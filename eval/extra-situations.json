@@ -1,0 +1,40 @@
+{
+  "_note": "Additional situations with roles that are not in the five official cases. No expected answers are stored here: the eval's judge decides from the source documents whether the screen answers each question.",
+  "situations": [
+    {
+      "id": "x1",
+      "user": "pharmacist",
+      "title": "Medication reconciliation before surgery",
+      "description": "You are the clinical pharmacist. Reconcile her medication before the breast surgery in May 2016.",
+      "questions": ["Which drugs are on her latest medication list, with doses?", "Which dose changed between the 2015 and 2016 lists?", "Is her renal function documented?"]
+    },
+    {
+      "id": "x2",
+      "user": "oncologist",
+      "title": "Planning adjuvant endocrine therapy",
+      "description": "You are the medical oncologist planning adjuvant therapy after surgery.",
+      "questions": ["What is the receptor status?", "Is osteoporosis or bone treatment documented?", "What was the last documented ejection fraction?"]
+    },
+    {
+      "id": "x3",
+      "user": "nurse",
+      "title": "Admission to the surgical ward",
+      "description": "You are the ward nurse admitting her for the operation on 16 May 2016.",
+      "questions": ["Which allergy is documented?", "Does she inject any medication, and how often?", "What is her latest documented weight?"]
+    },
+    {
+      "id": "x4",
+      "user": "radiologist",
+      "title": "Request for CT angiography with contrast",
+      "description": "You are the radiologist asked to perform a CT angiography with iodinated contrast.",
+      "questions": ["Is a contrast reaction documented, and what happened?", "Does she take metformin?", "What did earlier imaging of the neck arteries show?"]
+    },
+    {
+      "id": "x5",
+      "user": "gp",
+      "title": "Eye check-up follow-up",
+      "description": "You are her GP. An ophthalmologist asks what was found in 2015 and whether the recommended eye check-ups happened.",
+      "questions": ["What did the 2015 eye examination find?", "Is a later eye check-up documented?", "What is her latest HbA1c?"]
+    }
+  ]
+}

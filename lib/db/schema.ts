@@ -1,28 +1,16 @@
-import {
-  integer,
-  sqliteTable,
-  text,
-  real,
-  uniqueIndex,
-} from "drizzle-orm/sqlite-core";
+import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-// ─── LLM cache ──────────────────────────────────────────────────────────────
+const createdAt = () =>
+  integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date());
 
 export const llmCache = sqliteTable("llm_cache", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   promptHash: text("prompt_hash").notNull().unique(),
   response: text("response").notNull(),
-  patientId: text("patient_id"),
-  situationHash: text("situation_hash"),
-  role: text("role"),
-  promptVersion: text("prompt_version"),
-  latencyMs: integer("latency_ms"),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
+  createdAt: createdAt(),
 });
-
-// ─── Users ───────────────────────────────────────────────────────────────────
 
 export const users = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -30,23 +18,19 @@ export const users = sqliteTable("users", {
   displayName: text("display_name").notNull(),
   role: text("role").notNull(),
   department: text("department").notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
 });
-
-// ─── Situations ──────────────────────────────────────────────────────────────
 
 export const situations = sqliteTable("situations", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   title: text("title").notNull(),
   description: text("description").notNull(),
-  createdByUserId: integer("created_by_user_id").references(() => users.id),
-  role: text("role"), // nullable → role-agnostic preset
+  /** Role named or implied by the situation; null = use the user's role only */
+  role: text("role"),
   isPreset: integer("is_preset", { mode: "boolean" }).notNull().default(false),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
+  /** Questions the question bar suggests for this situation */
+  suggestedQuestions: text("suggested_questions", { mode: "json" }).$type<string[]>(),
+  createdByUserId: integer("created_by_user_id").references(() => users.id),
+  createdAt: createdAt(),
 });
 
 export const userSituations = sqliteTable(
@@ -59,51 +43,36 @@ export const userSituations = sqliteTable(
       .notNull()
       .references(() => situations.id),
   },
-  (t) => [uniqueIndex("user_situations_uq").on(t.userId, t.situationId)]
+  (t) => [primaryKey({ columns: [t.userId, t.situationId] })],
 );
 
-// ─── Patient index ────────────────────────────────────────────────────────────
-
-export const patientsIndex = sqliteTable("patients_index", {
+export const patientIndex = sqliteTable("patient_index", {
   patientId: text("patient_id").primaryKey(),
   docHash: text("doc_hash").notNull(),
-  indexedAt: integer("indexed_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
   promptVersion: text("prompt_version").notNull(),
+  /** "rules" when only deterministic checks ran, "rules+llm" when the LLM scan also ran */
+  contradictionMode: text("contradiction_mode").notNull(),
+  indexedAt: createdAt(),
 });
 
-// ─── Passages ────────────────────────────────────────────────────────────────
-
-export const passages = sqliteTable("passages", {
-  // stable id format: "docId:pNNN"
-  id: text("id").primaryKey(),
+export const passageTranslations = sqliteTable("passage_translations", {
+  passageId: text("passage_id").primaryKey(),
   patientId: text("patient_id").notNull(),
-  docId: text("doc_id").notNull(),
-  section: text("section").notNull(), // e.g. "Diagnosen", "Allergien", "Entlassungsmedikation"
-  text: text("text").notNull(),
-  translation: text("translation"), // English machine translation, cached
-  startOffset: integer("start_offset").notNull(),
-  endOffset: integer("end_offset").notNull(),
+  docHash: text("doc_hash").notNull(),
+  translation: text("translation").notNull(),
 });
-
-// ─── Contradictions ───────────────────────────────────────────────────────────
 
 export const contradictions = sqliteTable("contradictions", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+  id: text("id").primaryKey(),
   patientId: text("patient_id").notNull(),
   title: text("title").notNull(),
-  explanation: text("explanation").notNull(), // plain-English one-liner
-  severity: text("severity").notNull(), // "high" | "medium" | "low"
-  categories: text("categories").notNull(), // JSON array of strings
-  passageIds: text("passage_ids").notNull(), // JSON array of passage IDs
-  detectedBy: text("detected_by").notNull(), // "rule" | "llm"
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
+  explanation: text("explanation").notNull(),
+  severity: text("severity", { enum: ["high", "medium", "low"] }).notNull(),
+  categories: text("categories", { mode: "json" }).$type<string[]>().notNull(),
+  passageIds: text("passage_ids", { mode: "json" }).$type<string[]>().notNull(),
+  detectedBy: text("detected_by", { enum: ["rule", "llm"] }).notNull(),
+  createdAt: createdAt(),
 });
-
-// ─── Conversations ────────────────────────────────────────────────────────────
 
 export const conversations = sqliteTable("conversations", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -111,46 +80,27 @@ export const conversations = sqliteTable("conversations", {
     .notNull()
     .references(() => users.id),
   patientId: text("patient_id").notNull(),
-  situationId: integer("situation_id").references(() => situations.id), // nullable for "None"
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
+  situationId: integer("situation_id").references(() => situations.id),
+  createdAt: createdAt(),
 });
-
-// ─── Messages ─────────────────────────────────────────────────────────────────
 
 export const messages = sqliteTable("messages", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   conversationId: integer("conversation_id")
     .notNull()
     .references(() => conversations.id),
-  role: text("role").notNull(), // "user" | "assistant"
-  content: text("content").notNull(), // JSON: {text, facts?, passageIds?}
+  role: text("role", { enum: ["user", "assistant"] }).notNull(),
+  /** user: { text }, assistant: { items: BriefingItem[] } */
+  content: text("content", { mode: "json" }).notNull(),
   latencyMs: integer("latency_ms"),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
+  createdAt: createdAt(),
 });
-
-// ─── Audit log ────────────────────────────────────────────────────────────────
 
 export const auditLog = sqliteTable("audit_log", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   userId: integer("user_id").references(() => users.id),
   patientId: text("patient_id"),
-  action: text("action").notNull(), // login | open_patient | select_situation | view_briefing | open_source | ask_question
-  details: text("details"), // JSON
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
+  action: text("action").notNull(),
+  details: text("details", { mode: "json" }),
+  createdAt: createdAt(),
 });
-
-// ─── Type exports ─────────────────────────────────────────────────────────────
-
-export type User = typeof users.$inferSelect;
-export type Situation = typeof situations.$inferSelect;
-export type Passage = typeof passages.$inferSelect;
-export type Contradiction = typeof contradictions.$inferSelect;
-export type Conversation = typeof conversations.$inferSelect;
-export type Message = typeof messages.$inferSelect;
-export type AuditLog = typeof auditLog.$inferSelect;

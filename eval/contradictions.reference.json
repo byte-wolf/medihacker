@@ -1,0 +1,13 @@
+{
+  "_note": "Evaluation-only reference for patient 0000-0001. Lists known contradictions by topic and the documents they must link; no document text. Runtime code must never read this file (enforced by tests/unit/boundaries.test.ts).",
+  "patient": "0000-0001",
+  "known": [
+    { "id": "carotid-side", "topic": "carotid|stenosis|side|laterality|left|right", "mustLinkDocs": ["12340012"] },
+    { "id": "bmi-2015", "topic": "bmi", "mustLinkDocs": ["12340012"] },
+    { "id": "bmi-2016-04-05", "topic": "bmi", "mustLinkDocs": ["12340014"] },
+    { "id": "admission-2016", "topic": "admission|admitted", "mustLinkDocs": ["12340018"] },
+    { "id": "discharge-date-2016", "topic": "discharge", "mustLinkDocs": ["12340018"] },
+    { "id": "case-number", "topic": "case number", "mustLinkDocs": ["12340018"], "uncertain": true },
+    { "id": "axillary-nodes", "topic": "lymph|axilla|axillary", "mustLinkDocs": ["12340014"], "uncertain": true }
+  ]
+}

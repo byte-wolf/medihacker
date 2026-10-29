@@ -1,41 +1,27 @@
-/**
- * llm-smoke.ts — 20-line smoke test for the Bob inference API.
- * Sends one chat request and prints latency + first 200 chars of output.
- * Run with: npm run llm-smoke
- */
-import "dotenv/config";
-import { BobProvider } from "../lib/llm/bob-provider";
+// Sends one small request to the configured LLM and prints latency and output.
+// Use it to confirm the IBM Bob endpoint, headers and model before anything else.
+import "./env";
+import { getProvider, MockProvider } from "@/lib/llm/provider";
 
 async function main() {
-  const required = ["BOB_API_KEY", "BOB_BASE_URL", "BOB_MODEL"];
-  const missing = required.filter((k) => !process.env[k]);
-  if (missing.length > 0) {
-    console.error(`❌  Missing env vars: ${missing.join(", ")}`);
-    console.error("    Copy .env.local.example → .env.local and fill in the values.");
+  const provider = getProvider();
+  if (provider instanceof MockProvider) {
+    console.error("No LLM configured. Fill BOB_BASE_URL, BOB_API_KEY and BOB_MODEL in .env.local (see .env.local.example).");
     process.exit(1);
   }
-
-  console.log(`Provider  : IBM Bob`);
-  console.log(`Base URL  : ${process.env.BOB_BASE_URL}`);
-  console.log(`Model     : ${process.env.BOB_MODEL}`);
-  if (process.env.BOB_TEAM_ID) console.log(`Team ID   : ${process.env.BOB_TEAM_ID}`);
-  if (process.env.BOB_INSTANCE_ID) console.log(`Instance  : ${process.env.BOB_INSTANCE_ID}`);
-  console.log();
-
-  const provider = new BobProvider();
-
-  try {
-    const result = await provider.complete({
-      messages: [{ role: "user", content: "Reply with exactly: SMOKE_OK" }],
-      temperature: 0,
-    });
-
-    console.log(`✅  Latency: ${result.latencyMs} ms`);
-    console.log(`   Output : ${result.text.slice(0, 200)}`);
-  } catch (err) {
-    console.error("❌  Request failed:", err);
-    process.exit(1);
-  }
+  console.log(`Provider: ${provider.name}`);
+  const res = await provider.complete({
+    messages: [
+      { role: "system", content: 'Reply with JSON only: {"ok": true, "translation": "<English>"}' },
+      { role: "user", content: "Translate: KM-Allergie (Übelkeit, Schwindel, Erbrechen)" },
+    ],
+    json: true,
+    maxTokens: 100,
+  });
+  console.log(`Model: ${res.model}\nLatency: ${res.ms} ms\nOutput: ${res.text}`);
 }
 
-main();
+main().catch((err) => {
+  console.error("Smoke test failed:", err instanceof Error ? err.message : err);
+  process.exit(1);
+});
