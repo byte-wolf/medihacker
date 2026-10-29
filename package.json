@@ -7,7 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:push": "drizzle-kit push"
+    "typecheck": "tsc --noEmit",
+    "db:push": "drizzle-kit push",
+    "db:seed": "tsx scripts/db-seed.ts",
+    "index": "tsx scripts/index-patient.ts",
+    "eval": "tsx scripts/eval.ts",
+    "llm-smoke": "tsx scripts/llm-smoke.ts"
   },
   "dependencies": {
     "@carbon/icons-react": "^11.91.0",
@@ -24,9 +29,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^18.0.9",
     "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }
