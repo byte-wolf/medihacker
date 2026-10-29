@@ -16,6 +16,7 @@ export type SituationOption = {
   title: string;
   description: string;
   role: string | null;
+  suggestedQuestions: string[];
   /** mine = created by the user, assigned = preset linked to the user, preset = other presets */
   group: "mine" | "assigned" | "preset";
 };

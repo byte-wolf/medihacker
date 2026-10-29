@@ -84,9 +84,13 @@ export function ContradictionsPanel(props: {
       {relevant.map((c) => (
         <ContradictionCard key={c.id} c={c} documents={props.documents} onOpenSource={props.onOpenSource} focused={props.focusId === c.id} />
       ))}
-      {others.length > 0 && (
+      {relevant.length === 0 &&
+        others.map((c) => (
+          <ContradictionCard key={c.id} c={c} documents={props.documents} onOpenSource={props.onOpenSource} focused={props.focusId === c.id} />
+        ))}
+      {relevant.length > 0 && others.length > 0 && (
         <Accordion size="md">
-          <AccordionItem title={`Other contradictions (${others.length})`} open={focusInOthers || relevant.length === 0}>
+          <AccordionItem title={`Other contradictions (${others.length})`} open={focusInOthers}>
             {others.map((c) => (
               <ContradictionCard key={c.id} c={c} documents={props.documents} onOpenSource={props.onOpenSource} focused={props.focusId === c.id} />
             ))}

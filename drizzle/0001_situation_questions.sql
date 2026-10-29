@@ -1,0 +1,1 @@
+ALTER TABLE `situations` ADD `suggested_questions` text;

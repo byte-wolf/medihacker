@@ -1,12 +1,12 @@
 // Sends one small request to the configured LLM and prints latency and output.
-// Use it to confirm the configured endpoint (IBM Bob, OpenAI-compatible or Devin) before anything else.
+// Use it to confirm the configured endpoint (Gemini, OpenAI-compatible or Devin), key and model before anything else.
 import "./env";
 import { getProvider, MockProvider } from "@/lib/llm/provider";
 
 async function main() {
   const provider = getProvider();
   if (provider instanceof MockProvider) {
-    console.error("No LLM configured. Set LLM_PROVIDER and its settings in .env.local, e.g. BOB_BASE_URL/BOB_API_KEY/BOB_MODEL or DEVIN_API_KEY/DEVIN_ORG_ID (see .env.local.example).");
+    console.error("No LLM configured. Set LLM_PROVIDER and its settings in .env (e.g. GEMINI_API_KEY and GEMINI_MODEL, or DEVIN_API_KEY); see .env.local.example.");
     process.exit(1);
   }
   console.log(`Provider: ${provider.name}`);

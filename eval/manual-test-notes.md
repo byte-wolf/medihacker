@@ -1,6 +1,6 @@
 # Manual test notes
 
-Date: 2026-10-29. Build: dev server and production build (`next build && next start`), Chromium, 1440×900 and 768×1024 (tablet). LLM: **not configured** (keyword-retrieval mode). The runs with the IBM Bob model are still to do.
+Date: 2026-10-29. Build: dev server and production build (`next build && next start`), Chromium, 1440×900 and 768×1024 (tablet). LLM: **not configured** (keyword-retrieval mode). The runs with the AI model (Gemini) are still to do.
 
 ## What was checked
 

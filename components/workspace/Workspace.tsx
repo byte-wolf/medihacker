@@ -3,7 +3,7 @@
 import { InlineNotification } from "@carbon/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { BriefingStreamEvent } from "@/lib/types";
+import type { BriefingStreamEvent, Contradiction } from "@/lib/types";
 import { BriefingView } from "./BriefingView";
 import { ChatPanel } from "./ChatPanel";
 import { ContextBar } from "./ContextBar";
@@ -30,6 +30,8 @@ export function Workspace(props: {
   situations: SituationOption[];
   initialSituationId: number | null;
   aiConfigured: boolean;
+  initialContradictions: Contradiction[];
+  roleQuestions: string[];
 }) {
   const { patient } = props;
   const router = useRouter();
@@ -125,7 +127,9 @@ export function Workspace(props: {
   // Load briefing and conversation whenever the situation changes.
   useEffect(() => {
     setSource(null);
-    void loadBriefing(situationId);
+    // "None" means no briefing: only the question bar and the contradictions.
+    if (situationId) void loadBriefing(situationId);
+    else abortRef.current?.abort();
     void openConversation(situationId);
     const url = new URL(window.location.href);
     if (situationId) url.searchParams.set("situation", String(situationId));
@@ -146,10 +150,11 @@ export function Workspace(props: {
     audit("open_contradiction", { id });
   };
 
-  const contradictionTitles = useMemo(
-    () => Object.fromEntries(briefing.contradictions.map((c) => [c.id, c.title])),
-    [briefing.contradictions],
-  );
+  // Contradictions are known before any briefing; the briefing only adds which ones are relevant.
+  const contradictions = briefing.contradictions.length ? briefing.contradictions : props.initialContradictions;
+  const relevantContradictions = situationId ? briefing.relevantContradictions : [];
+  const contradictionTitles = useMemo(() => Object.fromEntries(contradictions.map((c) => [c.id, c.title])), [contradictions]);
+  const roleSituations = situations.filter((s) => s.group !== "preset");
 
   return (
     <main id="main-content" className="app-content workspace">
@@ -178,8 +183,11 @@ export function Workspace(props: {
       <div className={`workspace__grid${source ? " workspace__grid--source" : ""}`}>
         <div className="workspace__main">
           <BriefingView
-            state={briefing}
+            state={situationId ? briefing : { ...briefing, status: "idle" }}
             situation={situation}
+            roleSituations={roleSituations}
+            onSelectSituation={setSituationId}
+            contradictionCount={contradictions.length}
             documents={patient.documents}
             contradictionTitles={contradictionTitles}
             onOpenSource={openSource}
@@ -192,6 +200,7 @@ export function Workspace(props: {
             messages={messages}
             setMessages={setMessages}
             situation={situation}
+            suggestions={situation?.suggestedQuestions.length ? situation.suggestedQuestions : props.roleQuestions}
             documents={patient.documents}
             contradictionTitles={contradictionTitles}
             onOpenSource={openSource}
@@ -213,9 +222,9 @@ export function Workspace(props: {
             />
           ) : (
             <ContradictionsPanel
-              loading={briefing.status === "loading" && briefing.contradictions.length === 0}
-              contradictions={briefing.contradictions}
-              relevant={briefing.relevantContradictions}
+              loading={false}
+              contradictions={contradictions}
+              relevant={relevantContradictions}
               focusId={focusContradiction}
               documents={patient.documents}
               onOpenSource={openSource}

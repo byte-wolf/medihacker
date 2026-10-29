@@ -3,7 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 import { getSessionUser } from "@/lib/auth/session";
 import { ageAt, getPatient } from "@/lib/data/patients";
-import { ensureContradictions } from "@/lib/contradictions/store";
+import { ensureContradictions, listContradictions } from "@/lib/contradictions/store";
+import { DEFAULT_QUESTIONS, ROLE_QUESTIONS } from "@/lib/catalog/situations";
 import { ensureTranslations } from "@/lib/data/translations";
 import { llmConfigured } from "@/lib/llm/provider";
 import { logAudit, situationsForUser } from "@/lib/repo";
@@ -38,6 +39,7 @@ async function WorkspaceContent({ params, searchParams }: PageProps<"/patients/[
     title: s.title,
     description: s.description,
     role: s.role,
+    suggestedQuestions: s.suggestedQuestions ?? [],
     group,
   });
   const situations = [...mine.map((s) => toOption(s, s.isPreset ? "assigned" : "mine")), ...presets.map((s) => toOption(s, "preset"))];
@@ -64,6 +66,8 @@ async function WorkspaceContent({ params, searchParams }: PageProps<"/patients/[
         situations={situations}
         initialSituationId={initialSituationId}
         aiConfigured={llmConfigured()}
+        initialContradictions={listContradictions(patient.id)}
+        roleQuestions={ROLE_QUESTIONS[user.role] ?? DEFAULT_QUESTIONS}
       />
     </>
   );
