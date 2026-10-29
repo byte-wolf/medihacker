@@ -42,12 +42,15 @@ bun run index
 
 | Variable | Purpose |
 |---|---|
-| `LLM_PROVIDER` | `bob` (IBM Bob inference API), `openai-compatible`, or `mock` (no model: keyword retrieval) |
+| `LLM_PROVIDER` | `bob` (IBM Bob inference API), `openai-compatible`, `devin` (Devin API), or `mock` (no model: keyword retrieval) |
 | `BOB_BASE_URL`, `BOB_API_KEY`, `BOB_MODEL` | Bob endpoint (OpenAI-style `…/chat/completions`), key and model |
 | `BOB_TEAM_ID`, `BOB_INSTANCE_ID` | Sent as `x-team-id` / `x-instance-id` headers when set |
 | `BOB_FAST_MODEL` | Optional faster model for planning and translation |
 | `BOB_EXTRA_HEADERS` | Optional JSON object of extra headers |
 | `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` | Any other OpenAI-compatible endpoint |
+| `DEVIN_API_KEY`, `DEVIN_ORG_ID` | Devin service user token and organization ID (`org-…`) for `LLM_PROVIDER=devin` |
+| `DEVIN_MODE`, `DEVIN_FAST_MODE` | Devin agent mode per call (default `lite`); optional mode for planning and translation |
+| `DEVIN_MAX_ACU_LIMIT`, `DEVIN_TIMEOUT_MS`, `DEVIN_POLL_MS` | Optional ACU cap per session, overall timeout per call (default 600000) and poll interval (default 3000) |
 | `DATABASE_URL` | SQLite file (default `./medihacker.db`) |
 | `PATIENT_DATA_DIR` | Patient folders (default `./data/data`) |
 | `SESSION_SECRET` | Signs the session cookie |
@@ -124,6 +127,7 @@ See [`eval/results.md`](eval/results.md) once `bun run eval` has been run with t
 
 ## Known limitations
 
+* With `LLM_PROVIDER=devin` every model call runs as its own short Devin session (Lite mode by default) that returns the reply as structured output and is terminated afterwards. Expect tens of seconds to minutes per call instead of seconds, and ACU usage per call; run `bun run index` beforehand so briefings come from the cache.
 * The IBM Bob endpoint shape is assumed to be OpenAI-compatible; run `bun run llm:smoke` to confirm before a demo.
 * Without a model the briefing shows keyword-matched German passages and chat is disabled.
 * Login has no password (prototype). One synthetic patient is available, but the code handles any number of patient folders.

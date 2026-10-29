@@ -78,6 +78,112 @@ export class OpenAiCompatibleProvider implements LlmProvider {
   }
 }
 
+type DevinConfig = {
+  apiUrl: string;
+  apiKey: string;
+  orgId: string;
+  mode: string;
+  fastMode?: string;
+  maxAcuLimit?: number;
+  pollMs: number;
+  timeoutMs: number;
+};
+
+type DevinSession = {
+  session_id: string;
+  url?: string;
+  status: string;
+  status_detail?: string | null;
+  structured_output?: { text?: unknown } | null;
+};
+
+const DEVIN_OUTPUT_SCHEMA = {
+  type: "object",
+  properties: { text: { type: "string" } },
+  required: ["text"],
+  additionalProperties: false,
+};
+
+const DEVIN_DONE_DETAILS = new Set(["finished", "waiting_for_user"]);
+
+/** Flattens chat messages into one Devin session prompt that asks for the reply as structured output. */
+export function devinPrompt(opts: CompleteOptions): string {
+  const parts = [
+    "You are being used as a plain text-completion backend. Do not run commands, browse, open files, or create pull requests.",
+    "Read the messages below and write the assistant reply. Return it only through the structured output tool, with the full reply in the `text` field.",
+    opts.json ? "The `text` field must contain a single JSON object as a string, with no code fences or prose." : "",
+  ].filter(Boolean);
+  for (const m of opts.messages) parts.push(`<${m.role}>\n${m.content}\n</${m.role}>`);
+  return parts.join("\n\n");
+}
+
+/**
+ * Adapter for the Devin API (v3). Each completion runs as a short Devin session (Lite mode by default)
+ * that returns the reply as structured output; the session is terminated afterwards.
+ */
+export class DevinProvider implements LlmProvider {
+  readonly name = "Devin";
+  constructor(private cfg: DevinConfig) {}
+
+  private async request<T>(method: string, path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
+    const res = await fetch(`${this.cfg.apiUrl.replace(/\/$/, "")}/v3/organizations/${this.cfg.orgId}${path}`, {
+      method,
+      signal,
+      headers: { authorization: `Bearer ${this.cfg.apiKey}`, ...(body ? { "content-type": "application/json" } : {}) },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Devin API ${method} ${path} failed: HTTP ${res.status} ${text.slice(0, 300)}`);
+    }
+    return (await res.json()) as T;
+  }
+
+  async complete(opts: CompleteOptions): Promise<CompleteResult> {
+    const mode = (opts.fast && this.cfg.fastMode) || this.cfg.mode;
+    const model = `devin-${mode}`;
+    const started = Date.now();
+    const timeout = AbortSignal.timeout(this.cfg.timeoutMs);
+    const signal = opts.signal ? AbortSignal.any([opts.signal, timeout]) : timeout;
+    const session = await this.request<DevinSession>(
+      "POST",
+      "/sessions",
+      {
+        prompt: devinPrompt(opts),
+        devin_mode: mode,
+        title: `medihacker ${opts.tag ?? "completion"}`,
+        tags: ["medihacker"],
+        structured_output_schema: DEVIN_OUTPUT_SCHEMA,
+        structured_output_required: true,
+        knowledge_ids: [],
+        secret_ids: [],
+        resumable: false,
+        ...(this.cfg.maxAcuLimit ? { max_acu_limit: this.cfg.maxAcuLimit } : {}),
+      },
+      signal,
+    );
+    try {
+      for (;;) {
+        await new Promise<void>((resolve, reject) => {
+          const t = setTimeout(resolve, this.cfg.pollMs);
+          signal.addEventListener("abort", () => (clearTimeout(t), reject(signal.reason)), { once: true });
+        });
+        const s = await this.request<DevinSession>("GET", `/sessions/${session.session_id}`, undefined, signal);
+        const text = s.structured_output?.text;
+        const done = s.status === "exit" || DEVIN_DONE_DETAILS.has(s.status_detail ?? "");
+        if (typeof text === "string" && done) return { text, model, ms: Date.now() - started };
+        if (done || s.status === "error" || s.status === "suspended") {
+          throw new Error(`Devin session ${session.session_id} ended without output (status ${s.status}${s.status_detail ? `/${s.status_detail}` : ""})`);
+        }
+      }
+    } finally {
+      await this.request("DELETE", `/sessions/${session.session_id}?archive=true`).catch((err) =>
+        console.error("[devin] could not terminate session:", err),
+      );
+    }
+  }
+}
+
 /** Mock provider: answers from a handler (tests) or reports itself unavailable (app falls back to retrieval). */
 export class MockProvider implements LlmProvider {
   readonly name = "mock";
@@ -129,6 +235,19 @@ export function providerFromEnv(env: NodeJS.ProcessEnv = process.env): LlmProvid
       model: env.LLM_MODEL,
       fastModel: env.LLM_FAST_MODEL || undefined,
       timeoutMs,
+    });
+  }
+  if (kind === "devin") {
+    if (!env.DEVIN_API_KEY || !env.DEVIN_ORG_ID) return new MockProvider();
+    return new DevinProvider({
+      apiUrl: env.DEVIN_API_URL || "https://api.devin.ai",
+      apiKey: env.DEVIN_API_KEY,
+      orgId: env.DEVIN_ORG_ID,
+      mode: env.DEVIN_MODE || "lite",
+      fastMode: env.DEVIN_FAST_MODE || undefined,
+      maxAcuLimit: env.DEVIN_MAX_ACU_LIMIT ? Number(env.DEVIN_MAX_ACU_LIMIT) : undefined,
+      pollMs: Number(env.DEVIN_POLL_MS ?? 3000),
+      timeoutMs: Number(env.DEVIN_TIMEOUT_MS ?? 600000),
     });
   }
   return new MockProvider();
