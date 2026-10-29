@@ -48,7 +48,7 @@ bun run index
 | `BOB_FAST_MODEL` | Optional faster model for planning and translation |
 | `BOB_EXTRA_HEADERS` | Optional JSON object of extra headers |
 | `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` | Any other OpenAI-compatible endpoint |
-| `DEVIN_API_KEY`, `DEVIN_ORG_ID` | Devin service user token and organization ID (`org-…`) for `LLM_PROVIDER=devin` |
+| `DEVIN_API_KEY`, `DEVIN_ORG_ID` | Devin service user token for `LLM_PROVIDER=devin`; optional organization ID (`org-…`, looked up from the token when empty) |
 | `DEVIN_MODE`, `DEVIN_FAST_MODE` | Devin agent mode per call (default `lite`); optional mode for planning and translation |
 | `DEVIN_MAX_ACU_LIMIT`, `DEVIN_TIMEOUT_MS`, `DEVIN_POLL_MS` | Optional ACU cap per session, overall timeout per call (default 600000) and poll interval (default 3000) |
 | `DATABASE_URL` | SQLite file (default `./medihacker.db`) |

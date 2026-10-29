@@ -23,7 +23,7 @@ describe("DevinProvider", () => {
   it("creates a lite session, polls for structured output and terminates the session", async () => {
     const calls = mockFetch([
       { session_id: "devin-abc", status: "running", status_detail: "working", structured_output: null },
-      { session_id: "devin-abc", status: "running", status_detail: "finished", structured_output: { text: '{"ok":true}' } },
+      { session_id: "devin-abc", status: "running", status_detail: "finished", structured_output: { ok: true } },
     ]);
     const res = await new DevinProvider(cfg).complete({ messages: [{ role: "user", content: "hi" }], json: true, tag: "plan" });
     expect(res).toMatchObject({ text: '{"ok":true}', model: "devin-lite" });
@@ -33,7 +33,7 @@ describe("DevinProvider", () => {
       "GET https://api.example.test/v3/organizations/org-1/sessions/devin-abc",
       "DELETE https://api.example.test/v3/organizations/org-1/sessions/devin-abc?archive=true",
     ]);
-    expect(calls[0].body).toMatchObject({ devin_mode: "lite", knowledge_ids: [], secret_ids: [], resumable: false, structured_output_required: true });
+    expect(calls[0].body).toMatchObject({ devin_mode: "lite", knowledge_ids: [], secret_ids: [], resumable: false, structured_output_required: true, structured_output_schema: { type: "object" } });
   });
 
   it("uses the fast mode for fast calls", async () => {
@@ -53,11 +53,22 @@ describe("DevinProvider", () => {
     const p = devinPrompt({ messages: [{ role: "system", content: "S" }, { role: "user", content: "U" }], json: true });
     expect(p).toContain("<system>\nS\n</system>");
     expect(p).toContain("<user>\nU\n</user>");
-    expect(p).toMatch(/single JSON object/);
+    expect(p).toMatch(/JSON object the messages ask for/);
   });
 
-  it("is selected by LLM_PROVIDER=devin only when key and org are set", () => {
-    expect(providerFromEnv({ LLM_PROVIDER: "devin", DEVIN_API_KEY: "k" } as unknown as NodeJS.ProcessEnv)).toBeInstanceOf(MockProvider);
-    expect(providerFromEnv({ LLM_PROVIDER: "devin", DEVIN_API_KEY: "k", DEVIN_ORG_ID: "org-1" } as unknown as NodeJS.ProcessEnv)).toBeInstanceOf(DevinProvider);
+  it("resolves the organization from the token when DEVIN_ORG_ID is not set", async () => {
+    const calls = mockFetch([{ session_id: "devin-abc", status: "exit", structured_output: { text: "x" } }]);
+    const fetchMock = vi.mocked(fetch);
+    const inner = fetchMock.getMockImplementation()!;
+    fetchMock.mockImplementation(async (url, init) =>
+      String(url).endsWith("/v3/self") ? new Response(JSON.stringify({ org_id: "org-self" })) : inner(url as string, init!),
+    );
+    await new DevinProvider({ ...cfg, orgId: undefined }).complete({ messages: [{ role: "user", content: "hi" }] });
+    expect(calls[0].url).toBe("https://api.example.test/v3/organizations/org-self/sessions");
+  });
+
+  it("is selected by LLM_PROVIDER=devin only when a key is set", () => {
+    expect(providerFromEnv({ LLM_PROVIDER: "devin" } as unknown as NodeJS.ProcessEnv)).toBeInstanceOf(MockProvider);
+    expect(providerFromEnv({ LLM_PROVIDER: "devin", DEVIN_API_KEY: "k" } as unknown as NodeJS.ProcessEnv)).toBeInstanceOf(DevinProvider);
   });
 });

@@ -81,7 +81,8 @@ export class OpenAiCompatibleProvider implements LlmProvider {
 type DevinConfig = {
   apiUrl: string;
   apiKey: string;
-  orgId: string;
+  /** Resolved from the token via GET /v3/self when not set */
+  orgId?: string;
   mode: string;
   fastMode?: string;
   maxAcuLimit?: number;
@@ -94,25 +95,28 @@ type DevinSession = {
   url?: string;
   status: string;
   status_detail?: string | null;
-  structured_output?: { text?: unknown } | null;
+  structured_output?: Record<string, unknown> | null;
 };
 
-const DEVIN_OUTPUT_SCHEMA = {
+const DEVIN_TEXT_SCHEMA = {
   type: "object",
   properties: { text: { type: "string" } },
   required: ["text"],
   additionalProperties: false,
 };
+const DEVIN_JSON_SCHEMA = { type: "object" };
 
 const DEVIN_DONE_DETAILS = new Set(["finished", "waiting_for_user"]);
 
 /** Flattens chat messages into one Devin session prompt that asks for the reply as structured output. */
 export function devinPrompt(opts: CompleteOptions): string {
   const parts = [
-    "You are being used as a plain text-completion backend. Do not run commands, browse, open files, or create pull requests.",
-    "Read the messages below and write the assistant reply. Return it only through the structured output tool, with the full reply in the `text` field.",
-    opts.json ? "The `text` field must contain a single JSON object as a string, with no code fences or prose." : "",
-  ].filter(Boolean);
+    "You are being used as a plain text-completion backend. Do not run commands, browse, or create pull requests.",
+    "Read the messages below and write the assistant reply. Submit it with one final structured output call, passing the value inline (do not write it to a file).",
+    opts.json
+      ? "The structured output is the JSON object the messages ask for, exactly as specified there."
+      : "The structured output is an object whose `text` field holds the full reply.",
+  ];
   for (const m of opts.messages) parts.push(`<${m.role}>\n${m.content}\n</${m.role}>`);
   return parts.join("\n\n");
 }
@@ -123,10 +127,26 @@ export function devinPrompt(opts: CompleteOptions): string {
  */
 export class DevinProvider implements LlmProvider {
   readonly name = "Devin";
+  private orgId?: Promise<string>;
   constructor(private cfg: DevinConfig) {}
 
+  private resolveOrgId(signal?: AbortSignal): Promise<string> {
+    if (this.cfg.orgId) return Promise.resolve(this.cfg.orgId);
+    this.orgId ??= this.fetchJson<{ org_id?: string }>("GET", "/v3/self", undefined, signal).then((self) => {
+      if (!self.org_id) throw new Error("Devin API token is not bound to an organization; set DEVIN_ORG_ID");
+      return self.org_id;
+    });
+    this.orgId.catch(() => (this.orgId = undefined));
+    return this.orgId;
+  }
+
   private async request<T>(method: string, path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
-    const res = await fetch(`${this.cfg.apiUrl.replace(/\/$/, "")}/v3/organizations/${this.cfg.orgId}${path}`, {
+    const orgId = await this.resolveOrgId(signal);
+    return this.fetchJson<T>(method, `/v3/organizations/${orgId}${path}`, body, signal);
+  }
+
+  private async fetchJson<T>(method: string, path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
+    const res = await fetch(`${this.cfg.apiUrl.replace(/\/$/, "")}${path}`, {
       method,
       signal,
       headers: { authorization: `Bearer ${this.cfg.apiKey}`, ...(body ? { "content-type": "application/json" } : {}) },
@@ -153,7 +173,7 @@ export class DevinProvider implements LlmProvider {
         devin_mode: mode,
         title: `medihacker ${opts.tag ?? "completion"}`,
         tags: ["medihacker"],
-        structured_output_schema: DEVIN_OUTPUT_SCHEMA,
+        structured_output_schema: opts.json ? DEVIN_JSON_SCHEMA : DEVIN_TEXT_SCHEMA,
         structured_output_required: true,
         knowledge_ids: [],
         secret_ids: [],
@@ -169,7 +189,8 @@ export class DevinProvider implements LlmProvider {
           signal.addEventListener("abort", () => (clearTimeout(t), reject(signal.reason)), { once: true });
         });
         const s = await this.request<DevinSession>("GET", `/sessions/${session.session_id}`, undefined, signal);
-        const text = s.structured_output?.text;
+        const out = s.structured_output;
+        const text = out == null ? undefined : opts.json ? JSON.stringify(out) : out.text;
         const done = s.status === "exit" || DEVIN_DONE_DETAILS.has(s.status_detail ?? "");
         if (typeof text === "string" && done) return { text, model, ms: Date.now() - started };
         if (done || s.status === "error" || s.status === "suspended") {
@@ -238,11 +259,11 @@ export function providerFromEnv(env: NodeJS.ProcessEnv = process.env): LlmProvid
     });
   }
   if (kind === "devin") {
-    if (!env.DEVIN_API_KEY || !env.DEVIN_ORG_ID) return new MockProvider();
+    if (!env.DEVIN_API_KEY) return new MockProvider();
     return new DevinProvider({
       apiUrl: env.DEVIN_API_URL || "https://api.devin.ai",
       apiKey: env.DEVIN_API_KEY,
-      orgId: env.DEVIN_ORG_ID,
+      orgId: env.DEVIN_ORG_ID || undefined,
       mode: env.DEVIN_MODE || "lite",
       fastMode: env.DEVIN_FAST_MODE || undefined,
       maxAcuLimit: env.DEVIN_MAX_ACU_LIMIT ? Number(env.DEVIN_MAX_ACU_LIMIT) : undefined,
