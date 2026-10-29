@@ -94,8 +94,8 @@ export function BriefingView({
           kind="info"
           lowContrast
           hideCloseButton
-          title="Keyword search mode."
-          subtitle="Rows show the matching German source passages, not verified summaries."
+          title="The AI model did not answer for some sections."
+          subtitle="Those sections show matching German source passages (keyword search) instead of summaries. Retry later."
         />
       )}
       {state.contradictions.length > 0 && (

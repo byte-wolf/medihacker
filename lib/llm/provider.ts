@@ -20,6 +20,15 @@ export interface LlmProvider {
   complete(opts: CompleteOptions): Promise<CompleteResult>;
 }
 
+class RetryableError extends Error {
+  constructor(
+    message: string,
+    readonly delayMs: number,
+  ) {
+    super(message);
+  }
+}
+
 export class LlmUnavailableError extends Error {
   constructor(message: string) {
     super(message);
@@ -34,8 +43,38 @@ type OpenAiConfig = {
   model: string;
   fastModel?: string;
   headers?: Record<string, string>;
+  /** Sent as `reasoning_effort`; hidden reasoning counts against max_tokens, so keep it low for extraction. */
+  reasoningEffort?: string;
+  fastReasoningEffort?: string;
   timeoutMs: number;
+  /** Max parallel requests; the rest wait (protects per-minute quotas). */
+  maxConcurrency?: number;
 };
+
+/** Small FIFO semaphore so bursts (parallel sections, background jobs) queue instead of hitting rate limits. */
+class Limiter {
+  private active = 0;
+  private queue: (() => void)[] = [];
+  constructor(private max: number) {}
+  async run<T>(fn: () => Promise<T>): Promise<T> {
+    if (this.active >= this.max) await new Promise<void>((resolve) => this.queue.push(resolve));
+    this.active++;
+    try {
+      return await fn();
+    } finally {
+      this.active--;
+      this.queue.shift()?.();
+    }
+  }
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Retry delay from a rate-limit error body ("retryDelay": "7s"), else a short backoff. */
+function retryDelayMs(body: string, attempt: number): number {
+  const m = body.match(/"retryDelay"\s*:\s*"(\d+(?:\.\d+)?)s"/);
+  return Math.min(m ? Number(m[1]) * 1000 : 1500 * attempt, 10_000);
+}
 
 /**
  * Adapter for OpenAI-compatible `chat/completions` endpoints.
@@ -43,14 +82,35 @@ type OpenAiConfig = {
  */
 export class OpenAiCompatibleProvider implements LlmProvider {
   readonly name: string;
+  private limiter: Limiter;
   constructor(private cfg: OpenAiConfig) {
     this.name = cfg.name;
+    this.limiter = new Limiter(cfg.maxConcurrency ?? 6);
   }
 
   async complete(opts: CompleteOptions): Promise<CompleteResult> {
+    return this.limiter.run(() => this.completeWithRetry(opts));
+  }
+
+  /** Retries rate limits (429) and overload (503) twice, within the request timeout. */
+  private async completeWithRetry(opts: CompleteOptions): Promise<CompleteResult> {
+    const deadline = Date.now() + this.cfg.timeoutMs;
+    for (let attempt = 1; ; attempt++) {
+      try {
+        return await this.request(opts, deadline);
+      } catch (err) {
+        const retry = err instanceof RetryableError && attempt < 3 && Date.now() + err.delayMs < deadline - 2000;
+        if (!retry) throw err instanceof RetryableError ? new Error(err.message) : err;
+        await sleep(err.delayMs);
+      }
+    }
+  }
+
+  private async request(opts: CompleteOptions, deadline: number): Promise<CompleteResult> {
     const model = (opts.fast && this.cfg.fastModel) || this.cfg.model;
+    const effort = opts.fast ? (this.cfg.fastReasoningEffort ?? this.cfg.reasoningEffort) : this.cfg.reasoningEffort;
     const started = Date.now();
-    const timeout = AbortSignal.timeout(this.cfg.timeoutMs);
+    const timeout = AbortSignal.timeout(Math.max(1000, deadline - Date.now()));
     const signal = opts.signal ? AbortSignal.any([opts.signal, timeout]) : timeout;
     const res = await fetch(`${this.cfg.baseUrl.replace(/\/$/, "")}/chat/completions`, {
       method: "POST",
@@ -66,14 +126,20 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         temperature: opts.temperature ?? 0,
         max_tokens: opts.maxTokens ?? 4000,
         ...(opts.json ? { response_format: { type: "json_object" } } : {}),
+        ...(effort ? { reasoning_effort: effort } : {}),
       }),
     });
     if (!res.ok) {
       const body = await res.text().catch(() => "");
-      throw new Error(`${this.name} request failed: HTTP ${res.status} ${body.slice(0, 300)}`);
+      const message = `${this.name} request failed: HTTP ${res.status} ${body.slice(0, 300)}`;
+      if (res.status === 429 || res.status === 503) throw new RetryableError(message, retryDelayMs(body, 1));
+      throw new Error(message);
     }
-    const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-    const text = data.choices?.[0]?.message?.content ?? "";
+    const data = (await res.json()) as { choices?: { message?: { content?: string }; finish_reason?: string }[] };
+    const choice = data.choices?.[0];
+    // A cut-off answer is never used: half a JSON object could drop facts silently.
+    if (choice?.finish_reason === "length") throw new Error(`${this.name} answer was cut off at max_tokens (${model})`);
+    const text = choice?.message?.content ?? "";
     return { text, model, ms: Date.now() - started };
   }
 }
@@ -102,7 +168,10 @@ export function providerFromEnv(env: NodeJS.ProcessEnv = process.env): LlmProvid
       apiKey: env.GEMINI_API_KEY,
       model: env.GEMINI_MODEL,
       fastModel: env.GEMINI_FAST_MODEL || undefined,
+      reasoningEffort: env.GEMINI_REASONING_EFFORT || "low",
+      fastReasoningEffort: env.GEMINI_FAST_REASONING_EFFORT || "minimal",
       timeoutMs,
+      maxConcurrency: Number(env.LLM_MAX_CONCURRENCY ?? 6),
     });
   }
   if (kind === "openai-compatible") {
