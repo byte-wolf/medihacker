@@ -30,7 +30,7 @@ bun run dev
 
 Open <http://localhost:3000>. The SQLite database (`medihacker.db`) is created, migrated and seeded on first use.
 
-Demo users (no password in this prototype): `anaesthesia`, `surgeon`, `gp`, `ed`, `pharmacist`, `oncologist`, `nurse`, `radiologist`.
+Demo users (no password in this prototype): `anaesthesia`, `surgeon`, `gp`, `ed`, `pharmacist`, `oncologist`, `nurse`, `radiologist`. Each role comes with three example situations (`lib/catalog/situations.ts`), plus the hackathon's five cases. With the situation set to "None" there is no briefing, only the question bar and the contradictions. The question bar stays pinned to the bottom of the window (press `/` to focus it) and suggests questions for the current situation.
 
 Optional: pre-compute contradictions and translations, so the first page view is instant.
 

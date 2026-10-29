@@ -19,3 +19,15 @@ describe("deterministicPlan", () => {
     expect(profileForRole("Physiotherapist").length).toBeGreaterThan(0);
   });
 });
+
+describe("role situations", async () => {
+  const { ROLE_SITUATIONS, ROLE_QUESTIONS } = await import("@/lib/catalog/situations");
+  const { SEED_USERS } = await import("@/lib/db/seed");
+  it("gives every demo role three situations with suggested questions", () => {
+    for (const u of SEED_USERS) {
+      expect(ROLE_SITUATIONS[u.role], u.role).toHaveLength(3);
+      for (const s of ROLE_SITUATIONS[u.role]) expect(s.questions.length).toBeGreaterThanOrEqual(2);
+      expect(ROLE_QUESTIONS[u.role]?.length, u.role).toBeGreaterThan(0);
+    }
+  });
+});

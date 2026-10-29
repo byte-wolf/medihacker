@@ -82,6 +82,7 @@ test("anaesthetist: preset situation shows a sourced briefing", async ({ page })
 test("a fact's contradiction tag focuses the contradiction", async ({ page }) => {
   await login(page, "ed");
   await page.goto("/patients/0000-0001");
+  await page.getByRole("button", { name: /Fall with a head injury/ }).click();
   await expect(page.getByText(/Ready in/)).toBeVisible({ timeout: 15_000 });
   const tag = page.getByRole("button", { name: /^Contradiction:/ }).first();
   await tag.click();
@@ -106,6 +107,7 @@ test("a new situation can be created and is selected", async ({ page }) => {
 test("the screen changes with the role", async ({ page }) => {
   await login(page, "surgeon");
   await page.goto("/patients/0000-0001");
+  await page.getByRole("button", { name: /Explaining the biopsy result/ }).click();
   await expect(page.locator('[data-section="tumour"]')).toBeVisible();
   await expect(page.locator('[data-item="tumour_receptors"]')).toBeVisible();
   await expect(page.locator('[data-item="glucose_lowering"]')).toHaveCount(0);
@@ -115,4 +117,29 @@ test("logout returns to the login page", async ({ page }) => {
   await login(page, "gp");
   await page.getByRole("button", { name: "Log out" }).click();
   await expect(page).toHaveURL(/\/login$/);
+});
+
+test("without a situation there is no briefing, but the question bar and contradictions are shown", async ({ page }) => {
+  await login(page, "nurse");
+  await page.goto("/patients/0000-0001");
+  await expect(page.getByRole("heading", { name: "No situation selected" })).toBeVisible();
+  await expect(page.locator(".briefing-section")).toHaveCount(0);
+  await expect(page.locator(".contradiction").first()).toBeVisible();
+  // Three example situations for the role, one click away
+  for (const t of [/Nursing admission assessment/, /Pre-operative checklist/, /Diabetes care on the ward/]) {
+    await expect(page.getByRole("button", { name: t })).toBeVisible();
+  }
+  await expect(page.getByRole("search", { name: "Ask about this patient" })).toBeInViewport();
+});
+
+test("the question bar stays in the window while scrolling the briefing", async ({ page }) => {
+  await login(page, "anaesthesia");
+  await page.goto("/patients/0000-0001");
+  await page.getByRole("button", { name: /High blood pressure in the recovery room/ }).click();
+  await expect(page.getByText(/Ready in/)).toBeVisible({ timeout: 15_000 });
+  const bar = page.getByRole("search", { name: "Ask about this patient" });
+  await expect(bar.getByRole("button", { name: /Which blood pressure drugs/ })).toBeVisible();
+  await page.mouse.wheel(0, 1500);
+  await expect(bar).toBeInViewport();
+  await expectNoSeriousA11yIssues(page);
 });

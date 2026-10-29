@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { eq } from "drizzle-orm";
 import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import { ROLE_SITUATIONS } from "@/lib/catalog/situations";
 import * as schema from "./schema";
 
 export const SEED_USERS = [
@@ -54,22 +55,38 @@ export function roleHintFor(text: string) {
   return ROLE_HINTS.find((h) => h.re.test(text)) ?? null;
 }
 
-/** Idempotent seed: users and preset situations. */
+/** Idempotent seed: users, the hackathon's preset situations and three example situations per role. */
 export function seed(db: BetterSQLite3Database<typeof schema>) {
   for (const u of SEED_USERS) {
     db.insert(schema.users).values(u).onConflictDoNothing().run();
   }
-  const existingPresets = db.select().from(schema.situations).where(eq(schema.situations.isPreset, true)).all();
-  if (existingPresets.length > 0) return;
+  const presets = db.select().from(schema.situations).where(eq(schema.situations.isPreset, true)).all();
+  const exists = (title: string) => presets.some((p) => p.title === title);
+  const link = (username: string, situationId: number) => {
+    const user = db.select().from(schema.users).where(eq(schema.users.username, username)).get();
+    if (user) db.insert(schema.userSituations).values({ userId: user.id, situationId }).onConflictDoNothing().run();
+  };
+
   for (const s of readPresetSituations()) {
+    if (exists(s.title)) continue;
     const hint = roleHintFor(s.description);
     const [row] = db
       .insert(schema.situations)
       .values({ title: s.title, description: s.description, role: hint?.role ?? null, isPreset: true })
       .returning()
       .all();
-    if (!hint) continue;
-    const user = db.select().from(schema.users).where(eq(schema.users.username, hint.username)).get();
-    if (user) db.insert(schema.userSituations).values({ userId: user.id, situationId: row.id }).onConflictDoNothing().run();
+    if (hint) link(hint.username, row.id);
+  }
+
+  for (const user of SEED_USERS) {
+    for (const s of ROLE_SITUATIONS[user.role] ?? []) {
+      if (exists(s.title)) continue;
+      const [row] = db
+        .insert(schema.situations)
+        .values({ title: s.title, description: s.description, role: user.role, isPreset: true, suggestedQuestions: s.questions })
+        .returning()
+        .all();
+      link(user.username, row.id);
+    }
   }
 }

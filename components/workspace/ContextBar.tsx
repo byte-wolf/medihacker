@@ -7,7 +7,7 @@ import type { SituationOption } from "./types";
 
 type Option = SituationOption | { id: 0; title: string; group: "none" } | { id: -1; title: string; group: "new" };
 
-const NONE: Option = { id: 0, title: "None (role briefing only)", group: "none" };
+const NONE: Option = { id: 0, title: "None (questions only)", group: "none" };
 const NEW: Option = { id: -1, title: "+ New situation…", group: "new" };
 
 function optionLabel(o: Option | null) {
@@ -147,11 +147,11 @@ function NewSituationModal(props: {
       setError(data?.error ?? "Could not save the situation.");
       return;
     }
-    const s = data.situation as { id: number; title: string; description: string; role: string | null };
+    const s = data.situation as { id: number; title: string; description: string; role: string | null; suggestedQuestions: string[] | null };
     setTitle("");
     setDescription("");
     setError(null);
-    props.onCreated({ ...s, group: "mine" });
+    props.onCreated({ ...s, suggestedQuestions: s.suggestedQuestions ?? [], group: "mine" });
   };
 
   return (

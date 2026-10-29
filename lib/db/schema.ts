@@ -27,6 +27,8 @@ export const situations = sqliteTable("situations", {
   /** Role named or implied by the situation; null = use the user's role only */
   role: text("role"),
   isPreset: integer("is_preset", { mode: "boolean" }).notNull().default(false),
+  /** Questions the question bar suggests for this situation */
+  suggestedQuestions: text("suggested_questions", { mode: "json" }).$type<string[]>(),
   createdByUserId: integer("created_by_user_id").references(() => users.id),
   createdAt: createdAt(),
 });

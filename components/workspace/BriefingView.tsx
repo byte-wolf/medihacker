@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, InlineNotification, SkeletonText, Tile } from "@carbon/react";
-import { Renew, WarningAltFilled } from "@carbon/icons-react";
+import { ArrowRight, Renew, WarningAltFilled } from "@carbon/icons-react";
 import type { DocumentMeta } from "@/lib/types";
 import { ItemRow } from "./ItemRow";
 import type { BriefingState, OpenSource, SituationOption } from "./types";
@@ -15,6 +15,9 @@ export function BriefingView({
   onShowContradiction,
   onRetry,
   aiConfigured,
+  roleSituations,
+  onSelectSituation,
+  contradictionCount,
 }: {
   state: BriefingState;
   situation: SituationOption | null;
@@ -24,13 +27,54 @@ export function BriefingView({
   onShowContradiction: (id: string) => void;
   onRetry: () => void;
   aiConfigured: boolean;
+  roleSituations: SituationOption[];
+  onSelectSituation: (id: number) => void;
+  contradictionCount: number;
 }) {
+  if (!situation) {
+    return (
+      <section className="briefing" aria-labelledby="briefing-title">
+        <Tile className="no-situation">
+          <h2 id="briefing-title">No situation selected</h2>
+          <p className="muted">
+            Ask a question in the bar below, or choose a situation to get a briefing with only the facts it needs.
+          </p>
+          {roleSituations.length > 0 && (
+            <>
+              <h3 className="no-situation__subtitle">Your situations</h3>
+              <ul className="no-situation__list">
+                {roleSituations.map((s) => (
+                  <li key={s.id}>
+                    <button type="button" className="demo-user" onClick={() => onSelectSituation(s.id)}>
+                      <span>
+                        <span className="demo-user__role">{s.title}</span>
+                        <span className="demo-user__meta">{s.description}</span>
+                      </span>
+                      <ArrowRight size={16} aria-hidden />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </Tile>
+        {contradictionCount > 0 && (
+          <a href="#contradictions-title" className="contradiction-jump">
+            <WarningAltFilled size={16} aria-hidden className="sev-medium" />
+            <span>
+              <strong>{contradictionCount} contradictions in the documents.</strong> Show them
+            </span>
+          </a>
+        )}
+      </section>
+    );
+  }
   const loading = state.status === "loading";
   const showPlanSkeleton = loading && state.plan.length === 0;
   return (
     <section className="briefing" aria-labelledby="briefing-title" aria-busy={loading}>
       <div className="briefing__head">
-        <h2 id="briefing-title">{situation ? "Briefing for this situation" : "Briefing for your role"}</h2>
+        <h2 id="briefing-title">Briefing for this situation</h2>
         <span className="briefing__meta" aria-live="polite">
           {loading && "Reading 8 documents…"}
           {state.status === "done" && state.ms !== undefined && `Ready in ${(state.ms / 1000).toFixed(1)} s${state.cached ? " (cached)" : ""}`}

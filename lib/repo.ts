@@ -10,7 +10,7 @@ export function logAudit(userId: number | null, patientId: string | null, action
   getDb().insert(schema.auditLog).values({ userId, patientId, action, details: details ?? null }).run();
 }
 
-/** The user's own situations first, then the remaining preset situations. */
+/** The user's own and assigned situations first, then the hackathon's example cases. */
 export function situationsForUser(userId: number): { mine: SituationRow[]; presets: SituationRow[] } {
   const db = getDb();
   const linked = db
@@ -28,7 +28,8 @@ export function situationsForUser(userId: number): { mine: SituationRow[]; prese
     .where(eq(schema.situations.isPreset, true))
     .orderBy(asc(schema.situations.id))
     .all()
-    .filter((s) => !linked.includes(s.id));
+    // Other roles' example situations stay out of the list; the hackathon's cases stay in for every role.
+    .filter((s) => !linked.includes(s.id) && !s.suggestedQuestions);
   return { mine, presets };
 }
 
