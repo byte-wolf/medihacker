@@ -13,9 +13,13 @@ export async function cachedComplete(opts: CompleteOptions): Promise<{ text: str
   const provider = getProvider();
   const key = hashKey([provider.name, opts.fast ?? false, opts.messages, opts.json ?? false]);
   const db = getDb();
-  const hit = db.select().from(schema.llmCache).where(eq(schema.llmCache.promptHash, key)).get();
+  // LLM_CACHE=off measures cold timings (the eval does this); results are still written.
+  const hit = process.env.LLM_CACHE === "off" ? undefined : db.select().from(schema.llmCache).where(eq(schema.llmCache.promptHash, key)).get();
   if (hit) return { text: hit.response, cached: true };
   const res = await provider.complete(opts);
-  db.insert(schema.llmCache).values({ promptHash: key, response: res.text }).onConflictDoNothing().run();
+  db.insert(schema.llmCache)
+    .values({ promptHash: key, response: res.text })
+    .onConflictDoUpdate({ target: schema.llmCache.promptHash, set: { response: res.text, createdAt: new Date() } })
+    .run();
   return { text: res.text, cached: false };
 }

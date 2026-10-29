@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, InlineNotification, SkeletonText, Tile } from "@carbon/react";
-import { Renew } from "@carbon/icons-react";
+import { Renew, WarningAltFilled } from "@carbon/icons-react";
 import type { DocumentMeta } from "@/lib/types";
 import { ItemRow } from "./ItemRow";
 import type { BriefingState, OpenSource, SituationOption } from "./types";
@@ -53,6 +53,15 @@ export function BriefingView({
           title="Keyword search mode."
           subtitle="Rows show the matching German source passages, not verified summaries."
         />
+      )}
+      {state.contradictions.length > 0 && (
+        <a href="#contradictions-title" className="contradiction-jump">
+          <WarningAltFilled size={16} aria-hidden className="sev-medium" />
+          <span>
+            <strong>{state.contradictions.length} contradictions in the documents.</strong>{" "}
+            {state.relevantContradictions.length ? `${state.relevantContradictions.length} relevant to this briefing. ` : ""}Show them
+          </span>
+        </a>
       )}
       {showPlanSkeleton && (
         <Tile className="briefing-section">

@@ -53,12 +53,19 @@ export function SourcePanel(props: {
     }
   }, [data, passageIds]);
 
+  // Move focus into the panel when it opens; Esc closes it (capture phase, so tooltips cannot swallow the key).
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
   useEffect(() => {
     closeRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, docId]);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onCloseRef.current();
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, []);
 
   const meta = props.documents.find((d) => d.id === docId);
   const highlighted = data ? data.passages.filter((p) => passageIds.includes(p.id)).sort((a, b) => a.start - b.start) : [];

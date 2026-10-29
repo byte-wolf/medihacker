@@ -537,3 +537,93 @@ body {
 .chat__form .cds--form-item {
   flex: 1;
 }
+
+/* Login demo users */
+.login-card__subtitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.demo-users {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--cds-border-subtle-01);
+  border: 1px solid var(--cds-border-subtle-01);
+}
+@media (max-width: 671px) {
+  .demo-users {
+    grid-template-columns: 1fr;
+  }
+}
+.demo-user {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  border: none;
+  background: var(--cds-layer-02);
+  color: var(--cds-text-primary);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+.demo-user:hover {
+  background: var(--cds-layer-hover-02);
+}
+.demo-user:focus-visible {
+  outline: 2px solid var(--cds-focus);
+  outline-offset: -2px;
+}
+.demo-user__role {
+  display: block;
+  font-size: 0.875rem;
+}
+.demo-user__meta {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--cds-text-secondary);
+}
+
+/* Never truncate source labels or the allergy alert: they are the evidence. */
+.source-tags .cds--tag,
+.contradiction__sources .cds--tag,
+.patient-banner__alerts .cds--tag {
+  max-width: none;
+}
+.source-tags .cds--tag__label,
+.contradiction__sources .cds--tag__label,
+.patient-banner__alerts .cds--tag__label {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  text-align: left;
+}
+
+/* On narrow screens the contradictions rail moves below; this link keeps it one tap away. */
+.contradiction-jump {
+  display: none;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--cds-notification-background-warning, #fcf4d6);
+  border-left: 3px solid var(--cds-support-warning);
+  color: var(--cds-text-primary);
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+.contradiction-jump span {
+  text-decoration: underline;
+}
+.contradiction-jump:focus-visible {
+  outline: 2px solid var(--cds-focus);
+}
+@media (max-width: 1055px) {
+  .contradiction-jump {
+    display: flex;
+  }
+}
