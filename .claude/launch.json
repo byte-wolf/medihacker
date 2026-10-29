@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "medihacker-dev",
+      "runtimeExecutable": "/bin/zsh",
+      "runtimeArgs": ["-c", "export PATH=/opt/homebrew/opt/node@22/bin:$HOME/.bun/bin:$PATH; bun run dev"],
+      "port": 3000
+    }
+  ]
+}
