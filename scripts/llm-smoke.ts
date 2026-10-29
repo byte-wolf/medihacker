@@ -1,12 +1,12 @@
 // Sends one small request to the configured LLM and prints latency and output.
-// Use it to confirm the IBM Bob endpoint, headers and model before anything else.
+// Use it to confirm the endpoint, key and model before anything else.
 import "./env";
 import { getProvider, MockProvider } from "@/lib/llm/provider";
 
 async function main() {
   const provider = getProvider();
   if (provider instanceof MockProvider) {
-    console.error("No LLM configured. Fill BOB_BASE_URL, BOB_API_KEY and BOB_MODEL in .env.local (see .env.local.example).");
+    console.error("No LLM configured. Set LLM_PROVIDER=gemini and fill GEMINI_API_KEY and GEMINI_MODEL in .env (see .env.local.example).");
     process.exit(1);
   }
   console.log(`Provider: ${provider.name}`);

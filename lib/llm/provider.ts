@@ -39,7 +39,7 @@ type OpenAiConfig = {
 
 /**
  * Adapter for OpenAI-compatible `chat/completions` endpoints.
- * IBM Bob's inference API is used through this adapter with its team/instance headers.
+ * Gemini is used through Google's OpenAI-compatible endpoint.
  */
 export class OpenAiCompatibleProvider implements LlmProvider {
   readonly name: string;
@@ -90,34 +90,19 @@ export class MockProvider implements LlmProvider {
   }
 }
 
-function parseHeaders(json: string | undefined): Record<string, string> {
-  if (!json) return {};
-  try {
-    return JSON.parse(json) as Record<string, string>;
-  } catch {
-    return {};
-  }
-}
-
 export function providerFromEnv(env: NodeJS.ProcessEnv = process.env): LlmProvider {
   const kind = (env.LLM_PROVIDER ?? "mock").toLowerCase();
   const timeoutMs = Number(env.LLM_TIMEOUT_MS ?? 30000);
-  if (kind === "bob") {
-    if (!env.BOB_BASE_URL || !env.BOB_API_KEY || !env.BOB_MODEL) {
-      return new MockProvider();
-    }
+  if (kind === "gemini") {
+    if (!env.GEMINI_API_KEY || !env.GEMINI_MODEL) return new MockProvider();
     return new OpenAiCompatibleProvider({
-      name: "IBM Bob",
-      baseUrl: env.BOB_BASE_URL,
-      apiKey: env.BOB_API_KEY,
-      model: env.BOB_MODEL,
-      fastModel: env.BOB_FAST_MODEL || undefined,
+      name: "Gemini",
+      // Google's OpenAI-compatible endpoint for the Gemini API
+      baseUrl: env.GEMINI_BASE_URL || "https://generativelanguage.googleapis.com/v1beta/openai",
+      apiKey: env.GEMINI_API_KEY,
+      model: env.GEMINI_MODEL,
+      fastModel: env.GEMINI_FAST_MODEL || undefined,
       timeoutMs,
-      headers: {
-        ...(env.BOB_TEAM_ID ? { "x-team-id": env.BOB_TEAM_ID } : {}),
-        ...(env.BOB_INSTANCE_ID ? { "x-instance-id": env.BOB_INSTANCE_ID } : {}),
-        ...parseHeaders(env.BOB_EXTRA_HEADERS),
-      },
     });
   }
   if (kind === "openai-compatible") {
