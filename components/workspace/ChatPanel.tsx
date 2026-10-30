@@ -8,8 +8,8 @@ import { ItemRow } from "./ItemRow";
 import type { ChatMessage, OpenSource, SituationOption } from "./types";
 
 /**
- * The conversation thread (in the page flow) plus the question bar, which
- * stays pinned to the bottom of the window so a question is always one step away.
+ * The question bar (sticky, right below the briefing so it stays mid-screen and always
+ * visible) followed by the conversation thread.
  */
 export function ChatPanel(props: {
   conversationId: number | null;
@@ -86,50 +86,6 @@ export function ChatPanel(props: {
 
   return (
     <>
-      <section ref={threadRef} className="chat" aria-labelledby="chat-title">
-        <h2 id="chat-title" className="chat__title">
-          Questions and answers
-        </h2>
-        <p className="muted chat__lead">
-          {props.situation ? `Answers stay in the context of “${props.situation.title}”.` : "No situation selected: answers use your role only."} Every
-          answer is checked against the source documents.
-        </p>
-        {messages.length === 0 && <p className="chat__empty muted">Ask a question in the bar at the bottom of the window.</p>}
-        <div className="chat__thread" aria-live="polite">
-          {messages.map((m) => {
-            if (m.role === "user")
-              return (
-                <div key={m.id} className="chat__q">
-                  <span className="visually-hidden">You asked: </span>
-                  {m.text}
-                </div>
-              );
-            if (m.role === "pending")
-              return (
-                <div key={m.id} className="chat__a">
-                  <InlineLoading description="Searching the documents…" />
-                </div>
-              );
-            if (m.role === "error") return <InlineNotification key={m.id} kind="error" lowContrast hideCloseButton title={m.text} />;
-            return (
-              <Tile key={m.id} className="chat__a">
-                {m.items.map((item) => (
-                  <ItemRow
-                    key={item.key}
-                    item={item}
-                    documents={props.documents}
-                    onOpenSource={props.onOpenSource}
-                    contradictionTitles={props.contradictionTitles}
-                    onShowContradiction={props.onShowContradiction}
-                  />
-                ))}
-              </Tile>
-            );
-          })}
-          <div ref={endRef} />
-        </div>
-      </section>
-
       <div className="ask-bar" role="search" aria-label="Ask about this patient">
         {suggestions.length > 0 && (
           <div className="ask-bar__suggestions" aria-label="Suggested questions">
@@ -164,8 +120,8 @@ export function ChatPanel(props: {
               }
             }}
           />
-          <Button type="submit" renderIcon={Send} disabled={props.disabled || busy || !question.trim() || !props.conversationId}>
-            Ask
+          <Button type="submit" renderIcon={busy ? undefined : Send} disabled={props.disabled || busy || !question.trim() || !props.conversationId}>
+            {busy ? <InlineLoading className="ask-bar__spinner" description="Answering…" /> : "Ask"}
           </Button>
         </form>
         {answered > 0 && (
@@ -174,6 +130,50 @@ export function ChatPanel(props: {
           </button>
         )}
       </div>
+
+      <section ref={threadRef} className="chat" aria-labelledby="chat-title">
+        <h2 id="chat-title" className="chat__title">
+          Questions and answers
+        </h2>
+        <p className="muted chat__lead">
+          {props.situation ? `Answers stay in the context of “${props.situation.title}”.` : "No situation selected: answers use your role only."} Every
+          answer is checked against the source documents.
+        </p>
+        {messages.length === 0 && <p className="chat__empty muted">Ask a question in the bar above.</p>}
+        <div className="chat__thread" aria-live="polite">
+          {messages.map((m) => {
+            if (m.role === "user")
+              return (
+                <div key={m.id} className="chat__q">
+                  <span className="visually-hidden">You asked: </span>
+                  {m.text}
+                </div>
+              );
+            if (m.role === "pending")
+              return (
+                <div key={m.id} className="chat__a">
+                  <InlineLoading description="Generating the answer from the documents…" />
+                </div>
+              );
+            if (m.role === "error") return <InlineNotification key={m.id} kind="error" lowContrast hideCloseButton title={m.text} />;
+            return (
+              <Tile key={m.id} className="chat__a">
+                {m.items.map((item) => (
+                  <ItemRow
+                    key={item.key}
+                    item={item}
+                    documents={props.documents}
+                    onOpenSource={props.onOpenSource}
+                    contradictionTitles={props.contradictionTitles}
+                    onShowContradiction={props.onShowContradiction}
+                  />
+                ))}
+              </Tile>
+            );
+          })}
+          <div ref={endRef} />
+        </div>
+      </section>
     </>
   );
 }

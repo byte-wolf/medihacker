@@ -112,3 +112,9 @@ export function skepticPrompt(candidates: { title: string; explanation: string; 
     .join("\n\n");
   return { system, user };
 }
+
+export function explainPrompt(args: { roles: string[]; situation: { title: string; description: string }; label: string }) {
+  const system = `You explain to a clinician, in 2-4 short English sentences (max 80 words), why one type of patient information matters for their role and situation. Use general medical knowledge only; do not state or invent facts about the patient. If a widely used, current clinical guideline covers this, name it and give its official URL (e.g. AWMF, NICE, ESC, ESAIC, NCCN, WHO); otherwise use null. Reply with JSON: {"why": "<explanation>", "guideline": {"title": "<guideline name and year>", "url": "<https URL>"} | null}.`;
+  const user = `ROLE: ${args.roles.join(" + ")}\nSITUATION: ${args.situation.title}. ${args.situation.description}\nINFORMATION: ${args.label}`;
+  return { system, user };
+}

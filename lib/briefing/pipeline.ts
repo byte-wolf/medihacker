@@ -26,7 +26,7 @@ const ITEM_CONTRADICTION_CATEGORIES: Record<string, string[]> = {
   followups_recommended: ["dates"],
 };
 
-/** Situation-specific questions from the model (cached), appended as their own section. */
+/** Situation-specific items from the model (cached), merged into the regular briefing sections. */
 async function customItems(roles: string[], situation: SituationInput, plan: PlannedSection[]): Promise<PlannedItem[]> {
   if (!situation || !llmConfigured()) return [];
   const existing = plan.flatMap((s) => s.items.map((i) => i.label));
@@ -139,33 +139,43 @@ export async function buildBriefing(
   let fallback = false;
   let allCached = true;
 
-  const runOne = async (s: PlannedSection) => {
+  const runOne = async (s: PlannedSection): Promise<BriefingSection | null> => {
     try {
       const r = await extractSection(patient, roles, situation, s);
       attachContradictions(r.section, contradictions, relevant);
-      sections.push(r.section);
       fallback ||= r.fallback;
       allCached &&= r.cached;
-      emit({ type: "section", section: r.section });
       if (r.rejected.rejected.length) emit(r.rejected);
+      return r.section;
     } catch (err) {
       console.error(`[briefing] section ${s.id} failed:`, err);
       allCached = false;
       emit({ type: "error", sectionId: s.id, message: "This section could not be loaded. Please retry." });
+      return null;
     }
   };
+  const publish = (section: BriefingSection | null) => {
+    if (!section) return;
+    const i = sections.findIndex((x) => x.id === section.id);
+    if (i >= 0) sections[i] = section;
+    else sections.push(section);
+    emit({ type: "section", section });
+  };
+  const jobs = plan.map((s) => runOne(s).then((section) => (publish(section), section)));
 
-  // Situation-specific questions are planned while the standard sections are already extracting.
+  // Situation-specific items are planned while the standard sections are already extracting,
+  // then appended to the last regular section (no separate "questions" section to read).
   const customJob = customItems(roles, situation, plan).then(async (items) => {
     const known = new Set(plan.flatMap((s) => s.items.map((i) => i.key)));
     const extra = items.filter((i) => !known.has(i.key) && !CATEGORIES[i.key]);
-    if (!extra.length) return;
-    const section: PlannedSection = { id: "situation", title: "Situation-specific questions", items: extra };
-    emit({ type: "plan", sections: [{ id: section.id, title: section.title, items: extra.map((i) => ({ key: i.key, label: i.label })) }] });
-    await runOne(section);
+    const target = plan.at(-1);
+    if (!extra.length || !target) return;
+    const [extraSection, base] = await Promise.all([runOne({ ...target, items: extra }), jobs[plan.length - 1]]);
+    if (!extraSection?.items.length) return;
+    publish({ ...(base ?? { id: target.id, title: target.title, items: [] }), items: [...(base?.items ?? []), ...extraSection.items] });
   });
 
-  await Promise.all([...plan.map(runOne), customJob]);
+  await Promise.all([...jobs, customJob]);
   emit({ type: "contradictions", relevant: [...relevant], all: contradictions });
   const ms = Date.now() - started;
   emit({ type: "done", ms, cached: allCached, fallback });

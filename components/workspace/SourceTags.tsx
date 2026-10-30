@@ -54,16 +54,18 @@ export function SourceTags({
         </Tag>
       )}
       {(fact.contradictionIds ?? []).map((id) => (
-        <OperationalTag
+        <button
           key={id}
-          type="red"
-          size="sm"
-          renderIcon={WarningAlt}
+          type="button"
+          className="contradiction-badge"
           onClick={() => onShowContradiction(id)}
-          className="source-tag"
-          text="Contradiction"
-          aria-label={`Contradiction: ${contradictionTitles[id] ?? "documents disagree"}`}
-        />
+          aria-label={`Contradiction: ${contradictionTitles[id] ?? "documents disagree"}. Show details`}
+        >
+          <WarningAlt size={14} aria-hidden />
+          <span>
+            <strong>Contradiction:</strong> {contradictionTitles[id] ?? "documents disagree"}
+          </span>
+        </button>
       ))}
     </span>
   );
