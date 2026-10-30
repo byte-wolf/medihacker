@@ -1,5 +1,6 @@
 "use client";
 
+import { Wordmark } from "@/components/Logo";
 import { Button, Form, InlineNotification, Stack, TextInput, Tile } from "@carbon/react";
 import { ArrowRight, Login } from "@carbon/icons-react";
 import { useRouter } from "next/navigation";
@@ -38,7 +39,8 @@ export function LoginForm({ users }: { users: LoginUser[] }) {
     <Tile className="login-card">
       <Stack gap={6}>
         <div>
-          <h1 className="login-card__title">Log in to MediHacker</h1>
+          <Wordmark height={56} className="login-card__logo" />
+          <h1 className="login-card__title">Log in</h1>
           <p className="login-card__lead">
             Your role and department are linked to your user name and decide which patient facts you see first.
           </p>

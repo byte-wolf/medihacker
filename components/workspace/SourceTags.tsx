@@ -1,7 +1,7 @@
 "use client";
 
 import { OperationalTag, Tag } from "@carbon/react";
-import { Document, WarningAlt } from "@carbon/icons-react";
+import { Document } from "@carbon/icons-react";
 import { docKindLabel, formatDate } from "@/lib/format";
 import type { DocumentMeta, Fact } from "@/lib/types";
 import type { OpenSource } from "./types";
@@ -16,14 +16,10 @@ export function SourceTags({
   fact,
   documents,
   onOpenSource,
-  contradictionTitles,
-  onShowContradiction,
 }: {
   fact: Fact;
   documents: DocumentMeta[];
   onOpenSource: OpenSource;
-  contradictionTitles: Record<string, string>;
-  onShowContradiction: (id: string) => void;
 }) {
   const byDoc = new Map<string, string[]>();
   for (const q of fact.quotes) {
@@ -53,20 +49,6 @@ export function SourceTags({
           Calculated
         </Tag>
       )}
-      {(fact.contradictionIds ?? []).map((id) => (
-        <button
-          key={id}
-          type="button"
-          className="contradiction-badge"
-          onClick={() => onShowContradiction(id)}
-          aria-label={`Contradiction: ${contradictionTitles[id] ?? "documents disagree"}. Show details`}
-        >
-          <WarningAlt size={14} aria-hidden />
-          <span>
-            <strong>Contradiction:</strong> {contradictionTitles[id] ?? "documents disagree"}
-          </span>
-        </button>
-      ))}
     </span>
   );
 }
