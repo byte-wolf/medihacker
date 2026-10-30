@@ -1,8 +1,7 @@
 "use client";
 
 import { Button, InlineNotification, SkeletonText } from "@carbon/react";
-import { Maximize, Minimize, Renew } from "@carbon/icons-react";
-import { useState } from "react";
+import { Renew } from "@carbon/icons-react";
 import type { DocumentMeta, TokenCall } from "@/lib/types";
 import { ItemRow } from "./ItemRow";
 import type { BriefingState, OpenSource, SituationOption } from "./types";
@@ -30,7 +29,6 @@ export function BriefingView({
   onRetry: () => void;
   aiConfigured: boolean;
 }) {
-  const [expanded, setExpanded] = useState(false);
   if (!situation) return null;
   const loading = state.status === "loading";
   const showPlanSkeleton = loading && state.plan.length === 0;
@@ -45,18 +43,8 @@ export function BriefingView({
             <span title={tokenTooltip(state.tokenCalls ?? [])}> · {state.tokens.toLocaleString("en")} tokens</span>
           )}
         </span>
-        <Button
-          kind="ghost"
-          size="sm"
-          renderIcon={expanded ? Minimize : Maximize}
-          aria-expanded={expanded}
-          aria-controls="briefing-body"
-          onClick={() => setExpanded((e) => !e)}
-        >
-          {expanded ? "Collapse" : "Expand"}
-        </Button>
       </div>
-      <div id="briefing-body" className={`briefing__body${expanded ? " briefing__body--expanded" : ""}`} tabIndex={0} aria-label="Briefing content">
+      <div className="briefing__body">
       {state.status === "error" && (
         <InlineNotification kind="error" lowContrast hideCloseButton title="The briefing could not be loaded." subtitle={state.error}>
         </InlineNotification>

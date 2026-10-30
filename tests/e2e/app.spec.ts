@@ -148,14 +148,15 @@ test("the question bar stays in the window while scrolling the briefing", async 
   await expectNoSeriousA11yIssues(page);
 });
 
-test("an expanded briefing scrolls with the page and the question bar follows its end", async ({ page }) => {
+test("the briefing flows with the page and the question bar stays pinned to the bottom", async ({ page }) => {
   await login(page, "anaesthesia");
   await page.goto("/patients/0000-0001");
   await chooseSituation(page, /Pre-operative anaesthesia check/);
   await expect(page.getByText(/Ready in/)).toBeVisible({ timeout: 15_000 });
-  await page.getByRole("button", { name: "Expand" }).click();
+  const body = page.locator(".briefing__body");
+  expect(await body.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
   const bar = page.getByRole("search", { name: "Ask about this patient" });
-  await expect(bar).not.toBeInViewport();
+  await expect(bar).toBeInViewport();
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await expect(bar).toBeInViewport();
 });

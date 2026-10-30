@@ -1,15 +1,15 @@
 "use client";
 
 import { Button, InlineLoading, InlineNotification, TextArea, Tile } from "@carbon/react";
-import { ArrowDown, Send } from "@carbon/icons-react";
+import { ArrowUp, Send } from "@carbon/icons-react";
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import type { BriefingItem, DocumentMeta } from "@/lib/types";
 import { ItemRow } from "./ItemRow";
 import type { ChatMessage, OpenSource, SituationOption } from "./types";
 
 /**
- * The question bar (sticky, right below the briefing so it stays mid-screen and always
- * visible) followed by the conversation thread.
+ * The conversation thread followed by the question bar, which is pinned to the bottom
+ * of the window while the page scrolls.
  */
 export function ChatPanel(props: {
   conversationId: number | null;
@@ -86,51 +86,6 @@ export function ChatPanel(props: {
 
   return (
     <>
-      <div className="ask-bar" role="search" aria-label="Ask about this patient">
-        {suggestions.length > 0 && (
-          <div className="ask-bar__suggestions" aria-label="Suggested questions">
-            {suggestions.map((s) => (
-              <button key={s} type="button" className="ask-bar__chip" disabled={props.disabled || busy || !props.conversationId} onClick={() => void ask(s)}>
-                {s}
-              </button>
-            ))}
-          </div>
-        )}
-        <form
-          className="ask-bar__form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            void ask();
-          }}
-        >
-          <TextArea
-            ref={inputRef}
-            id="chat-question"
-            labelText="Ask about this patient"
-            hideLabel
-            placeholder={props.disabled ? "Free-text questions need the AI model." : "Ask about this patient…  (press / to focus, Enter to send)"}
-            rows={1}
-            value={question}
-            disabled={props.disabled}
-            onChange={(e) => setQuestion(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                void ask();
-              }
-            }}
-          />
-          <Button type="submit" renderIcon={busy ? undefined : Send} disabled={props.disabled || busy || !question.trim() || !props.conversationId}>
-            {busy ? <InlineLoading className="ask-bar__spinner" description="Answering…" /> : "Ask"}
-          </Button>
-        </form>
-        {answered > 0 && (
-          <button type="button" className="ask-bar__jump" onClick={() => threadRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}>
-            <ArrowDown size={16} aria-hidden /> {answered} {answered === 1 ? "answer" : "answers"} in this conversation
-          </button>
-        )}
-      </div>
-
       <section ref={threadRef} className="chat" aria-labelledby="chat-title">
         <h2 id="chat-title" className="chat__title">
           Questions and answers
@@ -139,7 +94,7 @@ export function ChatPanel(props: {
           {props.situation ? `Answers stay in the context of “${props.situation.title}”.` : "No situation selected: answers use your role only."} Every
           answer is checked against the source documents.
         </p>
-        {messages.length === 0 && <p className="chat__empty muted">Ask a question in the bar above.</p>}
+        {messages.length === 0 && <p className="chat__empty muted">Ask a question in the bar at the bottom of the window.</p>}
         <div className="chat__thread" aria-live="polite">
           {messages.map((m) => {
             if (m.role === "user")
@@ -171,9 +126,66 @@ export function ChatPanel(props: {
               </Tile>
             );
           })}
-          <div ref={endRef} />
+          <div ref={endRef} className="chat__end" />
         </div>
       </section>
+
+      <div className="ask-bar" role="search" aria-label="Ask about this patient">
+        {(suggestions.length > 0 || answered > 0) && (
+          <div className="ask-bar__top">
+            {suggestions.length > 0 && (
+              <div className="ask-bar__suggestions" aria-label="Suggested questions">
+                {suggestions.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    className="ask-bar__chip"
+                    disabled={props.disabled || busy || !props.conversationId}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => void ask(s)}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
+            {answered > 0 && (
+              <button type="button" className="ask-bar__jump" onClick={() => threadRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}>
+                <ArrowUp size={16} aria-hidden /> {answered} {answered === 1 ? "answer" : "answers"} in this conversation
+              </button>
+            )}
+          </div>
+        )}
+        <form
+          className="ask-bar__form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void ask();
+          }}
+        >
+          <TextArea
+            ref={inputRef}
+            id="chat-question"
+            labelText="Ask about this patient"
+            hideLabel
+            aria-keyshortcuts="/"
+            placeholder={props.disabled ? "Questions need the AI model." : "Ask about this patient…  (press /)"}
+            rows={1}
+            value={question}
+            disabled={props.disabled}
+            onChange={(e) => setQuestion(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                void ask();
+              }
+            }}
+          />
+          <Button type="submit" size="md" renderIcon={busy ? undefined : Send} disabled={props.disabled || busy || !question.trim() || !props.conversationId}>
+            {busy ? <InlineLoading className="ask-bar__spinner" description="Answering…" /> : "Ask"}
+          </Button>
+        </form>
+      </div>
     </>
   );
 }
