@@ -51,7 +51,6 @@ test("anaesthetist: preset situation shows a sourced briefing", async ({ page })
 
   await chooseSituation(page, /Pre-operative anaesthesia check/);
   await expect(page).toHaveURL(/situation=\d+/);
-  await expect(page.getByText(/Perspective/)).toBeVisible();
 
   // Sections fill in; every documented row has at least one source button
   const safety = page.locator('[data-section="safety"]');
@@ -73,26 +72,25 @@ test("anaesthetist: preset situation shows a sourced briefing", async ({ page })
   await page.keyboard.press("Escape");
   await expect(panel).toBeHidden();
 
-  // Contradictions are listed with all their sources
-  const contradictions = page.locator(".contradiction");
-  expect(await contradictions.count()).toBeGreaterThanOrEqual(5);
-  await expect(page.getByRole("heading", { name: /Side of the carotid artery stenosis/ })).toBeVisible();
+  // Contradictions are not listed persistently, only as red boxes next to the affected facts
+  await expect(page.locator(".contradiction")).toHaveCount(0);
+  expect(await page.locator(".contradiction-badge").count()).toBeGreaterThan(0);
 });
 
-test("a fact's contradiction tag focuses the contradiction", async ({ page }) => {
+test("a fact's contradiction box opens the contradiction details", async ({ page }) => {
   await login(page, "ed");
   await page.goto("/patients/0000-0001");
-  await page.getByRole("button", { name: /Fall with a head injury/ }).click();
+  await chooseSituation(page, /Fall with a head injury/);
   await expect(page.getByText(/Ready in/)).toBeVisible({ timeout: 15_000 });
   const tag = page.getByRole("button", { name: /^Contradiction:/ }).first();
   await tag.click();
-  await expect(page.locator(".contradiction--focused")).toBeVisible();
+  await expect(page.getByRole("dialog").locator(".contradiction")).toBeVisible();
 });
 
 test("a new situation can be created and is selected", async ({ page }) => {
   await login(page, "pharmacist");
   await page.goto("/patients/0000-0001");
-  await page.getByRole("button", { name: "New situation" }).click();
+  await chooseSituation(page, /New situation/);
   const dialog = page.getByRole("dialog", { name: "New situation" });
   await dialog.getByLabel("Title").fill("Medication reconciliation");
   await dialog.getByLabel("Description").fill("Reconcile her medication before surgery in May 2016.");
@@ -107,7 +105,7 @@ test("a new situation can be created and is selected", async ({ page }) => {
 test("the screen changes with the role", async ({ page }) => {
   await login(page, "surgeon");
   await page.goto("/patients/0000-0001");
-  await page.getByRole("button", { name: /Explaining the biopsy result/ }).click();
+  await chooseSituation(page, /Explaining the biopsy result/);
   await expect(page.locator('[data-section="tumour"]')).toBeVisible();
   await expect(page.locator('[data-item="tumour_receptors"]')).toBeVisible();
   await expect(page.locator('[data-item="glucose_lowering"]')).toHaveCount(0);
@@ -119,27 +117,35 @@ test("logout returns to the login page", async ({ page }) => {
   await expect(page).toHaveURL(/\/login$/);
 });
 
-test("without a situation there is no briefing, but the question bar and contradictions are shown", async ({ page }) => {
+test("without a situation there is no briefing and no situation list, only the question bar", async ({ page }) => {
   await login(page, "nurse");
   await page.goto("/patients/0000-0001");
-  await expect(page.getByRole("heading", { name: "No situation selected" })).toBeVisible();
-  await expect(page.locator(".briefing-section")).toHaveCount(0);
-  await expect(page.locator(".contradiction").first()).toBeVisible();
-  // Three example situations for the role, one click away
-  for (const t of [/Nursing admission assessment/, /Pre-operative checklist/, /Diabetes care on the ward/]) {
-    await expect(page.getByRole("button", { name: t })).toBeVisible();
-  }
+  await expect(page.getByRole("combobox", { name: "Situation" })).toHaveValue(/None/);
+  await expect(page.locator(".briefing")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Nursing admission assessment/ })).toHaveCount(0);
   await expect(page.getByRole("search", { name: "Ask about this patient" })).toBeInViewport();
 });
 
 test("the question bar stays in the window while scrolling the briefing", async ({ page }) => {
   await login(page, "anaesthesia");
   await page.goto("/patients/0000-0001");
-  await page.getByRole("button", { name: /High blood pressure in the recovery room/ }).click();
+  await chooseSituation(page, /High blood pressure in the recovery room/);
   await expect(page.getByText(/Ready in/)).toBeVisible({ timeout: 15_000 });
   const bar = page.getByRole("search", { name: "Ask about this patient" });
   await expect(bar.getByRole("button", { name: /Which blood pressure drugs/ })).toBeVisible();
   await page.mouse.wheel(0, 1500);
   await expect(bar).toBeInViewport();
   await expectNoSeriousA11yIssues(page);
+});
+
+test("an expanded briefing scrolls with the page and the question bar follows its end", async ({ page }) => {
+  await login(page, "anaesthesia");
+  await page.goto("/patients/0000-0001");
+  await chooseSituation(page, /Pre-operative anaesthesia check/);
+  await expect(page.getByText(/Ready in/)).toBeVisible({ timeout: 15_000 });
+  await page.getByRole("button", { name: "Expand" }).click();
+  const bar = page.getByRole("search", { name: "Ask about this patient" });
+  await expect(bar).not.toBeInViewport();
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect(bar).toBeInViewport();
 });
