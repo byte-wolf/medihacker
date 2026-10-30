@@ -160,3 +160,19 @@ test("the briefing flows with the page and the question bar stays pinned to the 
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await expect(bar).toBeInViewport();
 });
+
+test("the question bar folds to one line, remembers it, and '/' opens it again", async ({ page }) => {
+  await login(page, "anaesthesia");
+  await page.goto("/patients/0000-0001");
+  await chooseSituation(page, /Pre-operative anaesthesia check/);
+  await expect(page.getByText(/Ready in/)).toBeVisible({ timeout: 15_000 });
+  const bar = page.getByRole("search", { name: "Ask about this patient" });
+  await bar.getByRole("button", { name: "Collapse question bar" }).click();
+  await expect(bar.getByRole("button", { name: "Expand question bar" })).toHaveAttribute("aria-expanded", "false");
+  await expect(page.locator("#chat-question")).toBeHidden();
+  await page.reload();
+  await expect(bar.getByRole("button", { name: "Expand question bar" })).toBeVisible();
+  await page.keyboard.press("/");
+  await expect(bar.getByRole("button", { name: "Collapse question bar" })).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#chat-question")).toBeVisible();
+});
