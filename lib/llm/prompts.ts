@@ -1,6 +1,7 @@
 import type { PatientRecord } from "@/lib/data/patients";
 import type { PlannedItem } from "@/lib/catalog/roles";
 import type { Passage } from "@/lib/types";
+import { GLOSSARY } from "./glossary";
 
 // Bump when prompts change so cached LLM responses are not reused.
 export const PROMPT_VERSION = "v5";
@@ -50,7 +51,7 @@ export function extractionPrompt(args: {
   items: PlannedItem[];
 }) {
   const { patient, roles, situation, items } = args;
-  const system = `You are a clinical documentation assistant. You extract patient facts from German hospital documents for one clinician and one task, in English.\n\n${FACT_RULES}\n\nAnswer with a single JSON object of this shape:\n${FACT_SCHEMA}`;
+  const system = `You are a clinical documentation assistant. You extract patient facts from German hospital documents for one clinician and one task, in English.\n\n${FACT_RULES}\n\n${GLOSSARY}\n\nAnswer with a single JSON object of this shape:\n${FACT_SCHEMA}`;
   const user = `PATIENT: ${patient.name}, ${patient.sex}, born ${patient.dateOfBirth}. Latest document: ${patient.latestDocumentDate} (this is "now").
 CLINICIAN ROLE: ${roles.join(" + ")}
 SITUATION: ${situation ? `${situation.title}. ${situation.description}` : "General review (no specific situation)."}
@@ -75,7 +76,7 @@ export function chatPrompt(args: {
   history: { role: "user" | "assistant"; text: string }[];
   question: string;
 }) {
-  const system = `You are a clinical documentation assistant answering a clinician's question about one patient from German hospital documents, in English.\n\n${FACT_RULES}\n\nAnswer with a single JSON object of this shape (usually one item; use several only for clearly separate sub-questions):\n{"items": [{"key": "answer_1", "label": "<short heading for the answer>", "status": "documented" | "not_documented", "note": "<only for not_documented>", "facts": [{"statement": "<English>", "quotes": [{"passageId": "<id>", "text": "<verbatim German>"}], "calculation": null}]}]}`;
+  const system = `You are a clinical documentation assistant answering a clinician's question about one patient from German hospital documents, in English.\n\n${FACT_RULES}\n\n${GLOSSARY}\n\nAnswer with a single JSON object of this shape (usually one item; use several only for clearly separate sub-questions):\n{"items": [{"key": "answer_1", "label": "<short heading for the answer>", "status": "documented" | "not_documented", "note": "<only for not_documented>", "facts": [{"statement": "<English>", "quotes": [{"passageId": "<id>", "text": "<verbatim German>"}], "calculation": null}]}]}`;
   const history = args.history
     .slice(-6)
     .map((h) => `${h.role === "user" ? "CLINICIAN" : "ASSISTANT"}: ${h.text}`)
@@ -91,7 +92,7 @@ SOURCE PASSAGES:${renderSources(args.patient)}`;
 }
 
 export function translationPrompt(passages: Passage[]) {
-  const system = `Translate German clinical text to concise clinical English. Keep numbers, units, drug names and abbreviations unchanged. Reply with JSON: {"translations": {"<id>": "<English>"}} with every id.`;
+  const system = `Translate German clinical text to concise clinical English. Keep numbers, units and drug names unchanged. Write German clinical abbreviations out in English with the original in brackets, e.g. "KM-Allergie" -> "contrast medium (KM) allergy", "Z.n. OP" -> "status post surgery (Z.n. OP)". Reply with JSON: {"translations": {"<id>": "<English>"}} with every id.\n\n${GLOSSARY}`;
   const user = JSON.stringify(Object.fromEntries(passages.map((p) => [p.id, p.text.replace(/\s*\n\s*/g, " ")])));
   return { system, user };
 }
@@ -99,7 +100,7 @@ export function translationPrompt(passages: Passage[]) {
 export function contradictionPrompt(patient: PatientRecord) {
   const system = `You audit German hospital documents of one patient for CONTRADICTIONS: two or more passages that cannot all be true at the same time (e.g. two different dates for the same event, a finding on the left in one passage and on the right in another, a BMI that does not match height and weight in the same letter, the same examination reported with different results).
 NOT contradictions: small measurement differences (e.g. 170 vs 171 cm, BP 140/90 vs 145/90 at slightly different times), values that changed over time (weight loss, dose changes between letters), planned vs actual events, different wording of the same thing.
-Be conservative: a false alarm is worse than a miss. Reply with JSON: {"contradictions": [{"title": "<short English title>", "explanation": "<one plain English sentence>", "severity": "high" | "medium" | "low", "passageIds": ["<every passage involved>"]}]}`;
+Be conservative: a false alarm is worse than a miss. Abbreviations: KM = Kontrastmittel (contrast medium), RR = blood pressure, HF = heart rate, li./re. = left/right. Reply with JSON: {"contradictions": [{"title": "<short English title>", "explanation": "<one plain English sentence>", "severity": "high" | "medium" | "low", "passageIds": ["<every passage involved>"]}]}`;
   return { system, user: `SOURCE PASSAGES:${renderSources(patient)}` };
 }
 

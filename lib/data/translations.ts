@@ -2,10 +2,14 @@ import { and, eq } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
 import { cachedComplete } from "@/lib/llm/cache";
 import { llmConfigured, parseJsonObject } from "@/lib/llm/provider";
+import { TRANSLATION_VERSION, translationIsSafe } from "@/lib/llm/glossary";
 import { translationPrompt } from "@/lib/llm/prompts";
 import type { PatientRecord } from "./patients";
 
 const running = new Map<string, Promise<void>>();
+
+/** Stored translations belong to one document version and one translation prompt version. */
+const versionKey = (patient: PatientRecord) => `${patient.hash}:${TRANSLATION_VERSION}`;
 
 /** Machine-translate every passage once (per document, in parallel) and store it. Runs in the background. */
 export function ensureTranslations(patient: PatientRecord): Promise<void> {
@@ -17,7 +21,7 @@ export function ensureTranslations(patient: PatientRecord): Promise<void> {
     db
       .select({ id: schema.passageTranslations.passageId })
       .from(schema.passageTranslations)
-      .where(and(eq(schema.passageTranslations.patientId, patient.id), eq(schema.passageTranslations.docHash, patient.hash)))
+      .where(and(eq(schema.passageTranslations.patientId, patient.id), eq(schema.passageTranslations.docHash, versionKey(patient))))
       .all()
       .map((r) => r.id),
   );
@@ -48,9 +52,14 @@ export function ensureTranslations(patient: PatientRecord): Promise<void> {
         for (const p of batch) {
           const t = map[p.id];
           if (typeof t !== "string" || !t.trim()) continue;
+          // A known wrong meaning (e.g. KM as "milk") is never stored: the German original is shown instead.
+          if (!translationIsSafe(p.text, t)) {
+            console.warn(`[translations] rejected unsafe translation of ${p.id}`);
+            continue;
+          }
           db.insert(schema.passageTranslations)
-            .values({ passageId: p.id, patientId: patient.id, docHash: patient.hash, translation: t.trim() })
-            .onConflictDoUpdate({ target: schema.passageTranslations.passageId, set: { translation: t.trim(), docHash: patient.hash } })
+            .values({ passageId: p.id, patientId: patient.id, docHash: versionKey(patient), translation: t.trim() })
+            .onConflictDoUpdate({ target: schema.passageTranslations.passageId, set: { translation: t.trim(), docHash: versionKey(patient) } })
             .run();
         }
       } catch (err) {
@@ -66,7 +75,7 @@ export function translationsForDocument(patient: PatientRecord, docId: string): 
   const rows = getDb()
     .select()
     .from(schema.passageTranslations)
-    .where(and(eq(schema.passageTranslations.patientId, patient.id), eq(schema.passageTranslations.docHash, patient.hash)))
+    .where(and(eq(schema.passageTranslations.patientId, patient.id), eq(schema.passageTranslations.docHash, versionKey(patient))))
     .all();
   return Object.fromEntries(rows.filter((r) => r.passageId.startsWith(`${docId}:`)).map((r) => [r.passageId, r.translation]));
 }
