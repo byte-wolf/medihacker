@@ -23,7 +23,7 @@ export type Origin = "record" | "manual";
 type Sourced = { id: string; origin: Origin; date: string; docIds: string[] };
 export type AllergyEntry = Sourced & { text: string };
 export type MedicationEntry = Sourced & { drug: string; dosage: string };
-export type ConditionEntry = Sourced & { label: string; detail: string; status: "positive" | "statuspost" | "suspected" };
+export type ConditionEntry = Sourced & { label: string; detail: string; status: "positive" | "statuspost" | "suspected"; icd: string[] };
 export type SurgeryEntry = Sourced & { label: string };
 export type RecordValue = { value: number; date: string; docIds: string[] };
 
@@ -33,6 +33,8 @@ export type Checklist = {
   medication: MedicationEntry[];
   conditions: ConditionEntry[];
   surgeries: SurgeryEntry[];
+  /** Explicit confirmations of C and D; any edit of a list resets its confirmation. */
+  confirmations: { medication: boolean; diagnoses: boolean; history: boolean };
   exam: {
     dental: string[];
     dentalNotes: string;
@@ -115,12 +117,14 @@ function conditionsFrom(tree: StructuredNode[]): ConditionEntry[] {
       const used = confirmed.length ? confirmed : findings;
       const status = confirmed.some((f) => f.status === "positive") ? "positive" : confirmed.length ? "statuspost" : "suspected";
       const nodes = used.flatMap(mentions);
+      const icd = [...new Set(used.filter((f) => f.code?.catalog === "ICD10" && f.code.value).map((f) => f.code!.value))];
       out.push({
         id: group.id ?? clean(group.name),
         origin: "record",
         label: clean(group.name),
         detail: [...new Set(nodes.map((n) => clean(n.text ?? n.name)))].slice(0, 3).join("; "),
         status,
+        icd,
         date: newest(nodes)?.date?.value ?? "",
         docIds: docIdsOf(nodes),
       });
@@ -171,6 +175,7 @@ export function prefillAnesthesia(input: PrefillInput): Checklist {
     medication: medicationFrom(s.medication),
     conditions: conditionsFrom(s.diagnoses),
     surgeries: surgeriesFrom(s.procedures),
+    confirmations: { medication: false, diagnoses: false, history: false },
     exam: {
       dental: [],
       dentalNotes: "",
@@ -306,6 +311,9 @@ export function suggestAsa(c: Checklist): AsaResult {
   return { status: "complete", asaClass: reasons[0].asaClass, reasons };
 }
 
+/** Diagnoses that still need an ICD-10 code before they can be confirmed. */
+export const uncodedDiagnoses = (c: Checklist) => c.conditions.filter((x) => !x.icd.length);
+
 // ---------------------------------------------------------------- save
 
 /** Reasons the checklist cannot be saved yet; empty when it can. */
@@ -313,6 +321,10 @@ export function saveBlockers(c: Checklist): string[] {
   const out: string[] = [];
   if (!c.identity.confirmed) out.push("Confirm the patient's identity (A).");
   if (!c.allergies.confirmed) out.push("Confirm the allergies (B).");
+  if (!c.confirmations.medication) out.push("Confirm the current medication (C).");
+  if (!c.confirmations.diagnoses) out.push("Confirm the diagnoses and ICD codes (D).");
+  else if (uncodedDiagnoses(c).length) out.push("Every diagnosis needs an ICD-10 code (D).");
+  if (!c.confirmations.history) out.push("Confirm the medical history (D).");
   const asa = suggestAsa(c);
   if (asa.status === "incomplete") out.push(`Complete the fields the ASA score needs: ${asa.missing.join(", ")} (E).`);
   if (!c.asa.finalClass) out.push("Confirm the ASA class (F).");

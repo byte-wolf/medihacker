@@ -11,8 +11,9 @@ import {
   Tag,
   TextArea,
   TextInput,
+  Tooltip,
 } from "@carbon/react";
-import { Add, Save, TrashCan } from "@carbon/icons-react";
+import { Add, Checkmark, CheckmarkFilled, ChevronDown, ChevronUp, Information, Locked, Save, TrashCan } from "@carbon/icons-react";
 import { useMemo, useState, type ReactNode } from "react";
 import {
   ASA_CLASSES,
@@ -26,10 +27,15 @@ import {
   type ConditionEntry,
   type MedicationEntry,
   type SurgeryEntry,
+  uncodedDiagnoses,
 } from "@/lib/documents/anesthesia";
 import { formatDate } from "@/lib/format";
 
 type Props = { patientId: string; prefill: Checklist; docLabels: Record<string, string>; backHref: string };
+
+/** Diagnoses shown before the list is expanded. */
+const HISTORY_PREVIEW = 5;
+const ICD10 = /^[A-Z]\d{2}(\.\d{1,2})?$/;
 
 const newId = () => `manual-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
 
@@ -47,6 +53,19 @@ export function AnesthesiaChecklist({ patientId, prefill, docLabels, backHref }:
     setC(fn);
     setSaved(null);
   };
+  const [historyExpanded, setHistoryExpanded] = useState(false);
+  // Once the full list has been opened, the confirmations stay available (also after "Show fewer").
+  const [historySeen, setHistorySeen] = useState(false);
+  const historySeenAll = historySeen || c.conditions.length <= HISTORY_PREVIEW;
+  const uncoded = uncodedDiagnoses(c);
+  const setConfirmed = (key: keyof Checklist["confirmations"], value: boolean) =>
+    update((d) => ({ ...d, confirmations: { ...d.confirmations, [key]: value } }));
+  const setConditionIcd = (id: string, code: string) =>
+    update((d) => ({
+      ...d,
+      conditions: d.conditions.map((x) => (x.id === id ? { ...x, icd: [code] } : x)),
+      confirmations: { ...d.confirmations, diagnoses: false },
+    }));
   const setExam = <K extends keyof Checklist["exam"]>(key: K, value: Checklist["exam"][K]) =>
     update((d) => ({ ...d, exam: { ...d.exam, [key]: value } }));
 
@@ -158,44 +177,70 @@ export function AnesthesiaChecklist({ patientId, prefill, docLabels, backHref }:
       </Section>
 
       {/* C ------------------------------------------------------------ */}
-      <Section letter="C" title="Current medication" info={`${c.medication.length} from the record`}>
+      <Section
+        letter="C"
+        title="Current medication"
+        done={c.confirmations.medication}
+        doneText="Confirmed"
+        todoText="Confirm"
+        info={`${c.medication.length} from the record`}
+      >
         <EntryList<MedicationEntry>
           label="medication"
           entries={c.medication}
           empty="No medication documented."
           render={(e) => (
-            <>
-              <span className="checklist__entry-main">
-                <strong>{e.drug}</strong> <span className="checklist__mono">{e.dosage}</span>
-              </span>
-              <span className="checklist__entry-meta">
-                {e.date ? `Last documented ${formatDate(e.date)} · ` : ""}
-                {source(e)}
-              </span>
-            </>
+            <span className="checklist__entry-main">
+              <strong>{e.drug}</strong> <span className="checklist__mono">{e.dosage}</span>
+              <InfoTip label={`Documentation of ${e.drug}`} text={`${e.date ? `Last documented ${formatDate(e.date)} · ` : ""}${source(e)}`} />
+            </span>
           )}
-          onRemove={(id) => update((d) => ({ ...d, medication: d.medication.filter((x) => x.id !== id) }))}
+          onRemove={(id) => update((d) => ({ ...d, medication: d.medication.filter((x) => x.id !== id), confirmations: { ...d.confirmations, medication: false } }))}
         />
         <AddRow
           id="medication-add"
           label="Add medication"
           placeholder="e.g. Bisoprolol 2.5 mg 1-0-0"
           onAdd={(text) =>
-            update((d) => ({ ...d, medication: [...d.medication, { id: newId(), origin: "manual", drug: text, dosage: "", date: "", docIds: [] }] }))
+            update((d) => ({
+              ...d,
+              medication: [...d.medication, { id: newId(), origin: "manual", drug: text, dosage: "", date: "", docIds: [] }],
+              confirmations: { ...d.confirmations, medication: false },
+            }))
           }
+        />
+        <ConfirmAction
+          id="confirm-medication"
+          label="Confirm current medication"
+          doneText="Current medication confirmed"
+          confirmed={c.confirmations.medication}
+          onChange={(v) => setConfirmed("medication", v)}
         />
       </Section>
 
       {/* D ------------------------------------------------------------ */}
-      <Section letter="D" title="Medical history (anamnesis)">
-        <h3 className="checklist__sub">Previous conditions</h3>
+      <Section
+        letter="D"
+        title="Medical history (anamnesis)"
+        done={c.confirmations.diagnoses && c.confirmations.history}
+        doneText="Confirmed"
+        todoText="Confirm"
+      >
+        <h3 className="checklist__sub">Previous conditions (ICD-10)</h3>
         <EntryList<ConditionEntry>
           label="condition"
-          entries={c.conditions}
+          listId="conditions-list"
+          entries={historyExpanded ? c.conditions : c.conditions.slice(0, HISTORY_PREVIEW)}
+          revealedFrom={HISTORY_PREVIEW}
           empty="No conditions documented."
           render={(e) => (
             <>
               <span className="checklist__entry-main">
+                {e.icd.map((code) => (
+                  <Tag key={code} size="sm" type="blue" className="checklist__icd" title={`ICD-10 ${code}`}>
+                    {code}
+                  </Tag>
+                ))}
                 {e.label}
                 {e.status === "suspected" && (
                   <Tag size="sm" type="warm-gray">
@@ -208,6 +253,7 @@ export function AnesthesiaChecklist({ patientId, prefill, docLabels, backHref }:
                   </Tag>
                 )}
               </span>
+              {!e.icd.length && <IcdInput id={`icd-${e.id}`} onSet={(code) => setConditionIcd(e.id, code)} />}
               {e.detail && <span className="checklist__entry-detail">{e.detail}</span>}
               <span className="checklist__entry-meta">
                 {e.date ? `${formatDate(e.date)} · ` : ""}
@@ -215,8 +261,24 @@ export function AnesthesiaChecklist({ patientId, prefill, docLabels, backHref }:
               </span>
             </>
           )}
-          onRemove={(id) => update((d) => ({ ...d, conditions: d.conditions.filter((x) => x.id !== id) }))}
+          onRemove={(id) => update((d) => ({ ...d, conditions: d.conditions.filter((x) => x.id !== id), confirmations: { ...d.confirmations, diagnoses: false, history: false } }))}
         />
+        {c.conditions.length > HISTORY_PREVIEW && (
+          <Button
+            kind="ghost"
+            size="sm"
+            className="checklist__expand"
+            renderIcon={historyExpanded ? ChevronUp : ChevronDown}
+            aria-expanded={historyExpanded}
+            aria-controls="conditions-list"
+            onClick={() => {
+              setHistoryExpanded((x) => !x);
+              setHistorySeen(true);
+            }}
+          >
+            {historyExpanded ? "Show fewer" : `Show all ${c.conditions.length} diagnoses (${c.conditions.length - HISTORY_PREVIEW} more)`}
+          </Button>
+        )}
         <AddRow
           id="condition-add"
           label="Add condition"
@@ -224,10 +286,26 @@ export function AnesthesiaChecklist({ patientId, prefill, docLabels, backHref }:
           onAdd={(text) =>
             update((d) => ({
               ...d,
-              conditions: [...d.conditions, { id: newId(), origin: "manual", label: text, detail: "", status: "positive", date: "", docIds: [] }],
+              conditions: [...d.conditions, { id: newId(), origin: "manual", label: text, detail: "", status: "positive", icd: [], date: "", docIds: [] }],
+              confirmations: { ...d.confirmations, diagnoses: false, history: false },
             }))
           }
         />
+        <ConfirmAction
+          id="confirm-diagnoses"
+          label="Confirm diagnoses and ICD codes"
+          doneText="Diagnoses and ICD codes confirmed"
+          confirmed={c.confirmations.diagnoses}
+          disabledReason={
+            !historySeenAll
+              ? `Show all ${c.conditions.length} diagnoses before confirming.`
+              : uncoded.length
+                ? `Add an ICD-10 code to ${uncoded.length === 1 ? "1 diagnosis" : `${uncoded.length} diagnoses`} first.`
+                : undefined
+          }
+          onChange={(v) => setConfirmed("diagnoses", v)}
+        />
+
         <h3 className="checklist__sub">Previous surgery</h3>
         <EntryList<SurgeryEntry>
           label="procedure"
@@ -242,13 +320,27 @@ export function AnesthesiaChecklist({ patientId, prefill, docLabels, backHref }:
               </span>
             </>
           )}
-          onRemove={(id) => update((d) => ({ ...d, surgeries: d.surgeries.filter((x) => x.id !== id) }))}
+          onRemove={(id) => update((d) => ({ ...d, surgeries: d.surgeries.filter((x) => x.id !== id), confirmations: { ...d.confirmations, history: false } }))}
         />
         <AddRow
           id="surgery-add"
           label="Add surgery"
           placeholder="e.g. Appendectomy 1998, no anaesthesia problems"
-          onAdd={(text) => update((d) => ({ ...d, surgeries: [...d.surgeries, { id: newId(), origin: "manual", label: text, date: "", docIds: [] }] }))}
+          onAdd={(text) =>
+            update((d) => ({
+              ...d,
+              surgeries: [...d.surgeries, { id: newId(), origin: "manual", label: text, date: "", docIds: [] }],
+              confirmations: { ...d.confirmations, history: false },
+            }))
+          }
+        />
+        <ConfirmAction
+          id="confirm-history"
+          label="Confirm medical history"
+          doneText="Medical history confirmed"
+          confirmed={c.confirmations.history}
+          disabledReason={!historySeenAll ? `Show all ${c.conditions.length} diagnoses before confirming.` : undefined}
+          onChange={(v) => setConfirmed("history", v)}
         />
       </Section>
 
@@ -488,6 +580,9 @@ function Section(props: {
 
 function EntryList<T extends { id: string }>(props: {
   label: string;
+  listId?: string;
+  /** Entries from this index on were revealed by expanding; they fade in. */
+  revealedFrom?: number;
   entries: T[];
   empty: string;
   render: (e: T) => ReactNode;
@@ -495,9 +590,9 @@ function EntryList<T extends { id: string }>(props: {
 }) {
   if (!props.entries.length) return <p className="muted checklist__empty">{props.empty}</p>;
   return (
-    <ul className="checklist__entries">
-      {props.entries.map((e) => (
-        <li key={e.id} className="checklist__entry">
+    <ul className="checklist__entries" id={props.listId}>
+      {props.entries.map((e, i) => (
+        <li key={e.id} className={`checklist__entry${props.revealedFrom !== undefined && i >= props.revealedFrom ? " checklist__entry--revealed" : ""}`}>
           <div className="checklist__entry-text">{props.render(e)}</div>
           <IconButton kind="ghost" size="sm" label={`Remove ${props.label}`} align="left" onClick={() => props.onRemove(e.id)}>
             <TrashCan />
@@ -533,6 +628,95 @@ function AddRow(props: { id: string; label: string; placeholder: string; onAdd: 
       />
       <Button kind="ghost" size="md" renderIcon={Add} onClick={add} disabled={!text.trim()}>
         {props.label}
+      </Button>
+    </div>
+  );
+}
+
+/** Confirmation button with a visible, explained disabled state. */
+function ConfirmAction(props: {
+  id: string;
+  label: string;
+  doneText: string;
+  confirmed: boolean;
+  /** Set while the action is not allowed yet; shown under the button. */
+  disabledReason?: string;
+  onChange: (confirmed: boolean) => void;
+}) {
+  const hintId = `${props.id}-hint`;
+  if (props.confirmed) {
+    return (
+      <div className="confirm-action confirm-action--done" role="status">
+        <CheckmarkFilled size={16} aria-hidden />
+        <span>{props.doneText}</span>
+        <Button kind="ghost" size="sm" onClick={() => props.onChange(false)}>
+          Undo
+        </Button>
+      </div>
+    );
+  }
+  const disabled = !!props.disabledReason;
+  return (
+    <div className="confirm-action">
+      <Button
+        id={props.id}
+        kind="tertiary"
+        size="md"
+        renderIcon={disabled ? Locked : Checkmark}
+        disabled={disabled}
+        aria-describedby={disabled ? hintId : undefined}
+        onClick={() => props.onChange(true)}
+      >
+        {props.label}
+      </Button>
+      {disabled && (
+        <p id={hintId} className="confirm-action__hint">
+          {props.disabledReason}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** "i" icon; the text appears on hover or keyboard focus. */
+function InfoTip({ label, text }: { label: string; text: string }) {
+  return (
+    <Tooltip label={text} align="bottom-start" enterDelayMs={80} leaveDelayMs={120} className="info-tip">
+      <button type="button" className="info-tip__trigger" aria-label={label}>
+        <Information size={16} aria-hidden />
+      </button>
+    </Tooltip>
+  );
+}
+
+/** Inline ICD-10 entry for a diagnosis the record has no code for. */
+function IcdInput({ id, onSet }: { id: string; onSet: (code: string) => void }) {
+  const [value, setValue] = useState("");
+  const code = value.trim().toUpperCase();
+  const valid = ICD10.test(code);
+  const commit = () => {
+    if (valid) onSet(code);
+  };
+  return (
+    <div className="checklist__icd-input">
+      <TextInput
+        id={id}
+        size="sm"
+        labelText="ICD-10 code (not in the record)"
+        placeholder="e.g. I10.90"
+        value={value}
+        invalid={!!value && !valid}
+        invalidText="Format: letter, two digits, optional decimals (e.g. I10.90)"
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            commit();
+          }
+        }}
+      />
+      <Button kind="ghost" size="sm" onClick={commit} disabled={!valid}>
+        Set code
       </Button>
     </div>
   );

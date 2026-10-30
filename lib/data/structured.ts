@@ -15,6 +15,7 @@ export type StructuredNode = {
   date?: { value: string; type?: string };
   drug?: string;
   agent?: string;
+  code?: { catalog: string; value: string; specific?: boolean };
   documentIds?: string[];
   values?: StructuredNode[];
 };

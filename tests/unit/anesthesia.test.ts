@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { bmiOf, prefillAnesthesia, saveBlockers, suggestAsa, type Checklist } from "@/lib/documents/anesthesia";
+import { bmiOf, prefillAnesthesia, saveBlockers, suggestAsa, uncodedDiagnoses, type Checklist } from "@/lib/documents/anesthesia";
 import type { StructuredData, StructuredNode } from "@/lib/data/structured";
 
 // Pure checklist logic: pre-fill from structured data, BMI, ASA rules, save rules. No LLM, no DB.
 
 const mention = (text: string, date: string, docId: string): StructuredNode => ({ name: text, text, date: { value: date }, documentIds: [docId] });
 const finding = (name: string, status: string, ...m: StructuredNode[]): StructuredNode => ({ id: name, name, status, values: m });
+const coded = (code: string, f: StructuredNode): StructuredNode => ({ ...f, code: { catalog: "ICD10", value: code } });
 const group = (name: string, ...findings: StructuredNode[]): StructuredNode => ({ id: name, name, values: findings });
 
 const structured: StructuredData = {
@@ -31,8 +32,8 @@ const structured: StructuredData = {
     {
       name: "HERZ-KREISLAUF",
       values: [
-        group("Essentielle (primäre) Hypertonie", finding("Art. Hypertonie", "positive", mention("art HT", "2024-03-xx", "d2"))),
-        group("Vorhofflimmern", finding("VHF?", "suspected", mention("VHF?", "2024-03-xx", "d2"))),
+        group("Essentielle (primäre) Hypertonie", coded("I10.00", finding("Art. Hypertonie", "positive", mention("art HT", "2024-03-xx", "d2")))),
+        group("Vorhofflimmern", coded("I48.9", finding("VHF?", "suspected", mention("VHF?", "2024-03-xx", "d2")))),
         group("Perikarderguss", finding("Kein Perikarderguss", "negative", mention("Kein Perikarderguss", "2024-03-xx", "d2"))),
         group("Retinopathie", finding("Fundus hypertonicus", "positive", mention("Fundus hypertonicus bds.", "2024-03-xx", "d2"))),
       ],
@@ -95,6 +96,16 @@ describe("prefillAnesthesia", () => {
     ]);
   });
 
+  it("carries the ICD-10 codes of each diagnosis; uncoded ones are listed for manual coding", () => {
+    const c = base();
+    expect(c.conditions.map((x) => x.icd)).toEqual([["I10.00"], ["I48.9"], []]);
+    expect(uncodedDiagnoses(c).map((x) => x.label)).toEqual(["Retinopathie"]);
+  });
+
+  it("starts with all confirmations open", () => {
+    expect(base().confirmations).toEqual({ medication: false, diagnoses: false, history: false });
+  });
+
   it("lists previous surgery only, not planned operations or diagnostics", () => {
     expect(base().surgeries.map((s) => s.label)).toEqual(["St.p. CHE"]);
   });
@@ -152,7 +163,7 @@ describe("suggestAsa", () => {
   it("TIA within 3 months is ASA IV, older is ASA III", () => {
     const tia = (date: string): Checklist => ({
       ...filled(),
-      conditions: [{ id: "t", origin: "manual", label: "Amaurosis fugax", detail: "", status: "positive", date, docIds: [] }],
+      conditions: [{ id: "t", origin: "manual", label: "Amaurosis fugax", detail: "", status: "positive", icd: ["G45.3"], date, docIds: [] }],
     });
     expect(suggestAsa(tia("2024-02-xx"))).toMatchObject({ asaClass: "IV" });
     expect(suggestAsa(tia("2015-06-xx"))).toMatchObject({ asaClass: "III" });
@@ -166,15 +177,34 @@ describe("suggestAsa", () => {
 });
 
 describe("saveBlockers", () => {
-  it("requires identity, allergies, ASA fields and a confirmed ASA class", () => {
-    expect(saveBlockers(base())).toHaveLength(4);
+  const done = (): Checklist => {
     const ok = filled();
-    const done: Checklist = {
+    return {
       ...ok,
       identity: { ...ok.identity, confirmed: true },
       allergies: { ...ok.allergies, confirmed: true },
+      conditions: ok.conditions.map((x) => (x.icd.length ? x : { ...x, icd: ["H35.0"] })),
+      confirmations: { medication: true, diagnoses: true, history: true },
       asa: { ...ok.asa, finalClass: "II" },
     };
-    expect(saveBlockers(done)).toEqual([]);
+  };
+
+  it("requires identity, allergies, medication, diagnoses, history, ASA fields and a confirmed ASA class", () => {
+    expect(saveBlockers(base())).toEqual([
+      "Confirm the patient's identity (A).",
+      "Confirm the allergies (B).",
+      "Confirm the current medication (C).",
+      "Confirm the diagnoses and ICD codes (D).",
+      "Confirm the medical history (D).",
+      "Complete the fields the ASA score needs: Blood pressure, Smoking history, Alcohol history (E).",
+      "Confirm the ASA class (F).",
+    ]);
+    expect(saveBlockers(done())).toEqual([]);
+  });
+
+  it("refuses confirmed diagnoses that still lack an ICD-10 code", () => {
+    const c = done();
+    const uncodedOne = { ...c, conditions: [...c.conditions, { ...c.conditions[0], id: "m", icd: [] }] };
+    expect(saveBlockers(uncodedOne)).toEqual(["Every diagnosis needs an ICD-10 code (D)."]);
   });
 });

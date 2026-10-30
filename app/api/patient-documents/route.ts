@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   if (!patient) return badRequest("Unknown patient.");
   if (!isDocumentType(body.type)) return badRequest("Unknown document type.");
   const content = body.content;
-  if (!content?.identity || !content.allergies || !content.exam || !content.asa || !Array.isArray(content.conditions)) {
+  if (!content?.identity || !content.allergies || !content.exam || !content.asa || !content.confirmations || !Array.isArray(content.conditions)) {
     return badRequest("The checklist is incomplete.");
   }
   if (JSON.stringify(content).length > 200_000) return badRequest("The checklist is too large.");

@@ -995,3 +995,92 @@ body {
   justify-content: flex-end;
   gap: 0.5rem;
 }
+
+/* Checklist: confirmations, info tooltip, ICD codes, expandable history */
+.confirm-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.375rem;
+}
+.confirm-action .cds--btn--tertiary:disabled {
+  border-style: dashed;
+  cursor: not-allowed;
+}
+.confirm-action__hint {
+  font-size: 0.75rem;
+  color: var(--cds-text-secondary);
+}
+.confirm-action--done {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0 0.25rem 0 0.75rem;
+  border-left: 3px solid var(--cds-support-success);
+  background: var(--cds-layer-02);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.confirm-action--done svg {
+  fill: var(--cds-support-success);
+}
+.info-tip {
+  display: inline-flex;
+}
+.info-tip__trigger {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--cds-icon-secondary);
+  cursor: help;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.info-tip__trigger svg {
+  fill: currentColor;
+}
+.info-tip__trigger:hover,
+.info-tip__trigger:focus-visible {
+  background: var(--cds-layer-hover-02);
+  color: var(--cds-icon-primary);
+}
+.info-tip__trigger:focus-visible {
+  outline: 2px solid var(--cds-focus);
+  outline-offset: 1px;
+}
+.checklist__icd {
+  font-family: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+  margin: 0;
+}
+.checklist__icd-input {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  max-width: 24rem;
+  margin: 0.25rem 0;
+}
+.checklist__expand {
+  align-self: flex-start;
+}
+.checklist__entry--revealed {
+  animation: checklist-reveal 200ms ease-out both;
+}
+@keyframes checklist-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .checklist__entry--revealed {
+    animation: none;
+  }
+}

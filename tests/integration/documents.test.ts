@@ -57,6 +57,7 @@ function complete(c: ReturnType<typeof prefill>) {
     ...c,
     identity: { ...c.identity, confirmed: true },
     allergies: { ...c.allergies, confirmed: true },
+    confirmations: { medication: true, diagnoses: true, history: true },
     exam: { ...c.exam, bpSystolic: "150", bpDiastolic: "85", smoking: "former" as const, alcohol: "occasional" as const, mallampati: "II" },
   };
 }
@@ -68,6 +69,8 @@ describe("checklist pre-fill from the fixture patients", () => {
     expect(c.medication.map((m) => m.drug)).toContain("Ramipril");
     expect(c.conditions.map((x) => x.label)).toEqual(expect.arrayContaining(["Arterielle Hypertonie", "Chronisch obstruktive Lungenerkrankung"]));
     expect([c.exam.heightCm, c.exam.weightKg]).toEqual(["172", "86"]);
+    expect(c.conditions.find((x) => x.label === "Arterielle Hypertonie")!.icd).toContain("I10.90");
+    expect(c.conditions.every((x) => x.icd.length > 0)).toBe(true);
     const asa = checklist.suggestAsa(complete(c));
     expect(asa).toMatchObject({ status: "complete", asaClass: "III" });
     if (asa.status === "complete") expect(asa.reasons.map((r) => r.text).join(" ")).toMatch(/COPD/);
@@ -100,7 +103,9 @@ describe("POST /api/patient-documents", () => {
     const res = await route.POST(post("/api/patient-documents", { patientId: "TEST-0001", type: "preop-anesthesia", content: prefill("TEST-0001") }));
     expect(res.status).toBe(400);
     const body = await res.json();
-    expect(body.blockers).toEqual(expect.arrayContaining(["Confirm the patient's identity (A).", "Confirm the allergies (B)."]));
+    expect(body.blockers).toEqual(
+      expect.arrayContaining(["Confirm the patient's identity (A).", "Confirm the allergies (B).", "Confirm the current medication (C).", "Confirm the medical history (D)."]),
+    );
   });
 
   it("rejects unknown types and checklists of another patient", async () => {
