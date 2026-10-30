@@ -1,10 +1,10 @@
 ---
 id: T-016
 title: Resolve German clinical abbreviations correctly (KM = Kontrastmittel)
-status: in_progress
+status: review
 owner: Anna (Claude Code)
 branch: fix/t-016-clinical-abbreviations
-pr:
+pr: https://github.com/byte-wolf/medihacker/pull/8
 depends_on: []
 touches: [lib/llm/prompts.ts, lib/llm/glossary.ts, lib/data/translations.ts, scripts/llm-smoke.ts, tests/unit/]
 ---
@@ -28,3 +28,4 @@ Found by `bun run llm:smoke`, whose own minimal prompt had no clinical context. 
 ## Log
 
 - 2026-10-30, Anna (Claude Code): created and started.
+- 2026-10-30: PR #8 opened. Unit tests 148 green, KM live test passes against OpenRouter.
