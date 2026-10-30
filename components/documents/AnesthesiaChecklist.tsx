@@ -252,13 +252,17 @@ export function AnesthesiaChecklist({ patientId, prefill, docLabels, backHref }:
                     status post
                   </Tag>
                 )}
+                <InfoTip
+                  label={`Details of ${e.label}`}
+                  text={
+                    <>
+                      {e.detail && <span className="info-tip__line">{e.detail}</span>}
+                      <span className="info-tip__line">{`${e.date ? `${formatDate(e.date)} · ` : ""}${source(e)}`}</span>
+                    </>
+                  }
+                />
               </span>
               {!e.icd.length && <IcdInput id={`icd-${e.id}`} onSet={(code) => setConditionIcd(e.id, code)} />}
-              {e.detail && <span className="checklist__entry-detail">{e.detail}</span>}
-              <span className="checklist__entry-meta">
-                {e.date ? `${formatDate(e.date)} · ` : ""}
-                {source(e)}
-              </span>
             </>
           )}
           onRemove={(id) => update((d) => ({ ...d, conditions: d.conditions.filter((x) => x.id !== id), confirmations: { ...d.confirmations, diagnoses: false, history: false } }))}
@@ -679,7 +683,7 @@ function ConfirmAction(props: {
 }
 
 /** "i" icon; the text appears on hover or keyboard focus. */
-function InfoTip({ label, text }: { label: string; text: string }) {
+function InfoTip({ label, text }: { label: string; text: ReactNode }) {
   return (
     <Tooltip label={text} align="bottom-start" enterDelayMs={80} leaveDelayMs={120} className="info-tip">
       <button type="button" className="info-tip__trigger" aria-label={label}>
