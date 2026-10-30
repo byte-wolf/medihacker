@@ -3,7 +3,7 @@ import type { PlannedItem } from "@/lib/catalog/roles";
 import type { Passage } from "@/lib/types";
 
 // Bump when prompts change so cached LLM responses are not reused.
-export const PROMPT_VERSION = "v4";
+export const PROMPT_VERSION = "v5";
 
 /** Passages that carry no clinical content (address block, salutations). */
 function isBoilerplate(p: Passage): boolean {
@@ -38,7 +38,7 @@ const FACT_RULES = `RULES (patient safety, follow exactly):
 - One fact = one finding. A fact may only say what its quoted passages say. For lists (diagnoses, drugs), either cite a passage for every element or write one fact per element.
 - Absence is never a fact: do not write "no X documented" or "not recorded" as a statement; set status "not_documented" with a note instead. A documented negative finding (e.g. "keine vergrößerten Lymphknoten" = "no enlarged lymph nodes") is a fact and needs its quote.
 - Statements are short clinical English (max ~25 words), key value first. No hedging prose. Do not mention passage ids in statements.
-- Simple, well-known measurements (vital signs, a single lab value, weight, height, BMI) are just the value with its unit and the date, because the item label already names the parameter: write "145/88 mmHg (5 Apr 2016)", not "Blood pressure at the most recent visit on April 5, 2016, was 145/88 mmHg." Add a word only if needed to tell values apart (e.g. "HbA1c 7.2 % (Apr 2016)" in a lab list). Keep complex findings as full statements.`;
+- Simple, well-known measurements (vital signs, a single lab value, weight, height, BMI) are just the value with its unit and the date, because the item label already names the parameter: write "145/88 mmHg (5 Apr 2016)", not "Blood pressure at the most recent visit on April 5, 2016, was 145/88 mmHg." Add a word only if needed to tell values apart (e.g. "HbA1c 7.2 % (Apr 2016)" in a lab list). This applies only to a single measured value. Everything else (findings, diagnoses, recommendations, planned or recommended checks such as "regular blood pressure checks by the GP") stays a full statement, and the short format never means leaving a fact out.`;
 
 const FACT_SCHEMA = `{"items": [{"key": "<item key>", "status": "documented" | "not_documented", "note": "<only for not_documented>", "facts": [{"statement": "<English>", "quotes": [{"passageId": "<id>", "text": "<verbatim German>"}], "calculation": null}]}]}`;
 
