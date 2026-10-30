@@ -15,6 +15,20 @@
       "when": 1793309659887,
       "tag": "0001_situation_questions",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1793359587763,
+      "tag": "0002_patient_documents",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1793361408161,
+      "tag": "0003_patient_documents_form_id",
+      "breakpoints": true
     }
   ]
 }

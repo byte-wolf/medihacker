@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 import { getSessionUser } from "@/lib/auth/session";
+import { allergyLines } from "@/lib/data/allergies";
 import { ageAt, getPatient } from "@/lib/data/patients";
 import { ensureContradictions, listContradictions } from "@/lib/contradictions/store";
 import { DEFAULT_QUESTIONS, ROLE_QUESTIONS } from "@/lib/catalog/situations";
@@ -26,12 +27,7 @@ async function WorkspaceContent({ params, searchParams }: PageProps<"/patients/[
   logAudit(user.id, patient.id, "open_patient");
 
   // CAVE banner: allergy lines from the "Allergien" sections, newest document first.
-  const latestAllergyDoc = [...patient.documents]
-    .reverse()
-    .find((d) => patient.passages.some((p) => p.docId === d.id && /allergi/i.test(p.section ?? "")));
-  const allergies = patient.passages
-    .filter((p) => p.docId === latestAllergyDoc?.id && /allergi/i.test(p.section ?? "") && /allergi|unverträglich/i.test(p.text))
-    .map((p) => ({ passageId: p.id, text: p.text }));
+  const allergies = allergyLines(patient);
 
   const { mine, presets } = situationsForUser(user.id);
   const toOption = (s: (typeof mine)[number], group: SituationOption["group"]): SituationOption => ({
