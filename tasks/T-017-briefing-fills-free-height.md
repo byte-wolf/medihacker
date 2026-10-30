@@ -1,10 +1,10 @@
 ---
 id: T-017
 title: Collapsed briefing fills the free window height
-status: in_progress
+status: review
 owner: Devin (https://app.devin.ai/sessions/110cff77a54f439799b0e2128c832bfc)
 branch: feat/impeccable-review
-pr:
+pr: https://github.com/byte-wolf/medihacker/pull/9
 depends_on: []
 touches: [app/globals.css, components/workspace/Workspace.tsx]
 ---
@@ -15,8 +15,9 @@ The collapsed briefing box is ~290 px on a 900 px window while the empty Q&A are
 
 ## Acceptance criteria
 
-- [ ] Collapsed briefing uses the available height with no answers; shrinks when the chat has answers; expand/collapse behaviour unchanged
+- [x] Collapsed briefing uses the available height with no answers; shrinks when the chat has answers; expand/collapse behaviour unchanged
 
 ## Log
 
 - 2026-10-30, Devin: claimed.
+- 2026-10-30, Devin: in review (PR #9).

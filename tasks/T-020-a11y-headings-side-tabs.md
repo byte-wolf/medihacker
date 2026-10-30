@@ -1,10 +1,10 @@
 ---
 id: T-020
 title: Remove empty headings and side-tab borders
-status: in_progress
+status: review
 owner: Devin (https://app.devin.ai/sessions/110cff77a54f439799b0e2128c832bfc)
 branch: feat/impeccable-review
-pr:
+pr: https://github.com/byte-wolf/medihacker/pull/9
 depends_on: []
 touches: [components/workspace/*.tsx, app/globals.css]
 ---
@@ -15,8 +15,9 @@ Closed Carbon modals leave empty h2 elements in the heading outline; Impeccable 
 
 ## Acceptance criteria
 
-- [ ] No empty headings in the outline; no side-tab borders (detector clean)
+- [x] No empty headings in the outline; no side-tab borders (detector clean)
 
 ## Log
 
 - 2026-10-30, Devin: claimed.
+- 2026-10-30, Devin: in review (PR #9).
