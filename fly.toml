@@ -10,6 +10,8 @@ primary_region = "fra"
   LLM_TIMEOUT_MS = "30000"
   # Patient folders copied from the local, gitignored ./data/data at deploy time
   PATIENT_DATA_DIR = "/app/data/data"
+  # No preset hackathon cases (the fixture cases file lists the TEST patients as situations)
+  CASES_FILE = "/app/data/cases/situations.md"
 
 [mounts]
   source = "medihacker_data"
