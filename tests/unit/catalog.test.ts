@@ -31,3 +31,20 @@ describe("role situations", async () => {
     }
   });
 });
+
+describe("role relevance", () => {
+  it("does not show tumour biology to the anaesthetist before breast surgery", () => {
+    const keys = deterministicPlan(
+      ["Anaesthetist"],
+      "Pre-operative anaesthesia check. Quadrantectomy (partial removal of the breast) with intraoperative radiotherapy; tumour board recommended it.",
+    ).flatMap((s) => s.items.map((i) => i.key));
+    expect(keys).not.toContain("tumour_receptors");
+    expect(keys).not.toContain("tumour_histology");
+    expect(keys).toContain("antithrombotics");
+  });
+
+  it("shows tumour biology to the surgeon", () => {
+    const keys = deterministicPlan(["Breast surgeon"], "Surgery planning after the tumour board").flatMap((s) => s.items.map((i) => i.key));
+    expect(keys).toContain("tumour_receptors");
+  });
+});

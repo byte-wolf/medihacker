@@ -74,7 +74,8 @@ async function extractSection(
     const ordered = section.items.map((p) => (p.key === "demographics" ? fixed[0] : items.find((i) => i.key === p.key)!)).filter(Boolean);
     return { section: { id: section.id, title: section.title, items: ordered }, rejected: { type: "debug", rejected }, cached, fallback: false };
   } catch (err) {
-    if (!(err instanceof LlmUnavailableError)) throw err;
+    // No model, or the model failed (quota, outage, timeout): show grounded keyword matches instead of an empty section.
+    if (!(err instanceof LlmUnavailableError)) console.error(`[briefing] section ${section.id} fell back to keyword search:`, err instanceof Error ? err.message.slice(0, 200) : err);
     const items = retrievalItems(patient, llmItems);
     const ordered = section.items.map((p) => (p.key === "demographics" ? fixed[0] : items.find((i) => i.key === p.key)!)).filter(Boolean);
     return { section: { id: section.id, title: section.title, items: ordered }, rejected: { type: "debug", rejected: [] }, cached: false, fallback: true };
