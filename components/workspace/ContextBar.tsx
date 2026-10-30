@@ -65,9 +65,11 @@ export function ContextBar(props: {
         />
       </div>
       <div className="context-bar__actions">
-        <Button kind="ghost" size="md" renderIcon={Chat} onClick={props.onNewConversation} disabled={!props.hasMessages}>
-          New conversation
-        </Button>
+        {props.hasMessages && (
+          <Button kind="ghost" size="md" renderIcon={Chat} onClick={props.onNewConversation}>
+            New conversation
+          </Button>
+        )}
       </div>
 
       <NewSituationModal

@@ -42,7 +42,7 @@ export function PatientList({ patients }: { patients: PatientSummary[] }) {
                   </div>
                   <div>
                     <dt>Sex</dt>
-                    <dd>{p.sex}</dd>
+                    <dd>{p.sex.charAt(0).toUpperCase() + p.sex.slice(1)}</dd>
                   </div>
                   <div>
                     <dt>Documents</dt>

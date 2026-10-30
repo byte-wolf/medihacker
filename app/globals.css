@@ -305,6 +305,7 @@ body {
   align-items: flex-start;
 }
 .item-row__label h3 {
+  text-wrap: balance;
   flex: 1 1 auto;
   min-width: 0;
   font-size: 0.8125rem;
@@ -381,7 +382,6 @@ body {
   padding: 0.75rem;
   margin-bottom: 0.5rem;
   background: var(--cds-layer-01);
-  border-left: 3px solid var(--cds-support-error);
   outline: none;
 }
 .contradiction--focused {
@@ -464,7 +464,7 @@ body {
 .source-panel__translation {
   margin: 0.5rem 0 0.75rem;
   padding: 0.5rem 0.75rem;
-  border-left: 3px solid var(--cds-border-interactive);
+  background: var(--cds-layer-02);
   font-size: 0.875rem;
   line-height: 1.45;
 }
@@ -626,12 +626,16 @@ body {
 
 /* Briefing as a compact, internally scrolling box */
 .briefing__body {
-  max-height: clamp(12rem, 32vh, 26rem);
+  max-height: max(12rem, calc(100dvh - 26rem));
   overflow-y: auto;
   padding-right: 0.25rem;
   overscroll-behavior: contain;
 }
-.briefing__body--expanded {
+.workspace__main--chatting .briefing__body {
+  max-height: clamp(12rem, 32vh, 26rem);
+}
+.briefing__body--expanded,
+.workspace__main--chatting .briefing__body--expanded {
   max-height: none;
   overflow: visible;
 }
@@ -686,7 +690,6 @@ body {
   min-height: 1.125rem;
   padding: 0.0625rem 0.5rem;
   border: 1px solid var(--cds-support-error);
-  border-left-width: 3px;
   background: var(--cds-notification-background-error, #fff1f1);
   color: var(--cds-text-primary);
   font: inherit;
@@ -756,4 +759,17 @@ body {
   font-size: 0.75rem;
   cursor: pointer;
   padding: 0;
+}
+
+/* Placeholders at WCAG AA contrast (Carbon's default placeholder token is ~2.5:1) */
+.cds--text-input::placeholder,
+.cds--text-area::placeholder,
+.cds--combo-box input::placeholder {
+  color: var(--cds-text-helper);
+  opacity: 1;
+}
+
+/* Model-written item labels may start lowercase */
+.item-row__label h3::first-letter {
+  text-transform: uppercase;
 }
