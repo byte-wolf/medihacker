@@ -1,7 +1,8 @@
 "use client";
 
 import { Button, InlineNotification, SkeletonText, Tile } from "@carbon/react";
-import { ArrowRight, Renew, WarningAltFilled } from "@carbon/icons-react";
+import { ArrowRight, Maximize, Minimize, Renew } from "@carbon/icons-react";
+import { useState } from "react";
 import type { DocumentMeta } from "@/lib/types";
 import { ItemRow } from "./ItemRow";
 import type { BriefingState, OpenSource, SituationOption } from "./types";
@@ -17,7 +18,6 @@ export function BriefingView({
   aiConfigured,
   roleSituations,
   onSelectSituation,
-  contradictionCount,
 }: {
   state: BriefingState;
   situation: SituationOption | null;
@@ -29,8 +29,8 @@ export function BriefingView({
   aiConfigured: boolean;
   roleSituations: SituationOption[];
   onSelectSituation: (id: number) => void;
-  contradictionCount: number;
 }) {
+  const [expanded, setExpanded] = useState(false);
   if (!situation) {
     return (
       <section className="briefing" aria-labelledby="briefing-title">
@@ -58,14 +58,6 @@ export function BriefingView({
             </>
           )}
         </Tile>
-        {contradictionCount > 0 && (
-          <a href="#contradictions-title" className="contradiction-jump">
-            <WarningAltFilled size={16} aria-hidden className="sev-medium" />
-            <span>
-              <strong>{contradictionCount} contradictions in the documents.</strong> Show them
-            </span>
-          </a>
-        )}
       </section>
     );
   }
@@ -79,7 +71,18 @@ export function BriefingView({
           {loading && "Reading 8 documents…"}
           {state.status === "done" && state.ms !== undefined && `Ready in ${(state.ms / 1000).toFixed(1)} s${state.cached ? " (cached)" : ""}`}
         </span>
+        <Button
+          kind="ghost"
+          size="sm"
+          renderIcon={expanded ? Minimize : Maximize}
+          aria-expanded={expanded}
+          aria-controls="briefing-body"
+          onClick={() => setExpanded((e) => !e)}
+        >
+          {expanded ? "Collapse" : "Expand"}
+        </Button>
       </div>
+      <div id="briefing-body" className={`briefing__body${expanded ? " briefing__body--expanded" : ""}`} tabIndex={0} aria-label="Briefing content">
       {state.status === "error" && (
         <InlineNotification kind="error" lowContrast hideCloseButton title="The briefing could not be loaded." subtitle={state.error}>
         </InlineNotification>
@@ -97,15 +100,6 @@ export function BriefingView({
           title="The AI model did not answer for some sections."
           subtitle="Those sections show matching German source passages (keyword search) instead of summaries. Retry later."
         />
-      )}
-      {state.contradictions.length > 0 && (
-        <a href="#contradictions-title" className="contradiction-jump">
-          <WarningAltFilled size={16} aria-hidden className="sev-medium" />
-          <span>
-            <strong>{state.contradictions.length} contradictions in the documents.</strong>{" "}
-            {state.relevantContradictions.length ? `${state.relevantContradictions.length} relevant to this briefing. ` : ""}Show them
-          </span>
-        </a>
       )}
       {showPlanSkeleton && (
         <Tile className="briefing-section">
@@ -128,6 +122,7 @@ export function BriefingView({
                     onOpenSource={onOpenSource}
                     contradictionTitles={contradictionTitles}
                     onShowContradiction={onShowContradiction}
+                    explainSituationId={situation && situation.id > 0 ? situation.id : undefined}
                   />
                 ))
               : plan.items.map((i) => (
@@ -154,6 +149,7 @@ export function BriefingView({
           matched to the source text are not shown. Verify before clinical decisions.
         </p>
       )}
+      </div>
     </section>
   );
 }

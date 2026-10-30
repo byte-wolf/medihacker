@@ -7,7 +7,7 @@ import type { Contradiction, DocumentMeta } from "@/lib/types";
 import { docLabel } from "./SourceTags";
 import type { OpenSource } from "./types";
 
-function ContradictionCard({
+export function ContradictionCard({
   c,
   documents,
   onOpenSource,

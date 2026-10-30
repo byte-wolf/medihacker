@@ -1,13 +1,13 @@
 "use client";
 
-import { InlineNotification } from "@carbon/react";
+import { InlineNotification, Modal } from "@carbon/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { BriefingStreamEvent, Contradiction } from "@/lib/types";
 import { BriefingView } from "./BriefingView";
 import { ChatPanel } from "./ChatPanel";
 import { ContextBar } from "./ContextBar";
-import { ContradictionsPanel } from "./ContradictionsPanel";
+import { ContradictionCard } from "./ContradictionsPanel";
 import { PatientBanner } from "./PatientBanner";
 import { SourcePanel } from "./SourcePanel";
 import type { BriefingState, ChatMessage, SituationOption, WorkspacePatient } from "./types";
@@ -145,7 +145,6 @@ export function Workspace(props: {
   };
 
   const showContradiction = (id: string) => {
-    setSource(null);
     setFocusContradiction(id);
     audit("open_contradiction", { id });
   };
@@ -155,6 +154,7 @@ export function Workspace(props: {
   const relevantContradictions = situationId ? briefing.relevantContradictions : [];
   const contradictionTitles = useMemo(() => Object.fromEntries(contradictions.map((c) => [c.id, c.title])), [contradictions]);
   const roleSituations = situations.filter((s) => s.group !== "preset");
+  const focused = focusContradiction ? (contradictions.find((c) => c.id === focusContradiction) ?? null) : null;
 
   return (
     <main id="main-content" className="app-content workspace">
@@ -187,7 +187,6 @@ export function Workspace(props: {
             situation={situation}
             roleSituations={roleSituations}
             onSelectSituation={setSituationId}
-            contradictionCount={contradictions.length}
             documents={patient.documents}
             contradictionTitles={contradictionTitles}
             onOpenSource={openSource}
@@ -208,8 +207,8 @@ export function Workspace(props: {
             disabled={!props.aiConfigured}
           />
         </div>
-        <aside className="workspace__rail" aria-label={source ? "Source document" : "Contradictions"}>
-          {source ? (
+        {source && (
+          <aside className="workspace__rail" aria-label="Source document">
             <SourcePanel
               key={source.docId}
               patientId={patient.id}
@@ -220,18 +219,28 @@ export function Workspace(props: {
               onClose={() => setSource(null)}
               onNavigate={(docId, passageIds) => setSource({ docId, passageIds })}
             />
-          ) : (
-            <ContradictionsPanel
-              loading={false}
-              contradictions={contradictions}
-              relevant={relevantContradictions}
-              focusId={focusContradiction}
-              documents={patient.documents}
-              onOpenSource={openSource}
-            />
-          )}
-        </aside>
+          </aside>
+        )}
       </div>
+      <Modal
+        open={!!focused}
+        passiveModal
+        size="md"
+        modalHeading={focused && relevantContradictions.includes(focused.id) ? "Contradiction relevant to this situation" : "Contradiction in the documents"}
+        onRequestClose={() => setFocusContradiction(null)}
+      >
+        {focused && (
+          <ContradictionCard
+            c={focused}
+            documents={patient.documents}
+            focused={false}
+            onOpenSource={(docId, passageIds, context) => {
+              setFocusContradiction(null);
+              openSource(docId, passageIds, context);
+            }}
+          />
+        )}
+      </Modal>
     </main>
   );
 }

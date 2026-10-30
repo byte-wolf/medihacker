@@ -3,6 +3,7 @@
 import { Tag } from "@carbon/react";
 import { CheckmarkFilled, HelpFilled, WarningAltFilled } from "@carbon/icons-react";
 import type { BriefingItem, DocumentMeta } from "@/lib/types";
+import { ExplainButton } from "./ExplainButton";
 import { SourceTags } from "./SourceTags";
 import type { OpenSource } from "./types";
 
@@ -25,12 +26,15 @@ export function ItemRow({
   onOpenSource,
   contradictionTitles,
   onShowContradiction,
+  explainSituationId,
 }: {
   item: BriefingItem;
   documents: DocumentMeta[];
   onOpenSource: OpenSource;
   contradictionTitles: Record<string, string>;
   onShowContradiction: (id: string) => void;
+  /** Briefing only: show the "why this matters" button for this situation */
+  explainSituationId?: number;
 }) {
   return (
     <div className={`item-row item-row--${item.status}`} data-item={item.key}>
@@ -39,6 +43,7 @@ export function ItemRow({
         {item.status === "not_documented" && <HelpFilled size={16} aria-hidden className="icon-muted" />}
         {item.status === "unverified" && <WarningAltFilled size={16} aria-hidden className="icon-warn" />}
         <h3>{item.label}</h3>
+        {explainSituationId !== undefined && <ExplainButton situationId={explainSituationId} label={item.label} />}
       </div>
       <div className="item-row__body">
         {item.status === "documented" ? (
