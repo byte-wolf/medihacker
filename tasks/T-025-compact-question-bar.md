@@ -27,3 +27,4 @@ Requested by mirraman ("this gap is too huge, make it more compact and nicer"), 
 
 - 2026-10-30, Devin: claimed.
 - 2026-10-30, Devin: in progress on feat/t-025-compact-question-bar (PR to be opened by mirraman).
+- 2026-10-30, Devin: added viewport-fit layout (no empty space under Q&A, checked 1366x768 to 3840x2160) on the same branch.
