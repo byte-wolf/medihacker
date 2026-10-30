@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, InlineNotification, SkeletonText, Tile } from "@carbon/react";
-import { ArrowRight, Maximize, Minimize, Renew } from "@carbon/icons-react";
+import { Maximize, Minimize, Renew } from "@carbon/icons-react";
 import { useState } from "react";
 import type { DocumentMeta } from "@/lib/types";
 import { ItemRow } from "./ItemRow";
@@ -16,8 +16,6 @@ export function BriefingView({
   onShowContradiction,
   onRetry,
   aiConfigured,
-  roleSituations,
-  onSelectSituation,
 }: {
   state: BriefingState;
   situation: SituationOption | null;
@@ -27,40 +25,9 @@ export function BriefingView({
   onShowContradiction: (id: string) => void;
   onRetry: () => void;
   aiConfigured: boolean;
-  roleSituations: SituationOption[];
-  onSelectSituation: (id: number) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
-  if (!situation) {
-    return (
-      <section className="briefing" aria-labelledby="briefing-title">
-        <Tile className="no-situation">
-          <h2 id="briefing-title">No situation selected</h2>
-          <p className="muted">
-            Ask a question in the bar below, or choose a situation to get a briefing with only the facts it needs.
-          </p>
-          {roleSituations.length > 0 && (
-            <>
-              <h3 className="no-situation__subtitle">Your situations</h3>
-              <ul className="no-situation__list">
-                {roleSituations.map((s) => (
-                  <li key={s.id}>
-                    <button type="button" className="demo-user" onClick={() => onSelectSituation(s.id)}>
-                      <span>
-                        <span className="demo-user__role">{s.title}</span>
-                        <span className="demo-user__meta">{s.description}</span>
-                      </span>
-                      <ArrowRight size={16} aria-hidden />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </Tile>
-      </section>
-    );
-  }
+  if (!situation) return null;
   const loading = state.status === "loading";
   const showPlanSkeleton = loading && state.plan.length === 0;
   return (
