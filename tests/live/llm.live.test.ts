@@ -14,7 +14,10 @@ let provider: typeof import("@/lib/llm/provider");
 let patient: PatientRecord;
 
 beforeAll(async () => {
+  // setupSyntheticPatient() forces the mock provider; keep the real one here.
+  const configured = process.env.LLM_PROVIDER;
   setupSyntheticPatient();
+  process.env.LLM_PROVIDER = configured;
   provider = await import("@/lib/llm/provider");
   patient = (await import("@/lib/data/patients")).getPatient("9999-0001")!;
 });
@@ -57,5 +60,26 @@ describe.skipIf(!LIVE)("live briefing pipeline", () => {
     expect(facts.length).toBeGreaterThan(0);
     const passageIds = new Set(patient.passages.map((p) => p.id));
     for (const f of facts) for (const q of f.quotes) expect(passageIds.has(q.passageId)).toBe(true);
+  });
+});
+
+describe.skipIf(!LIVE)("live clinical abbreviations", () => {
+  it('translates "KM-Allergie" as contrast medium, not milk', async () => {
+    const { translationPrompt } = await import("@/lib/llm/prompts");
+    const { translationIsSafe } = await import("@/lib/llm/glossary");
+    const source = "KM-Allergie (Übelkeit, Schwindel, Erbrechen)";
+    const { system, user } = translationPrompt([{ id: "km:p001", docId: "km", section: "Allergien", kind: "line", text: source, start: 0, end: source.length }]);
+    const res = await provider.getProvider().complete({
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
+      json: true,
+      maxTokens: 300,
+      tag: "live-km",
+    });
+    const translation = provider.parseJsonObject<{ translations?: Record<string, string> }>(res.text).translations?.["km:p001"] ?? "";
+    expect(translation).toMatch(/contrast/i);
+    expect(translationIsSafe(source, translation)).toBe(true);
   });
 });
