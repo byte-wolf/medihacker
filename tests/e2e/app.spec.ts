@@ -74,7 +74,7 @@ test("anaesthetist: preset situation shows a sourced briefing", async ({ page })
 
   // Contradictions are not listed persistently, only as red boxes next to the affected facts
   await expect(page.locator(".contradiction")).toHaveCount(0);
-  expect(await page.locator(".contradiction-badge").count()).toBeGreaterThan(0);
+  expect(await page.locator(".fact--contradiction").count()).toBeGreaterThan(0);
 });
 
 test("a fact's contradiction box opens the contradiction details", async ({ page }) => {
@@ -82,8 +82,18 @@ test("a fact's contradiction box opens the contradiction details", async ({ page
   await page.goto("/patients/0000-0001");
   await chooseSituation(page, /Fall with a head injury/);
   await expect(page.getByText(/Ready in/)).toBeVisible({ timeout: 15_000 });
-  const tag = page.getByRole("button", { name: /^Contradiction:/ }).first();
-  await tag.click();
+  const box = page.locator(".fact--contradiction").first();
+  // A source tag inside the red box still opens the document, not the contradiction
+  await box.getByRole("button", { name: /^Open source/ }).first().click();
+  await expect(page.getByRole("region", { name: "Source document" })).toBeVisible();
+  await expect(page.getByRole("dialog").locator(".contradiction")).toBeHidden();
+  await page.keyboard.press("Escape");
+  // Clicking the fact text in the red box opens the contradiction details
+  await box.locator(".fact__statement").click();
+  await expect(page.getByRole("dialog").locator(".contradiction")).toBeVisible();
+  await page.keyboard.press("Escape");
+  // The keyboard-reachable button does the same
+  await page.getByRole("button", { name: /^Contradiction:/ }).first().click();
   await expect(page.getByRole("dialog").locator(".contradiction")).toBeVisible();
 });
 

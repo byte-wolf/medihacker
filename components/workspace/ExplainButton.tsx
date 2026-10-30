@@ -52,7 +52,7 @@ export function ExplainButton({ situationId, label }: { situationId: number; lab
       >
         <Information size={16} aria-hidden />
       </button>
-      <Modal open={open} passiveModal size="sm" modalLabel="Why this matters" modalHeading={label} onRequestClose={() => setOpen(false)}>
+      <Modal open={open} passiveModal size="sm" modalLabel="Why this matters" modalHeading={label.charAt(0).toUpperCase() + label.slice(1)} onRequestClose={() => setOpen(false)}>
         {loading && <InlineLoading description="Generating explanation…" />}
         {error && <InlineNotification kind="error" lowContrast hideCloseButton title={error} />}
         {data && (

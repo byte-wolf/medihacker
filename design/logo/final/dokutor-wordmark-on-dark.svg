@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 200" width="620" height="200" role="img" aria-label="DOKuTOR"><title>DOKuTOR</title>
+  <g stroke="#f4f4f4" stroke-width="16" fill="none" stroke-linejoin="miter">
+    <path d="M28 48 V112 H50 A32 32 0 0 0 50 48 Z"/>
+    <ellipse cx="144" cy="80" rx="30" ry="32"/>
+    <path d="M208 40 V120 M252 48 L214 82 L254 120" stroke-linecap="butt"/>
+    <path d="M366 48 H426 M396 48 V120"/>
+    <ellipse cx="482" cy="80" rx="30" ry="32"/>
+    <path d="M546 120 V48 H570 A16 16 0 0 1 570 80 H546 M564 80 L592 120"/>
+  </g>
+  <g stroke="#78a9ff" stroke-width="16" fill="none" stroke-linecap="round">
+    <path d="M280 62 V86 A26 26 0 0 0 332 86 V62"/>
+  </g>
+  <g stroke="#78a9ff" stroke-width="8" fill="none" stroke-linecap="round">
+    <path d="M306 114 C304 130 286 132 288 148 S310 174 330 160 S354 144 369 159"/>
+  </g>
+  <circle cx="280" cy="54" r="9" fill="#78a9ff"/>
+  <circle cx="332" cy="54" r="9" fill="#78a9ff"/>
+  <circle cx="376" cy="166" r="11" fill="none" stroke="#78a9ff" stroke-width="8"/>
+</svg>

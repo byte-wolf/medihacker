@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 180" width="640" height="180" role="img" aria-label="DOKuTOR"><title>DOKuTOR</title>
+  
+  <path d="M20 18 h70 l30 30 v104 a8 8 0 0 1 -8 8 h-92 a8 8 0 0 1 -8 -8 v-126 a8 8 0 0 1 8 -8 z" fill="#0f62fe"/>
+  <path d="M90 18 v22 a8 8 0 0 0 8 8 h22 z" fill="#d0e2ff"/>
+  <path d="M52 52 h16 v16 h16 v16 h-16 v16 h-16 v-16 h-16 v-16 h16 z" fill="#fff"/>
+  <rect x="28" y="116" width="76" height="8" rx="4" fill="#fff" opacity=".55"/>
+  <rect x="28" y="132" width="52" height="10" rx="5" fill="#ffd94d"/>
+
+  <text x="150" y="118" font-family="'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif" font-size="96" font-weight="600" fill="#161616" textLength="176" lengthAdjust="spacingAndGlyphs" >DOK</text>
+  <text x="330" y="118" font-family="'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif" font-size="96" font-weight="600" fill="#0f62fe" textLength="52" lengthAdjust="spacingAndGlyphs" >u</text>
+  <text x="386" y="118" font-family="'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif" font-size="96" font-weight="600" fill="#161616" textLength="196" lengthAdjust="spacingAndGlyphs" >TOR</text>
+</svg>

@@ -8,7 +8,7 @@ const plexSans = IBM_Plex_Sans({ subsets: ["latin"], weight: ["300", "400", "600
 const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400"], variable: "--font-plex-mono" });
 
 export const metadata: Metadata = {
-  title: "MediHacker",
+  title: "DOKuTOR",
   description: "Role- and task-specific patient briefing with source-linked facts",
 };
 
