@@ -4,7 +4,7 @@ import { Button, InlineNotification, SkeletonText } from "@carbon/react";
 import { Checkmark, Copy, Renew } from "@carbon/icons-react";
 import { useState } from "react";
 import type { BriefingItem, DocumentMeta, TokenCall } from "@/lib/types";
-import { ItemRow } from "./ItemRow";
+import { ItemRow, SAFETY_ITEMS } from "./ItemRow";
 import { docLabel } from "./SourceTags";
 import type { BriefingState, OpenSource, SituationOption } from "./types";
 
@@ -23,6 +23,21 @@ function briefingText(title: string, items: BriefingItem[], documents: DocumentM
     return `${item.label}: ${facts.join(" ")}`;
   });
   return [`Briefing: ${title}`, ...lines].join("\n");
+}
+
+/** One compact line of items without an answer; the reason is in the tooltip. */
+function GapLine({ title, items }: { title: string; items: BriefingItem[] }) {
+  return (
+    <p className="briefing-gaps__line">
+      <span className="briefing-gaps__title">{title}:</span>{" "}
+      {items.map((item, i) => (
+        <span key={item.key} className="briefing-gaps__item" data-item={item.key} title={item.note}>
+          {item.label}
+          {i < items.length - 1 && <span aria-hidden> · </span>}
+        </span>
+      ))}
+    </p>
+  );
 }
 
 export function BriefingView({
@@ -57,6 +72,11 @@ export function BriefingView({
     }
   };
   const loading = state.status === "loading";
+  // Gaps are listed once at the end instead of one row each; safety items stay in place even when missing.
+  const inline = (item: BriefingItem) => item.status === "documented" || SAFETY_ITEMS.has(item.key);
+  const gaps = state.plan.flatMap((p) => (state.sections[p.id]?.items ?? []).filter((i) => !inline(i)));
+  const notDocumented = gaps.filter((i) => i.status === "not_documented");
+  const unverified = gaps.filter((i) => i.status === "unverified");
   const showPlanSkeleton = loading && state.plan.length === 0;
   return (
     <section className="briefing" aria-labelledby="briefing-title" aria-busy={loading}>
@@ -105,7 +125,7 @@ export function BriefingView({
         return (
           <div key={plan.id} className="briefing-group" data-section={plan.id} aria-label={plan.title} role="group">
             {section
-              ? section.items.map((item) => (
+              ? section.items.filter(inline).map((item) => (
                   <ItemRow
                     key={item.key}
                     item={item}
@@ -133,11 +153,16 @@ export function BriefingView({
           </div>
         );
       })}
+      {gaps.length > 0 && (
+        <div className="briefing-gaps" data-section="gaps">
+          {notDocumented.length > 0 && <GapLine title="Not documented" items={notDocumented} />}
+          {unverified.length > 0 && <GapLine title="Not verified, check the documents" items={unverified} />}
+        </div>
+      )}
       {state.status === "done" && (
         <p className="briefing__legend">
-          Each fact links to the passage it was taken from; a click opens it beside the briefing. <em>calc. from</em> marks values calculated from
-          the linked sources, <span className="briefing__legend-flag">Documents differ</span> marks facts where the letters disagree. Check the
-          source before clinical decisions.
+          Click a source to see the passage. <em>calc.</em> = calculated, <span className="briefing__legend-flag">Documents differ</span> = letters
+          disagree.
         </p>
       )}
       </div>

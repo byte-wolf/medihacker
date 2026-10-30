@@ -3,11 +3,11 @@
 import { WarningAlt } from "@carbon/icons-react";
 import { emphasisSpans, isNoAllergyStatement } from "@/lib/briefing/emphasis";
 import type { BriefingItem, DocumentMeta } from "@/lib/types";
-import { SourceTags } from "./SourceTags";
+import { SourceTags, sourceRefs } from "./SourceTags";
 import type { OpenSource } from "./types";
 
 /** Safety-critical items: allergies get the danger accent, antithrombotics a stronger label. */
-const SAFETY_ITEMS = new Set(["allergies", "antithrombotics"]);
+export const SAFETY_ITEMS = new Set(["allergies", "antithrombotics"]);
 
 /** Bold only the clinical value (drug + dose, number + unit, allergen); otherwise nothing. */
 function Statement({ text }: { text: string }) {
@@ -25,15 +25,17 @@ function FactRow({
   onOpenSource,
   contradictionTitles,
   onShowContradiction,
+  ownSources,
 }: {
   fact: BriefingItem["facts"][number];
+  ownSources: boolean;
   documents: DocumentMeta[];
   onOpenSource: OpenSource;
   contradictionTitles: Record<string, string>;
   onShowContradiction: (id: string) => void;
 }) {
   const ids = fact.contradictionIds ?? [];
-  const tags = <SourceTags fact={fact} documents={documents} onOpenSource={onOpenSource} />;
+  const tags = ownSources ? <SourceTags facts={[fact]} documents={documents} onOpenSource={onOpenSource} /> : null;
   if (ids.length === 0) {
     return (
       <li className="fact">
@@ -51,17 +53,19 @@ function FactRow({
         if (!(e.target as HTMLElement).closest("button, a")) onShowContradiction(ids[0]);
       }}
     >
-      <Statement text={fact.statement} />
+      <span>
+        <Statement text={fact.statement} />
+        <button
+          type="button"
+          className="fact__contradiction"
+          onClick={() => onShowContradiction(ids[0])}
+          aria-label={`Contradiction: Documents differ. ${reason}. Show details`}
+        >
+          <WarningAlt size={14} aria-hidden />
+          Documents differ
+        </button>
+      </span>
       {tags}
-      <button
-        type="button"
-        className="fact__contradiction"
-        onClick={() => onShowContradiction(ids[0])}
-        aria-label={`Contradiction: Documents differ. ${reason}. Show details`}
-      >
-        <WarningAlt size={14} aria-hidden />
-        Documents differ
-      </button>
     </li>
   );
 }
@@ -80,6 +84,9 @@ export function ItemRow({
   onShowContradiction: (id: string) => void;
 }) {
   const documented = item.status === "documented";
+  // When every fact cites the same documents, show the sources once for the whole item.
+  const docSets = item.facts.map((f) => sourceRefs([f], documents).map(([d]) => d).sort().join(","));
+  const shared = documented && docSets.every((d) => d === docSets[0]);
   const alert =
     documented && item.key === "allergies" && item.facts.some((f) => !isNoAllergyStatement(f.statement))
       ? " item-row--alert"
@@ -87,7 +94,7 @@ export function ItemRow({
         ? " item-row--safety"
         : "";
   return (
-    <div className={`item-row item-row--${item.status}${alert}`} data-item={item.key}>
+    <div className={`item-row item-row--${item.status}${alert}${shared ? " item-row--shared" : ""}`} data-item={item.key}>
       <div className="item-row__label">
         <h3>{item.label}</h3>
       </div>
@@ -102,6 +109,7 @@ export function ItemRow({
                 onOpenSource={onOpenSource}
                 contradictionTitles={contradictionTitles}
                 onShowContradiction={onShowContradiction}
+                ownSources={!shared}
               />
             ))}
           </ul>
@@ -112,6 +120,11 @@ export function ItemRow({
           </div>
         )}
       </div>
+      {shared && (
+        <div className="item-row__sources">
+          <SourceTags facts={item.facts} documents={documents} onOpenSource={onOpenSource} />
+        </div>
+      )}
     </div>
   );
 }

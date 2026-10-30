@@ -1,7 +1,7 @@
 "use client";
 
 import { Document } from "@carbon/icons-react";
-import { useEffect, useId, useRef, type KeyboardEvent } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { docKindLabel, docKindShort, formatDate, formatShortDate } from "@/lib/format";
 import type { DocumentMeta, Fact } from "@/lib/types";
 import type { OpenSource } from "./types";
@@ -50,41 +50,56 @@ function onArrowKey(e: KeyboardEvent<HTMLElement>) {
   to.focus();
 }
 
-/** One quiet source link per cited document; clicking opens the highlighted passage(s). */
+/** Cited passages grouped by document, most recent document first. */
+export function sourceRefs(facts: Fact[], documents: DocumentMeta[]): [string, string[]][] {
+  const byDoc = new Map<string, string[]>();
+  const add = (passageId: string) => {
+    const docId = passageId.split(":")[0];
+    const ids = byDoc.get(docId) ?? [];
+    if (!ids.includes(passageId)) byDoc.set(docId, [...ids, passageId]);
+  };
+  for (const f of facts) {
+    for (const q of f.quotes) add(q.passageId);
+    for (const i of f.calculation?.inputs ?? []) add(i.passageId);
+  }
+  const date = (id: string) => documents.find((d) => d.id === id)?.date ?? "";
+  return [...byDoc].sort((a, b) => date(b[0]).localeCompare(date(a[0])));
+}
+
+/**
+ * Source links for one fact (or for all facts of an item that share the same sources).
+ * Only the most recent document is shown; "+N" reveals the others, so the answer reads first.
+ */
 export function SourceTags({
-  fact,
+  facts,
   documents,
   onOpenSource,
 }: {
-  fact: Fact;
+  facts: Fact[];
   documents: DocumentMeta[];
   onOpenSource: OpenSource;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const hintId = useId();
+  const [expanded, setExpanded] = useState(false);
   useEffect(() => {
     const group = ref.current && groupOf(ref.current);
     syncTabStops(group);
     return () => syncTabStops(group);
   });
 
-  const byDoc = new Map<string, string[]>();
-  for (const q of fact.quotes) {
-    const docId = q.passageId.split(":")[0];
-    byDoc.set(docId, [...(byDoc.get(docId) ?? []), q.passageId]);
-  }
-  for (const i of fact.calculation?.inputs ?? []) {
-    const docId = i.passageId.split(":")[0];
-    if (!byDoc.get(docId)?.includes(i.passageId)) byDoc.set(docId, [...(byDoc.get(docId) ?? []), i.passageId]);
-  }
+  const refs = sourceRefs(facts, documents);
+  const shown = expanded ? refs : refs.slice(0, 1);
+  const hiddenCount = refs.length - shown.length;
+  const context = facts.map((f) => f.statement).join(" ");
   return (
     <span className="source-tags" ref={ref} onKeyDown={onArrowKey} onFocus={(e) => e.target.matches(LINK) && syncTabStops(groupOf(e.target), e.target)}>
-      {fact.kind === "calculated" && (
+      {facts.some((f) => f.kind === "calculated") && (
         <span className="source-tags__calc" title="Calculated from the values in the linked sources">
-          calc. from
+          calc.
         </span>
       )}
-      {[...byDoc].map(([docId, ids]) => {
+      {shown.map(([docId, ids]) => {
         const full = docLabel(documents, docId);
         const short = docShortLabel(documents, docId);
         const title = documents.find((d) => d.id === docId)?.title;
@@ -92,7 +107,7 @@ export function SourceTags({
           <button
             key={docId}
             type="button"
-            onClick={() => onOpenSource(docId, ids, fact.statement)}
+            onClick={() => onOpenSource(docId, ids, context)}
             className="source-tag"
             aria-label={`Open source: ${short} (${full})`}
             title={title ? `${full} – ${title}` : full}
@@ -102,6 +117,17 @@ export function SourceTags({
           </button>
         );
       })}
+      {hiddenCount > 0 && (
+        <button
+          type="button"
+          className="source-tags__more"
+          onClick={() => setExpanded(true)}
+          aria-label={`Show ${hiddenCount} more source${hiddenCount > 1 ? "s" : ""}`}
+          title={refs.slice(1).map(([id]) => docLabel(documents, id)).join("\n")}
+        >
+          +{hiddenCount}
+        </button>
+      )}
       <span id={hintId} data-source-hint hidden>
         Arrow keys move between the sources of this item.
       </span>
