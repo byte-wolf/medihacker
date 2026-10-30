@@ -83,7 +83,7 @@ const rulesRan = new Set<string>();
 
 /**
  * Make sure the patient's contradictions are computed for the current documents.
- * Rules run synchronously (milliseconds); the LLM scan runs once in the background.
+ * Rules run synchronously (milliseconds); the optional LLM scan is opt-in.
  */
 export function ensureContradictions(patient: PatientRecord): void {
   const db = getDb();
@@ -94,7 +94,7 @@ export function ensureContradictions(patient: PatientRecord): void {
     rulesRan.add(patient.id + patient.hash);
   }
   const idx = db.select().from(schema.patientIndex).where(eq(schema.patientIndex.patientId, patient.id)).get();
-  const wantMode = llmConfigured() ? "rules+llm" : "rules";
+  const wantMode = process.env.LLM_CONTRADICTION_SCAN === "on" && llmConfigured() ? "rules+llm" : "rules";
   if (idx && idx.docHash === patient.hash && idx.promptVersion === PROMPT_VERSION && (idx.contradictionMode === wantMode || idx.contradictionMode === "rules+llm")) {
     return;
   }

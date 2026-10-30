@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { setupSyntheticPatient } from "../helpers/synthetic";
 import type { CompleteOptions } from "@/lib/llm/provider";
 import type { BriefingStreamEvent } from "@/lib/types";
@@ -70,6 +70,32 @@ beforeAll(async () => {
 });
 
 describe("briefing pipeline", () => {
+  it("uses one model call for the whole briefing, including novel situation items, and caches repeat views", async () => {
+    const patient = mods.patients.getPatient("9999-0001")!;
+    const handler = vi.fn((opts: CompleteOptions) => {
+      const raw = JSON.parse(scripted(opts));
+      raw.customItems = [{ key: "custom_drug_reaction", label: "Documented reaction", status: "documented", facts: [
+        { statement: "Penicillin allergy (rash)", quotes: [{ passageId: passageId("Penicillin-Allergie"), text: "Penicillin-Allergie (Exanthem)" }] },
+        { statement: "Invented reaction", quotes: [{ passageId: passageId("Penicillin-Allergie"), text: "Invented text" }] },
+      ] }];
+      return JSON.stringify(raw);
+    });
+    mods.provider.setProvider(new mods.provider.MockProvider(handler));
+    try {
+      const situation = { title: "Novel allergy review", description: "Document her reaction for a new task." };
+      const events: BriefingStreamEvent[] = [];
+      const result = await mods.pipeline.buildBriefing(patient, ["Anaesthetist"], situation, (e) => events.push(e));
+      expect(handler).toHaveBeenCalledTimes(1);
+      expect(handler.mock.calls[0][0].tag).toBe("extract:briefing");
+      const custom = result.sections.find((s) => s.id === "situation")!;
+      expect(custom.items[0].facts).toHaveLength(1);
+      expect(events.some((e) => e.type === "debug" && e.rejected.some((r) => r.statement === "Invented reaction"))).toBe(true);
+      await mods.pipeline.buildBriefing(patient, ["Anaesthetist"], situation, () => {});
+      expect(handler).toHaveBeenCalledTimes(1);
+    } finally {
+      mods.provider.setProvider(new mods.provider.MockProvider(scripted));
+    }
+  });
   it("streams plan, verified sections, contradictions and done", async () => {
     const patient = mods.patients.getPatient("9999-0001")!;
     const events: BriefingStreamEvent[] = [];

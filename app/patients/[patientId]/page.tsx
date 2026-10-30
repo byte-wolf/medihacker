@@ -5,7 +5,6 @@ import { getSessionUser } from "@/lib/auth/session";
 import { ageAt, getPatient } from "@/lib/data/patients";
 import { ensureContradictions, listContradictions } from "@/lib/contradictions/store";
 import { DEFAULT_QUESTIONS, ROLE_QUESTIONS } from "@/lib/catalog/situations";
-import { ensureTranslations } from "@/lib/data/translations";
 import { llmConfigured } from "@/lib/llm/provider";
 import { logAudit, situationsForUser } from "@/lib/repo";
 import { AppHeader } from "@/components/AppHeader";
@@ -22,7 +21,6 @@ async function WorkspaceContent({ params, searchParams }: PageProps<"/patients/[
   if (!patient) notFound();
   const sp = await searchParams;
   ensureContradictions(patient);
-  void ensureTranslations(patient);
   logAudit(user.id, patient.id, "open_patient");
 
   // CAVE banner: allergy lines from the "Allergien" sections, newest document first.

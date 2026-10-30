@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { claimedNumbers, numbersIn, verifyFact, type VerifyContext } from "@/lib/briefing/verify";
 import type { Passage, SourceDocument } from "@/lib/types";
+import { itemsFromModel } from "@/lib/briefing/items";
 
 const passages: Passage[] = [
   { id: "d1:p001", docId: "d1", section: "Entlassungsmedikation", kind: "line", text: "Thrombo ASS 100mg oral 1 0 0 0 ST", start: 0, end: 0 },
@@ -18,6 +19,27 @@ const ctx: VerifyContext = {
 };
 
 describe("verifyFact", () => {
+  it.each([
+    { passage_ids: ["d2:p001"], quote_german: "Gewicht: 66 kg" },
+    { passageIds: ["d2:p001"], quote: "Gewicht: 66 kg" },
+    { passageId: "d2:p001", quote: "Gewicht: 66 kg" },
+  ])("verifies citation spelling variants against the same original evidence: %j", (citation) => {
+    const result = itemsFromModel({ items: [{ key: "weight", status: "documented", facts: [
+      { statement: "Weight 66 kg (15 April 2016)", ...citation },
+    ] }] }, [], ctx, "chat");
+    expect(result.rejected).toEqual([]);
+    expect(result.items[0].facts[0].quotes).toEqual([{ passageId: "d2:p001", text: "Gewicht: 66 kg" }]);
+  });
+
+  it("still rejects invented quantities and quotes using alternate citation spellings", () => {
+    const result = itemsFromModel({ items: [{ key: "weight", status: "documented", facts: [
+      { statement: "Weight 90 kg", passageIds: ["d2:p001"], quote: "Gewicht: 66 kg" },
+      { statement: "Weight 90 kg", passageId: "d2:p001", quote: "Gewicht: 90 kg" },
+      { statement: "Weight 66 kg", passageIds: ["d1:p002", "d2:p001"], quote: "Gewicht: 66 kg" },
+    ] }] }, [], ctx, "chat");
+    expect(result.items[0].status).toBe("unverified");
+    expect(result.rejected).toHaveLength(3);
+  });
   it("accepts a fact with a verbatim quote and supported numbers", () => {
     const r = verifyFact(
       { statement: "Thrombo ASS (acetylsalicylic acid) 100 mg, 1-0-0", quotes: [{ passageId: "d1:p001", text: "Thrombo ASS 100mg oral 1 0 0 0" }] },

@@ -4,6 +4,7 @@ import { itemsFromModel, verifyContext } from "@/lib/briefing/items";
 import { cachedComplete } from "@/lib/llm/cache";
 import { LlmUnavailableError, parseJsonObject } from "@/lib/llm/provider";
 import { chatPrompt } from "@/lib/llm/prompts";
+import { chatResponseJsonSchema } from "@/lib/llm/schema";
 import type { BriefingItem, RejectedFact } from "@/lib/types";
 
 export type ChatTurn = { role: "user" | "assistant"; text: string };
@@ -31,8 +32,9 @@ export async function answerQuestion(args: {
         { role: "user", content: user },
       ],
       json: true,
+      jsonSchema: chatResponseJsonSchema,
       tag: "chat",
-      maxTokens: 1500,
+      maxTokens: 4000,
     });
     const { items, rejected } = itemsFromModel(parseJsonObject(text), [], verifyContext(args.patient), "chat");
     const contradictions = listContradictions(args.patient.id);

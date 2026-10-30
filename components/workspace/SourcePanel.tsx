@@ -26,6 +26,7 @@ export function SourcePanel(props: {
   const [data, setData] = useState<DocResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [translate, setTranslate] = useState(false);
+  const [translationError, setTranslationError] = useState<string | null>(null);
   const firstMark = useRef<HTMLElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
 
@@ -42,6 +43,28 @@ export function SourcePanel(props: {
       cancelled = true;
     };
   }, [patientId, docId]);
+
+  // Opening a source costs no model calls. Translate only missing highlighted passages.
+  const missingTranslations = JSON.stringify(data?.passages.filter((p) => passageIds.includes(p.id) && !data.translations[p.id]).map((p) => p.id) ?? []);
+  const translating = translate && missingTranslations !== "[]" && !translationError;
+  useEffect(() => {
+    const ids = JSON.parse(missingTranslations) as string[];
+    if (!translate || !ids.length) return;
+    let cancelled = false;
+    fetch(`/api/documents/${patientId}/${docId}`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ passageIds: ids.slice(0, 20) }),
+    }).then(async (r) => {
+      const result = await r.json();
+      if (!r.ok) throw new Error(result.error ?? "Translation could not be generated.");
+      if (!cancelled) {
+        setTranslationError(null);
+        setData((current) => current ? { ...current, translations: { ...current.translations, ...result.translations } } : current);
+      }
+    }).catch((e) => !cancelled && setTranslationError(e.message));
+    return () => { cancelled = true; };
+  }, [translate, missingTranslations, patientId, docId]);
 
   useEffect(() => {
     // Scroll only the panel's own container so the briefing keeps its position.
@@ -110,18 +133,19 @@ export function SourcePanel(props: {
         labelA="Off"
         labelB="On"
         toggled={translate}
-        onToggle={setTranslate}
+        onToggle={(enabled) => { setTranslate(enabled); setTranslationError(null); }}
       />
       {translate && data && (
         <div className="source-panel__translation">
           {highlighted.map((p) => (
             <p key={p.id}>
-              {data.translations[p.id] ?? <span className="muted">Translation not available yet (AI model needed or still running).</span>}
+              {data.translations[p.id] ?? <span className="muted">{translating ? "Translating selected passages…" : "Translation unavailable. Toggle off and on to retry."}</span>}
             </p>
           ))}
           <Tag type="cool-gray" size="sm">
             Machine translation
           </Tag>
+          {translationError && <InlineNotification kind="error" lowContrast hideCloseButton title="Translation unavailable" subtitle={translationError} />}
         </div>
       )}
       {error && <InlineNotification kind="error" lowContrast hideCloseButton title="Could not load the document." subtitle={error} />}

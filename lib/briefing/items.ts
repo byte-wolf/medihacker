@@ -13,6 +13,18 @@ export function verifyContext(patient: PatientRecord): VerifyContext {
 
 type RawItem = { key?: unknown; label?: unknown; status?: unknown; note?: unknown; facts?: unknown };
 
+/** Recognize older citation spellings without creating any new evidence. */
+function normalizeFact(value: unknown): RawFact {
+  if (!value || typeof value !== "object") return {};
+  const f = value as RawFact & Record<string, unknown>;
+  if (f.quotes !== undefined) return f;
+  const text = f.quote ?? f.quote_german;
+  const ids = f.passageIds ?? f.passage_ids ?? (typeof f.passageId === "string" ? [f.passageId] : undefined);
+  // A single quote with multiple ids is ambiguous; retain the verification failure.
+  if (typeof text !== "string" || !Array.isArray(ids) || ids.length !== 1 || typeof ids[0] !== "string") return f;
+  return { ...f, quotes: [{ passageId: ids[0], text }] };
+}
+
 /**
  * Turn the model's JSON into briefing items, keeping only verified facts.
  * Items the model skipped are reported as unverified rather than silently missing.
@@ -38,7 +50,8 @@ export function itemsFromModel(
       continue;
     }
     const facts: Fact[] = [];
-    for (const f of Array.isArray(r.facts) ? (r.facts as RawFact[]) : []) {
+    for (const value of Array.isArray(r.facts) ? r.facts : []) {
+      const f = normalizeFact(value);
       const v = verifyFact(f, ctx);
       if (v.ok) facts.push(v.fact);
       else rejected.push({ section: sectionTitle, item: p.key, statement: String(f?.statement ?? ""), reason: v.reason });

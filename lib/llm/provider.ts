@@ -4,6 +4,8 @@ export type CompleteOptions = {
   messages: ChatMessage[];
   /** Ask the provider for a JSON object response */
   json?: boolean;
+  /** Enforce this response shape where the provider supports structured output. */
+  jsonSchema?: Record<string, unknown>;
   /** Use the faster/cheaper model, e.g. for planning and translation */
   fast?: boolean;
   temperature?: number;
@@ -17,6 +19,7 @@ export type CompleteResult = { text: string; model: string; ms: number };
 
 export interface LlmProvider {
   readonly name: string;
+  readonly cacheIdentity?: string;
   complete(opts: CompleteOptions): Promise<CompleteResult>;
 }
 
@@ -25,6 +28,17 @@ export class LlmUnavailableError extends Error {
     super(message);
     this.name = "LlmUnavailableError";
   }
+}
+
+export class LlmRequestError extends Error {
+  constructor(message: string, readonly status: number, readonly userMessage: string) {
+    super(message);
+    this.name = "LlmRequestError";
+  }
+}
+
+export function llmErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof LlmRequestError ? error.userMessage : fallback;
 }
 
 type OpenAiConfig = {
@@ -43,8 +57,10 @@ type OpenAiConfig = {
  */
 export class OpenAiCompatibleProvider implements LlmProvider {
   readonly name: string;
+  readonly cacheIdentity: string;
   constructor(private cfg: OpenAiConfig) {
     this.name = cfg.name;
+    this.cacheIdentity = JSON.stringify([cfg.baseUrl, cfg.model, cfg.fastModel]);
   }
 
   async complete(opts: CompleteOptions): Promise<CompleteResult> {
@@ -52,6 +68,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     const started = Date.now();
     const timeout = AbortSignal.timeout(this.cfg.timeoutMs);
     const signal = opts.signal ? AbortSignal.any([opts.signal, timeout]) : timeout;
+    const gemini = new URL(this.cfg.baseUrl).hostname === "generativelanguage.googleapis.com";
     const res = await fetch(`${this.cfg.baseUrl.replace(/\/$/, "")}/chat/completions`, {
       method: "POST",
       signal,
@@ -65,15 +82,36 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         messages: opts.messages,
         temperature: opts.temperature ?? 0,
         max_tokens: opts.maxTokens ?? 4000,
-        ...(opts.json ? { response_format: { type: "json_object" } } : {}),
+        // Gemini 2.5 otherwise spends the output budget on hidden reasoning,
+        // leaving short JSON requests truncated. Other providers are unchanged.
+        ...(gemini && /^gemini-2\.5-flash/.test(model)
+          ? { reasoning_effort: "none" } : {}),
+        ...(opts.jsonSchema && gemini
+          ? { response_format: { type: "json_schema", json_schema: { name: "clinical_answer", strict: true, schema: opts.jsonSchema } } }
+          : opts.json ? { response_format: { type: "json_object" } } : {}),
       }),
     });
     if (!res.ok) {
       const body = await res.text().catch(() => "");
-      throw new Error(`${this.name} request failed: HTTP ${res.status} ${body.slice(0, 300)}`);
+      const daily = /perday|per_day|per day|daily/i.test(body);
+      const userMessage = res.status === 429
+        ? daily
+          ? "The AI provider's daily quota is exhausted. Check your project's quota or wait for it to reset."
+          : "The AI provider's quota has been reached. Wait a minute before trying again; if it continues, check your project's quota."
+        : res.status === 401 || res.status === 403
+          ? "The AI provider denied access. Check the configured key and project permissions."
+          : "The AI provider could not complete this request. Please try again.";
+      throw new LlmRequestError(`${this.name} request failed: HTTP ${res.status} ${body.split(this.cfg.apiKey).join("[REDACTED]").slice(0, 2000)}`, res.status, userMessage);
     }
-    const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+    const data = (await res.json()) as { choices?: { finish_reason?: string; message?: { content?: string } }[] };
     const text = data.choices?.[0]?.message?.content ?? "";
+    if (data.choices?.[0]?.finish_reason === "length" || !text.trim()) {
+      throw new LlmRequestError("The model returned an empty or truncated response.", 502, "The AI response was incomplete. Please try again with a more specific question.");
+    }
+    if (opts.json || opts.jsonSchema) {
+      try { parseJsonObject(text); }
+      catch { throw new LlmRequestError("The model returned malformed JSON.", 502, "The AI response could not be read. Please try again."); }
+    }
     return { text, model, ms: Date.now() - started };
   }
 }

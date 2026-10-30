@@ -2,14 +2,13 @@ import { CATEGORIES, deterministicPlan, type PlannedItem, type PlannedSection } 
 import type { PatientRecord } from "@/lib/data/patients";
 import { listContradictions, ensureContradictions } from "@/lib/contradictions/store";
 import { cachedComplete } from "@/lib/llm/cache";
-import { LlmUnavailableError, llmConfigured, parseJsonObject } from "@/lib/llm/provider";
-import { extractionPrompt, planPrompt } from "@/lib/llm/prompts";
-import type { BriefingItem, BriefingSection, BriefingStreamEvent, Contradiction } from "@/lib/types";
+import { LlmUnavailableError, parseJsonObject } from "@/lib/llm/provider";
+import { briefingPrompt } from "@/lib/llm/prompts";
+import type { BriefingSection, BriefingStreamEvent, Contradiction } from "@/lib/types";
 import { demographicsItem, itemsFromModel, retrievalItems, verifyContext } from "./items";
 
 export type SituationInput = { title: string; description: string } | null;
 
-/** Contradiction categories that matter for a briefing item. */
 const ITEM_CONTRADICTION_CATEGORIES: Record<string, string[]> = {
   weight_trend: ["weight", "bmi"],
   vascular_findings: ["laterality", "carotid-stenosis"],
@@ -19,67 +18,6 @@ const ITEM_CONTRADICTION_CATEGORIES: Record<string, string[]> = {
   planned_procedure: ["dates"],
   followups_recommended: ["dates"],
 };
-
-/** Situation-specific questions from the model (cached), appended as their own section. */
-async function customItems(roles: string[], situation: SituationInput, plan: PlannedSection[]): Promise<PlannedItem[]> {
-  if (!situation || !llmConfigured()) return [];
-  const existing = plan.flatMap((s) => s.items.map((i) => i.label));
-  const { system, user } = planPrompt({ roles, situation, existing });
-  try {
-    const { text } = await cachedComplete({
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
-      json: true,
-      fast: true,
-      tag: "plan",
-      maxTokens: 600,
-    });
-    const items = parseJsonObject<{ items?: PlannedItem[] }>(text).items ?? [];
-    return items
-      .filter((i) => typeof i?.key === "string" && typeof i?.label === "string")
-      .slice(0, 4)
-      .map((i) => ({ key: i.key.startsWith("custom_") ? i.key : `custom_${i.key}`, label: i.label, guidance: String(i.guidance ?? "") }));
-  } catch (err) {
-    console.error("[briefing] planning failed:", err);
-    return [];
-  }
-}
-
-async function extractSection(
-  patient: PatientRecord,
-  roles: string[],
-  situation: SituationInput,
-  section: PlannedSection,
-): Promise<{ section: BriefingSection; rejected: BriefingStreamEvent & { type: "debug" }; cached: boolean; fallback: boolean }> {
-  const ctx = verifyContext(patient);
-  const llmItems = section.items.filter((i) => i.key !== "demographics");
-  const fixed: BriefingItem[] = section.items.some((i) => i.key === "demographics") ? [demographicsItem(patient)] : [];
-  if (!llmItems.length) {
-    return { section: { id: section.id, title: section.title, items: fixed }, rejected: { type: "debug", rejected: [] }, cached: true, fallback: false };
-  }
-  try {
-    const { system, user } = extractionPrompt({ patient, roles, situation, sectionTitle: section.title, items: llmItems });
-    const { text, cached } = await cachedComplete({
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
-      json: true,
-      tag: `extract:${section.id}`,
-      maxTokens: 2500,
-    });
-    const { items, rejected } = itemsFromModel(parseJsonObject(text), llmItems, ctx, section.title);
-    const ordered = section.items.map((p) => (p.key === "demographics" ? fixed[0] : items.find((i) => i.key === p.key)!)).filter(Boolean);
-    return { section: { id: section.id, title: section.title, items: ordered }, rejected: { type: "debug", rejected }, cached, fallback: false };
-  } catch (err) {
-    if (!(err instanceof LlmUnavailableError)) throw err;
-    const items = retrievalItems(patient, llmItems);
-    const ordered = section.items.map((p) => (p.key === "demographics" ? fixed[0] : items.find((i) => i.key === p.key)!)).filter(Boolean);
-    return { section: { id: section.id, title: section.title, items: ordered }, rejected: { type: "debug", rejected: [] }, cached: false, fallback: true };
-  }
-}
 
 function attachContradictions(section: BriefingSection, all: Contradiction[], relevant: Set<string>) {
   for (const item of section.items) {
@@ -95,10 +33,7 @@ function attachContradictions(section: BriefingSection, all: Contradiction[], re
   }
 }
 
-/**
- * Build the role- and situation-specific briefing. Sections are extracted in
- * parallel and emitted as soon as each is verified.
- */
+/** Send the sources once, then verify and emit every section using the same response. */
 export async function buildBriefing(
   patient: PatientRecord,
   roles: string[],
@@ -108,45 +43,66 @@ export async function buildBriefing(
   const started = Date.now();
   ensureContradictions(patient);
   const plan = deterministicPlan(roles, situation ? `${situation.title} ${situation.description}` : "");
-  emit({ type: "plan", sections: plan.map((s) => ({ id: s.id, title: s.title, items: s.items.map((i) => ({ key: i.key, label: i.label })) })) });
-
+  const emitPlan = (parts: PlannedSection[]) => emit({ type: "plan", sections: parts.map((s) => ({ id: s.id, title: s.title, items: s.items.map((i) => ({ key: i.key, label: i.label })) })) });
+  emitPlan(plan);
   const contradictions = listContradictions(patient.id);
-  // Precomputed, so the clinician sees them immediately; relevance is filled in at the end.
   emit({ type: "contradictions", relevant: [], all: contradictions });
   const relevant = new Set<string>();
   const sections: BriefingSection[] = [];
+  const ctx = verifyContext(patient);
+  const llmItems = plan.flatMap((s) => s.items).filter((i) => i.key !== "demographics");
+  let raw: { items?: unknown; customItems?: unknown } = {};
   let fallback = false;
-  let allCached = true;
-
-  const runOne = async (s: PlannedSection) => {
+  let cached = true;
+  if (llmItems.length) {
     try {
-      const r = await extractSection(patient, roles, situation, s);
-      attachContradictions(r.section, contradictions, relevant);
-      sections.push(r.section);
-      fallback ||= r.fallback;
-      allCached &&= r.cached;
-      emit({ type: "section", section: r.section });
-      if (r.rejected.rejected.length) emit(r.rejected);
+      const { system, user } = briefingPrompt({ patient, roles, situation, sectionTitle: "Complete briefing", items: llmItems });
+      const result = await cachedComplete({
+        messages: [{ role: "system", content: system }, { role: "user", content: user }],
+        json: true, tag: "extract:briefing", maxTokens: 6500,
+      });
+      raw = parseJsonObject(result.text);
+      cached = result.cached;
     } catch (err) {
-      console.error(`[briefing] section ${s.id} failed:`, err);
-      allCached = false;
-      emit({ type: "error", sectionId: s.id, message: "This section could not be loaded. Please retry." });
+      if (!(err instanceof LlmUnavailableError)) throw err;
+      fallback = true;
+      cached = false;
     }
-  };
-
-  // Situation-specific questions are planned while the standard sections are already extracting.
-  const customJob = customItems(roles, situation, plan).then(async (items) => {
+  }
+  // Novel situations can add questions in the same request, without a planning call.
+  if (!fallback && situation && Array.isArray(raw.customItems)) {
     const known = new Set(plan.flatMap((s) => s.items.map((i) => i.key)));
-    const extra = items.filter((i) => !known.has(i.key) && !CATEGORIES[i.key]);
-    if (!extra.length) return;
-    const section: PlannedSection = { id: "situation", title: "Situation-specific questions", items: extra };
-    emit({ type: "plan", sections: [{ id: section.id, title: section.title, items: extra.map((i) => ({ key: i.key, label: i.label })) }] });
-    await runOne(section);
-  });
-
-  await Promise.all([...plan.map(runOne), customJob]);
+    const extra: PlannedItem[] = [];
+    const answers: Record<string, unknown>[] = [];
+    for (const item of raw.customItems) {
+      if (!item || typeof item !== "object" || typeof item.key !== "string" || typeof item.label !== "string") continue;
+      if (!item.key.startsWith("custom_") || known.has(item.key) || CATEGORIES[item.key]) continue;
+      known.add(item.key);
+      extra.push({ key: item.key, label: item.label, guidance: "" });
+      answers.push(item);
+      if (extra.length === 4) break;
+    }
+    if (extra.length) {
+      const section = { id: "situation", title: "Situation-specific questions", items: extra };
+      plan.push(section);
+      raw.items = [...(Array.isArray(raw.items) ? raw.items : []), ...answers];
+      emitPlan([section]);
+    }
+  }
+  for (const s of plan) {
+    const planned = s.items.filter((i) => i.key !== "demographics");
+    const verified = !planned.length ? { items: [], rejected: [] } : fallback ? { items: retrievalItems(patient, planned), rejected: [] } : itemsFromModel(raw, planned, ctx, s.title);
+    const section: BriefingSection = {
+      id: s.id, title: s.title,
+      items: s.items.map((i) => i.key === "demographics" ? demographicsItem(patient) : verified.items.find((a) => a.key === i.key)!).filter(Boolean),
+    };
+    attachContradictions(section, contradictions, relevant);
+    sections.push(section);
+    emit({ type: "section", section });
+    if (verified.rejected.length) emit({ type: "debug", rejected: verified.rejected });
+  }
   emit({ type: "contradictions", relevant: [...relevant], all: contradictions });
   const ms = Date.now() - started;
-  emit({ type: "done", ms, cached: allCached, fallback });
+  emit({ type: "done", ms, cached, fallback });
   return { sections, ms, fallback };
 }

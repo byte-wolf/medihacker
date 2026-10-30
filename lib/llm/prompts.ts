@@ -3,7 +3,7 @@ import type { PlannedItem } from "@/lib/catalog/roles";
 import type { Passage } from "@/lib/types";
 
 // Bump when prompts change so cached LLM responses are not reused.
-export const PROMPT_VERSION = "v1";
+export const PROMPT_VERSION = "v3-single-briefing-chat-schema";
 
 /** Passages that carry no clinical content (address block, salutations). */
 function isBoilerplate(p: Passage): boolean {
@@ -35,7 +35,7 @@ const FACT_RULES = `RULES (patient safety, follow exactly):
 - If the documents do not contain the information, set status "not_documented" and explain briefly in "note" what is missing (e.g. "No creatinine or eGFR in any of the 8 documents; lab tables are empty."). Never guess.
 - Medication schedules are morning-midday-evening(-night): write "1 0 1 0" as "1-0-1" (leave out the night column when it is 0).
 - Calculated values (weight change, BMI) are allowed: add "calculation": {"type": "difference" | "bmi", "inputs": [{"passageId": "...", "value": <number from that passage>, "unit": "kg"}...], "result": <number>}. Inputs for a difference are ordered oldest first.
-- Statements are short clinical English (max ~25 words), key value first. No hedging prose. Do not mention passage ids in statements.`;
+- Statements are short clinical English (max ~25 words), key value first. No hedging prose. Do not mention passage ids in statements. Quotes should be the shortest exact substring supporting the fact, not entire paragraphs.`;
 
 const FACT_SCHEMA = `{"items": [{"key": "<item key>", "status": "documented" | "not_documented", "note": "<only for not_documented>", "facts": [{"statement": "<English>", "quotes": [{"passageId": "<id>", "text": "<verbatim German>"}], "calculation": null}]}]}`;
 
@@ -65,6 +65,13 @@ export function planPrompt(args: { roles: string[]; situation: { title: string; 
   return { system, user };
 }
 
+/** Plan extra questions and extract the whole briefing in one model request. */
+export function briefingPrompt(args: Parameters<typeof extractionPrompt>[0]) {
+  const prompt = extractionPrompt(args);
+  prompt.system += `\nReturn all requested items in the same response. Keep facts concise and avoid repeating the same fact. Include at most 2 facts per item, except medication lists and trends which must include all relevant entries. Also include an optional "customItems" array, with at most 4 items of the same fact shape plus "key" (custom_<short_snake_case>) and "label". Use it only for questions specific to the situation that the requested items do not cover. Do not add generic extra questions. Each custom fact follows exactly the same source and quotation rules.`;
+  return prompt;
+}
+
 export function chatPrompt(args: {
   patient: PatientRecord;
   roles: string[];
@@ -72,7 +79,7 @@ export function chatPrompt(args: {
   history: { role: "user" | "assistant"; text: string }[];
   question: string;
 }) {
-  const system = `You are a clinical documentation assistant answering a clinician's question about one patient from German hospital documents, in English.\n\n${FACT_RULES}\n\nAnswer with a single JSON object of this shape (usually one item; use several only for clearly separate sub-questions):\n{"items": [{"key": "answer_1", "label": "<short heading for the answer>", "status": "documented" | "not_documented", "note": "...", "facts": [...]}]}`;
+  const system = `You are a clinical documentation assistant answering a clinician's question about one patient from German hospital documents, in English.\n\n${FACT_RULES}\n\nAnswer with a single JSON object of this complete shape:\n${FACT_SCHEMA}\nUse key "answer_1" and add a "label" with a short heading. Usually return one item; use several only for clearly separate sub-questions. Every entry in "facts" must be an object with "statement", "quotes" and "calculation", never a string. Use exactly "quotes": [{"passageId": "<source id>", "text": "<verbatim source>"}]; do not substitute "quote", "passageIds" or other field names. Set "note" and "calculation" to null when unused. Keep answers concise: for a list of diagnoses, use one short fact per condition, with one brief supporting quote. Conversation history is context only; support every new answer from SOURCE PASSAGES.`;
   const history = args.history
     .slice(-6)
     .map((h) => `${h.role === "user" ? "CLINICIAN" : "ASSISTANT"}: ${h.text}`)

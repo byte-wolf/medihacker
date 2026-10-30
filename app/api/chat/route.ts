@@ -4,6 +4,7 @@ import { answerQuestion, summarizeItems, type ChatTurn } from "@/lib/chat/answer
 import { getPatient } from "@/lib/data/patients";
 import { addMessage, getConversation, getSituation, listMessages, logAudit, rolesFor } from "@/lib/repo";
 import type { BriefingItem } from "@/lib/types";
+import { LlmRequestError, llmErrorMessage } from "@/lib/llm/provider";
 
 export async function POST(request: Request) {
   const user = await requireUser();
@@ -31,6 +32,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ user: userMsg, reply });
   } catch (err) {
     console.error("[chat] failed:", err);
-    return NextResponse.json({ error: "The answer could not be generated. Please retry.", user: userMsg }, { status: 502 });
+    return NextResponse.json({ error: llmErrorMessage(err, "The answer could not be generated. Please retry."), user: userMsg }, { status: err instanceof LlmRequestError && err.status === 429 ? 429 : 502 });
   }
 }

@@ -4,6 +4,7 @@ import { buildBriefing } from "@/lib/briefing/pipeline";
 import { getPatient } from "@/lib/data/patients";
 import { getSituation, logAudit, rolesFor } from "@/lib/repo";
 import type { BriefingStreamEvent } from "@/lib/types";
+import { llmErrorMessage } from "@/lib/llm/provider";
 
 // Streams the briefing as NDJSON: one event per line, sections arrive as they are verified.
 export async function POST(request: Request) {
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
         });
       } catch (err) {
         console.error("[briefing] failed:", err);
-        emit({ type: "error", message: "The briefing could not be generated. Please retry." });
+        emit({ type: "error", message: llmErrorMessage(err, "The briefing could not be generated. Please retry.") });
       } finally {
         controller.close();
       }
