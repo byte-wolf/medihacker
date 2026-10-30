@@ -281,6 +281,25 @@ body {
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
+.briefing__copy.cds--btn {
+  min-block-size: 1.5rem;
+  padding-block: 0;
+  padding-inline: 0.5rem;
+  font-size: 0.75rem;
+}
+.briefing__legend {
+  max-width: 84ch;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--cds-text-secondary);
+}
+.briefing__legend-flag {
+  padding: 0 0.25rem;
+  border-left: 3px solid var(--cds-support-warning);
+  background: color-mix(in srgb, var(--cds-support-warning) 10%, transparent);
+  color: var(--cds-text-primary);
+}
 .briefing .cds--inline-notification {
   max-width: none;
   margin-bottom: 0.75rem;
@@ -317,6 +336,22 @@ body {
 }
 .item-row--safety .item-row__label h3 {
   color: var(--cds-text-primary);
+}
+/* A slightly stronger divider ends the safety rows (allergies, antithrombotics) */
+.item-row:is(.item-row--alert, .item-row--safety):has(+ .item-row:not(.item-row--alert, .item-row--safety)) {
+  border-bottom-color: var(--cds-border-strong-01);
+}
+@media (max-width: 671px) {
+  .item-row--alert {
+    padding-inline: 0.625rem;
+  }
+  .item-row--alert .item-row__label {
+    padding-left: 0;
+  }
+  /* On a phone the patient banner scrolls away, so the briefing gets the screen */
+  .patient-banner {
+    position: static;
+  }
 }
 .item-row__label h3 {
   text-wrap: pretty;
@@ -660,6 +695,78 @@ body {
   padding: 0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom, 0px));
   background: var(--cds-background);
   border-top: 1px solid var(--cds-border-subtle-01);
+}
+/* Handle on the top edge folds the bar to one slim line */
+.ask-bar__toggle {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  translate: -50% -50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 3rem;
+  block-size: 1.25rem;
+  padding: 0;
+  border: 1px solid var(--cds-border-subtle-01);
+  border-radius: 0.625rem;
+  background: var(--cds-background);
+  color: var(--cds-icon-secondary);
+  cursor: pointer;
+}
+.ask-bar__toggle::before {
+  content: "";
+  position: absolute;
+  inset: -0.75rem -0.5rem;
+}
+.ask-bar__toggle svg {
+  fill: currentColor;
+}
+.ask-bar__toggle:hover {
+  background: var(--cds-layer-hover-01);
+  color: var(--cds-icon-primary);
+}
+.ask-bar__toggle:focus-visible {
+  outline: 2px solid var(--cds-focus);
+  outline-offset: 1px;
+}
+.ask-bar__slim {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  min-block-size: 2rem;
+}
+.ask-bar__slim-open {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-inline-size: 0;
+  min-block-size: 2rem;
+  padding: 0 0.75rem;
+  border: 0;
+  border-bottom: 1px solid var(--cds-border-strong-01);
+  background: var(--cds-field-01);
+  color: var(--cds-text-secondary);
+  font: inherit;
+  font-size: 0.875rem;
+  text-align: start;
+  cursor: text;
+}
+.ask-bar__slim-open:hover {
+  background: var(--cds-field-hover-01, var(--cds-layer-hover-01));
+}
+.ask-bar__slim-open:focus-visible {
+  outline: 2px solid var(--cds-focus);
+  outline-offset: -2px;
+}
+.ask-bar__slim-open kbd {
+  padding: 0 0.3125rem;
+  border: 1px solid var(--cds-border-subtle-01);
+  border-radius: 0.125rem;
+  font: inherit;
+  font-size: 0.75rem;
+  line-height: 1.125rem;
 }
 .ask-bar__spinner {
   min-height: 0;
