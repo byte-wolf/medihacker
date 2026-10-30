@@ -600,6 +600,44 @@ body {
   display: flex;
   flex-direction: column;
 }
+/* Before the first question the workspace fits the window: the briefing takes all free
+   height, so the question bar sits at the bottom with no empty space below, on any screen.
+   Once there are answers (or the briefing is expanded) the page scrolls normally. */
+.workspace:has(.briefing):not(:has(.workspace__main--chatting, .briefing__body--expanded)) {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 0;
+  padding-bottom: 1rem;
+
+  & .workspace__grid {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-bottom: 0;
+  }
+  & .workspace__main,
+  & .briefing {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  & .workspace__main {
+    align-self: stretch;
+  }
+  & .briefing {
+    flex: 1 1 auto;
+  }
+  & .briefing__body {
+    flex: 1 1 auto;
+    min-height: 12rem;
+    max-height: none;
+  }
+  @media (min-width: 1056px) {
+    & .workspace__rail {
+      max-height: 100%;
+    }
+  }
+}
 .chat {
   margin-top: 1.25rem;
 }
