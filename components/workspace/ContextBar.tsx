@@ -29,7 +29,6 @@ export function ContextBar(props: {
 }) {
   const { situation } = props;
   const [creating, setCreating] = useState(false);
-  const [pending, setPending] = useState<number | null | undefined>(undefined);
   const [comboKey, setComboKey] = useState(0);
 
   const items: Option[] = [NONE, ...props.situations, NEW];
@@ -44,8 +43,7 @@ export function ContextBar(props: {
     }
     const id = o.group === "none" ? null : o.id;
     if (id === (situation?.id ?? null)) return;
-    if (props.hasMessages) setPending(id);
-    else props.onSelect(id);
+    props.onSelect(id);
   };
 
 
@@ -60,14 +58,15 @@ export function ContextBar(props: {
           initialSelectedItem={selected}
           itemToString={optionLabel}
           onChange={({ selectedItem }) => choose(selectedItem)}
-          helperText="The situation stays fixed for this conversation until you change it."
           size="md"
         />
       </div>
       <div className="context-bar__actions">
-        <Button kind="ghost" size="md" renderIcon={Chat} onClick={props.onNewConversation} disabled={!props.hasMessages}>
-          New conversation
-        </Button>
+        {props.hasMessages && (
+          <Button kind="ghost" size="md" renderIcon={Chat} onClick={props.onNewConversation}>
+            New conversation
+          </Button>
+        )}
       </div>
 
       <NewSituationModal
@@ -80,23 +79,6 @@ export function ContextBar(props: {
         }}
       />
 
-      <Modal
-        open={pending !== undefined}
-        modalHeading="Change situation?"
-        primaryButtonText="Change situation"
-        secondaryButtonText="Keep current"
-        onRequestClose={() => {
-          setPending(undefined);
-          setComboKey((k) => k + 1);
-        }}
-        onRequestSubmit={() => {
-          props.onSelect(pending ?? null);
-          setPending(undefined);
-        }}
-        size="sm"
-      >
-        <p>This starts a new conversation for the new situation. The current conversation is kept in your history.</p>
-      </Modal>
     </section>
   );
 }

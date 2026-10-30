@@ -1,5 +1,6 @@
 "use client";
 
+import { Wordmark } from "@/components/Logo";
 import {
   Header,
   HeaderGlobalAction,
@@ -22,10 +23,10 @@ export function AppHeader({ user }: { user: HeaderUser }) {
     router.refresh();
   };
   return (
-    <Header aria-label="MediHacker">
+    <Header aria-label="DOKuTOR">
       <SkipToContent />
-      <HeaderName href={user ? "/patients" : "/login"} prefix="">
-        MediHacker
+      <HeaderName href={user ? "/patients" : "/login"} prefix="" className="header-logo">
+        <Wordmark height={30} />
       </HeaderName>
       <HeaderGlobalBar>
         {user && (
