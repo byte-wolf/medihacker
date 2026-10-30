@@ -1,28 +1,14 @@
 "use client";
 
 import { Button, InlineNotification, SkeletonText } from "@carbon/react";
-import { Checkmark, Copy, Renew } from "@carbon/icons-react";
+import { Maximize, Minimize, Renew } from "@carbon/icons-react";
 import { useState } from "react";
-import type { BriefingItem, DocumentMeta, TokenCall } from "@/lib/types";
+import type { DocumentMeta, TokenCall } from "@/lib/types";
 import { ItemRow } from "./ItemRow";
-import { docLabel } from "./SourceTags";
 import type { BriefingState, OpenSource, SituationOption } from "./types";
 
 function tokenTooltip(calls: TokenCall[]) {
   return calls.map((c) => `${c.tag}: ${c.cached ? "cached" : `${c.prompt} in + ${c.completion} out (${c.model})`}`).join("\n");
-}
-
-/** Plain-text briefing with its sources, e.g. for pasting into the consent note. */
-function briefingText(title: string, items: BriefingItem[], documents: DocumentMeta[]) {
-  const lines = items.map((item) => {
-    if (item.status !== "documented") return `${item.label}: ${item.status === "not_documented" ? "Not documented" : "Not verified"}${item.note ? ` (${item.note})` : ""}`;
-    const facts = item.facts.map((f) => {
-      const docs = [...new Set([...f.quotes, ...(f.calculation?.inputs ?? [])].map((q) => q.passageId.split(":")[0]))];
-      return `${f.statement} [${docs.map((d) => docLabel(documents, d)).join("; ")}]`;
-    });
-    return `${item.label}: ${facts.join(" ")}`;
-  });
-  return [`Briefing: ${title}`, ...lines].join("\n");
 }
 
 export function BriefingView({
@@ -44,18 +30,8 @@ export function BriefingView({
   onRetry: () => void;
   aiConfigured: boolean;
 }) {
-  const [copied, setCopied] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   if (!situation) return null;
-  const copy = async () => {
-    const items = state.plan.flatMap((p) => state.sections[p.id]?.items ?? []);
-    try {
-      await navigator.clipboard.writeText(briefingText(situation.title, items, documents));
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      setCopied(false);
-    }
-  };
   const loading = state.status === "loading";
   const showPlanSkeleton = loading && state.plan.length === 0;
   return (
@@ -69,13 +45,18 @@ export function BriefingView({
             <span title={tokenTooltip(state.tokenCalls ?? [])}> · {state.tokens.toLocaleString("en")} tokens</span>
           )}
         </span>
-        {state.status === "done" && (
-          <Button kind="ghost" size="sm" className="briefing__copy" renderIcon={copied ? Checkmark : Copy} onClick={() => void copy()}>
-            {copied ? "Copied" : "Copy as text"}
-          </Button>
-        )}
+        <Button
+          kind="ghost"
+          size="sm"
+          renderIcon={expanded ? Minimize : Maximize}
+          aria-expanded={expanded}
+          aria-controls="briefing-body"
+          onClick={() => setExpanded((e) => !e)}
+        >
+          {expanded ? "Collapse" : "Expand"}
+        </Button>
       </div>
-      <div className="briefing__body">
+      <div id="briefing-body" className={`briefing__body${expanded ? " briefing__body--expanded" : ""}`} tabIndex={0} aria-label="Briefing content">
       {state.status === "error" && (
         <InlineNotification kind="error" lowContrast hideCloseButton title="The briefing could not be loaded." subtitle={state.error}>
         </InlineNotification>
@@ -133,13 +114,6 @@ export function BriefingView({
           </div>
         );
       })}
-      {state.status === "done" && (
-        <p className="briefing__legend">
-          Each fact links to the passage it was taken from; a click opens it beside the briefing. <em>calc. from</em> marks values calculated from
-          the linked sources, <span className="briefing__legend-flag">Documents differ</span> marks facts where the letters disagree. Check the
-          source before clinical decisions.
-        </p>
-      )}
       </div>
     </section>
   );

@@ -1,24 +1,24 @@
 "use client";
 
-import { WarningAlt } from "@carbon/icons-react";
-import { emphasisSpans, isNoAllergyStatement } from "@/lib/briefing/emphasis";
+import { WarningAltFilled } from "@carbon/icons-react";
 import type { BriefingItem, DocumentMeta } from "@/lib/types";
 import { SourceTags } from "./SourceTags";
 import type { OpenSource } from "./types";
 
-/** Safety-critical items: allergies get the danger accent, antithrombotics a stronger label. */
-const SAFETY_ITEMS = new Set(["allergies", "antithrombotics"]);
-
-/** Bold only the clinical value (drug + dose, number + unit, allergen); otherwise nothing. */
+/** Highlight the leading drug name / value of a statement for scanning. */
 function Statement({ text }: { text: string }) {
+  const m = text.match(/^([^,:;(]{1,48}?)([,:;(]|\s[-–]\s)([\s\S]*)$/);
+  if (!m) return <span className="fact__statement">{text}</span>;
   return (
     <span className="fact__statement">
-      {emphasisSpans(text).map((s, i) => (s.strong ? <strong key={i}>{s.text}</strong> : s.text))}
+      <strong>{m[1]}</strong>
+      {m[2]}
+      {m[3]}
     </span>
   );
 }
 
-/** One fact; when documents disagree about it, a visible amber "Documents differ" flag opens the details. */
+/** One fact; a contradicting fact sits in a red box that opens the contradiction details on click. */
 function FactRow({
   fact,
   documents,
@@ -46,22 +46,23 @@ function FactRow({
   return (
     <li
       className="fact fact--contradiction"
-      title={reason}
       onClick={(e) => {
         if (!(e.target as HTMLElement).closest("button, a")) onShowContradiction(ids[0]);
       }}
     >
-      <Statement text={fact.statement} />
-      {tags}
       <button
         type="button"
         className="fact__contradiction"
         onClick={() => onShowContradiction(ids[0])}
-        aria-label={`Contradiction: Documents differ. ${reason}. Show details`}
+        aria-label={`Contradiction: ${reason}. Show details`}
       >
-        <WarningAlt size={14} aria-hidden />
-        Documents differ
+        <WarningAltFilled size={16} aria-hidden />
       </button>
+      <span className="fact__reason" aria-hidden>
+        <strong>Contradiction:</strong> {reason}
+      </span>
+      <Statement text={fact.statement} />
+      {tags}
     </li>
   );
 }
@@ -79,20 +80,13 @@ export function ItemRow({
   contradictionTitles: Record<string, string>;
   onShowContradiction: (id: string) => void;
 }) {
-  const documented = item.status === "documented";
-  const alert =
-    documented && item.key === "allergies" && item.facts.some((f) => !isNoAllergyStatement(f.statement))
-      ? " item-row--alert"
-      : documented && SAFETY_ITEMS.has(item.key)
-        ? " item-row--safety"
-        : "";
   return (
-    <div className={`item-row item-row--${item.status}${alert}`} data-item={item.key}>
+    <div className={`item-row item-row--${item.status}`} data-item={item.key}>
       <div className="item-row__label">
         <h3>{item.label}</h3>
       </div>
       <div className="item-row__body">
-        {documented ? (
+        {item.status === "documented" ? (
           <ul className="fact-list">
             {item.facts.map((f, i) => (
               <FactRow

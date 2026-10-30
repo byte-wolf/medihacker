@@ -148,31 +148,14 @@ test("the question bar stays in the window while scrolling the briefing", async 
   await expectNoSeriousA11yIssues(page);
 });
 
-test("the briefing flows with the page and the question bar stays pinned to the bottom", async ({ page }) => {
+test("an expanded briefing scrolls with the page and the question bar follows its end", async ({ page }) => {
   await login(page, "anaesthesia");
   await page.goto("/patients/0000-0001");
   await chooseSituation(page, /Pre-operative anaesthesia check/);
   await expect(page.getByText(/Ready in/)).toBeVisible({ timeout: 15_000 });
-  const body = page.locator(".briefing__body");
-  expect(await body.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
+  await page.getByRole("button", { name: "Expand" }).click();
   const bar = page.getByRole("search", { name: "Ask about this patient" });
-  await expect(bar).toBeInViewport();
+  await expect(bar).not.toBeInViewport();
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await expect(bar).toBeInViewport();
-});
-
-test("the question bar folds to one line, remembers it, and '/' opens it again", async ({ page }) => {
-  await login(page, "anaesthesia");
-  await page.goto("/patients/0000-0001");
-  await chooseSituation(page, /Pre-operative anaesthesia check/);
-  await expect(page.getByText(/Ready in/)).toBeVisible({ timeout: 15_000 });
-  const bar = page.getByRole("search", { name: "Ask about this patient" });
-  await bar.getByRole("button", { name: "Collapse question bar" }).click();
-  await expect(bar.getByRole("button", { name: "Expand question bar" })).toHaveAttribute("aria-expanded", "false");
-  await expect(page.locator("#chat-question")).toBeHidden();
-  await page.reload();
-  await expect(bar.getByRole("button", { name: "Expand question bar" })).toBeVisible();
-  await page.keyboard.press("/");
-  await expect(bar.getByRole("button", { name: "Collapse question bar" })).toHaveAttribute("aria-expanded", "true");
-  await expect(page.locator("#chat-question")).toBeVisible();
 });

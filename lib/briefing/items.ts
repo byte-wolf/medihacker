@@ -97,14 +97,10 @@ export function demographicsItem(patient: PatientRecord): BriefingItem {
   };
 }
 
-/** Show at most this many weighings in the trend line: the first, then the most recent ones. */
-const MAX_TREND_VALUES = 4;
-
 /**
- * Weight over time, by rule: every "Gewicht: N kg" line with its document date, as ONE trend fact
- * ("Weight 88 kg (15 Mar 2024) → 86 kg (25 Oct 2024); change −2 kg"), because repeated weighings are a
- * trend, not separate findings. The change between the first and the latest weighing is calculated.
- * Returns null when no weight line is found, so the model can still try.
+ * Weight over time, by rule: every "Gewicht: N kg" line with its document date, plus the
+ * calculated change between the first and the latest weighing. Returns null when no weight
+ * line is found, so the model can still try.
  */
 export function weightTrendItem(patient: PatientRecord): BriefingItem | null {
   const docDate = new Map(patient.documents.map((d) => [d.id, d.date]));
@@ -114,36 +110,34 @@ export function weightTrendItem(patient: PatientRecord): BriefingItem | null {
     .map(({ p, m }) => ({ passage: p, kg: Number(m[1].replace(",", ".")), date: docDate.get(p.docId) ?? "" }))
     .sort((a, b) => a.date.localeCompare(b.date));
   if (!weighings.length) return null;
+  const facts: Fact[] = weighings.map((w) => ({
+    statement: `Weight ${w.kg} kg (${formatDate(w.date)}).`,
+    kind: "documented",
+    quotes: [{ passageId: w.passage.id, text: w.passage.text }],
+  }));
   const first = weighings[0];
   const last = weighings.at(-1)!;
-  const shown =
-    weighings.length > MAX_TREND_VALUES ? [first, ...weighings.slice(-(MAX_TREND_VALUES - 1))] : weighings;
-  const values = shown.map((w, i) => `${i === 1 && shown.length < weighings.length ? "… → " : i ? "→ " : ""}${w.kg} kg (${formatDate(w.date)})`);
-  const quotes = shown.map((w) => ({ passageId: w.passage.id, text: w.passage.text }));
-  if (weighings.length === 1 || first.kg === last.kg) {
-    return {
-      key: "weight_trend",
-      label: CATEGORIES.weight_trend.label,
-      status: "documented",
-      facts: [{ statement: `Weight ${values.join(" ")}${weighings.length > 1 ? "; unchanged" : ""}.`, kind: "documented", quotes }],
-    };
-  }
-  const diff = Math.round((last.kg - first.kg) * 10) / 10;
-  const fact: Fact = {
-    statement: `Weight ${values.join(" ")}; change ${diff > 0 ? "+" : "−"}${Math.abs(diff)} kg.`,
-    kind: "calculated",
-    quotes,
-    calculation: {
-      type: "difference",
-      inputs: [
-        { passageId: first.passage.id, value: first.kg, unit: "kg" },
-        { passageId: last.passage.id, value: last.kg, unit: "kg" },
+  if (weighings.length > 1 && first.kg !== last.kg) {
+    const diff = Math.round((last.kg - first.kg) * 10) / 10;
+    facts.push({
+      statement: `Weight change ${diff > 0 ? "+" : "−"}${Math.abs(diff)} kg between ${formatDate(first.date)} and ${formatDate(last.date)} (${first.kg} → ${last.kg} kg).`,
+      kind: "calculated",
+      quotes: [
+        { passageId: first.passage.id, text: first.passage.text },
+        { passageId: last.passage.id, text: last.passage.text },
       ],
-      result: diff,
-      unit: "kg",
-    },
-  };
-  return { key: "weight_trend", label: CATEGORIES.weight_trend.label, status: "documented", facts: [fact] };
+      calculation: {
+        type: "difference",
+        inputs: [
+          { passageId: first.passage.id, value: first.kg, unit: "kg" },
+          { passageId: last.passage.id, value: last.kg, unit: "kg" },
+        ],
+        result: diff,
+        unit: "kg",
+      },
+    });
+  }
+  return { key: "weight_trend", label: CATEGORIES.weight_trend.label, status: "documented", facts };
 }
 
 /**

@@ -4,7 +4,7 @@ import type { Passage } from "@/lib/types";
 import { GLOSSARY } from "./glossary";
 
 // Bump when prompts change so cached LLM responses are not reused.
-export const PROMPT_VERSION = "v7";
+export const PROMPT_VERSION = "v6";
 
 /** Passages that carry no clinical content (address block, salutations). */
 function isBoilerplate(p: Passage): boolean {
@@ -32,7 +32,7 @@ const FACT_RULES = `RULES (patient safety, follow exactly):
 - Use ONLY the numbered source passages. Never use outside knowledge to add facts. You may use medical knowledge only to judge relevance, translate German to English, and name generic drugs (e.g. Blopress = candesartan).
 - Every fact must cite one or more passage ids and quote the German source text VERBATIM (copy the exact characters, can be a shorter substring of the passage).
 - Every number you write must appear in a cited passage, except calculated values (see below). Do not convert units.
-- "Present tense" means as of the date of the latest document. Prefer the most recent source; when a value is old, say when it was documented (e.g. "June 2015"). If several dated values of the same measurement exist and the trend matters (weight, doses), give them as ONE fact in date order, each with its date (e.g. "88 kg (Mar 2024) → 86 kg (Oct 2024)"); values that changed over time are a trend, not a contradiction.
+- "Present tense" means as of the date of the latest document. Prefer the most recent source; when a value is old, say when it was documented (e.g. "June 2015"). If several dated values exist and the trend matters (weight, doses), give each with its date.
 - If the documents do not contain the information, set status "not_documented" and explain briefly in "note" what is missing (e.g. "No creatinine or eGFR in any of the 8 documents; lab tables are empty."). Never guess.
 - Medication schedules are morning-midday-evening(-night): write "1 0 1 0" as "1-0-1" (leave out the night column when it is 0).
 - Calculated values (weight change, BMI) are allowed: add "calculation": {"type": "difference" | "bmi", "inputs": [{"passageId": "...", "value": <number from that passage>, "unit": "kg"}...], "result": <number>}. Inputs for a difference are ordered oldest first.

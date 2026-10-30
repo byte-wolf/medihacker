@@ -65,7 +65,7 @@ export const CATEGORIES: Record<string, Category> = {
     key: "weight_trend",
     label: "Weight, height and BMI over time",
     guidance:
-      "ONE fact for the whole series in date order: 'Weight X kg (date) → Y kg (date); change ±Z kg', quoting each document's weight line and adding a difference calculation from the first to the latest weight. Repeated weighings are a trend, not a contradiction. The latest weight is the one in the most recently dated document.",
+      "One fact per weighing: 'Weight X kg (date)', quoting that document's weight line; never combine values from different documents in one fact. The latest weight is the one in the most recently dated document. Then one calculated fact for the change between the first and the latest weight, citing both weight lines.",
     terms: /gewicht|größe|BMI|kg\b/i,
   },
   blood_pressure: {
@@ -343,16 +343,7 @@ export function deterministicPlan(roles: string[], situationText: string): Plann
 /** At most this many items on the screen: enough for the task, few enough to read in seconds. */
 export const MAX_BRIEFING_ITEMS = 8;
 
-/** Allergies always come first on screen: their section moves to the top and they lead it. */
-export function allergiesFirst(plan: PlannedSection[]): PlannedSection[] {
-  const i = plan.findIndex((s) => s.items.some((x) => x.key === "allergies"));
-  if (i < 0) return plan;
-  const s = plan[i];
-  const lead = { ...s, items: [...s.items.filter((x) => x.key === "allergies"), ...s.items.filter((x) => x.key !== "allergies")] };
-  return [lead, ...plan.slice(0, i), ...plan.slice(i + 1)];
-}
-
-/** Keep only the given keys of a plan, in the plan's order (allergies first); keys the plan lacks go into a last "More" section. */
+/** Keep only the given keys of a plan, in the plan's order; keys the plan lacks go into a last "More" section. */
 export function restrictPlan(plan: PlannedSection[], keys: string[]): PlannedSection[] {
   const wanted = new Set(keys);
   const sections = plan.map((s) => ({ ...s, items: s.items.filter((i) => wanted.has(i.key)) })).filter((s) => s.items.length > 0);
@@ -361,7 +352,7 @@ export function restrictPlan(plan: PlannedSection[], keys: string[]): PlannedSec
   if (extra.length) {
     sections.push({ id: "more", title: "More", items: extra.map((k) => ({ key: k, label: CATEGORIES[k].label, guidance: CATEGORIES[k].guidance })) });
   }
-  return allergiesFirst(sections);
+  return sections;
 }
 
 /**
