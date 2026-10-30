@@ -1,4 +1,4 @@
-import type { BriefingItem, BriefingSection, Contradiction, DocumentMeta, RejectedFact, TokenCall } from "@/lib/types";
+import type { BriefingItem, BriefingSection, Contradiction, DocumentMeta, RejectedFact } from "@/lib/types";
 
 export type WorkspacePatient = {
   id: string;
@@ -31,8 +31,6 @@ export type BriefingState = {
   contradictions: Contradiction[];
   relevantContradictions: string[];
   rejected: RejectedFact[];
-  tokenCalls?: TokenCall[];
-  tokens?: number;
   error?: string;
   ms?: number;
   cached?: boolean;

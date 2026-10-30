@@ -13,7 +13,7 @@ export type CompleteOptions = {
   signal?: AbortSignal;
 };
 
-export type CompleteResult = { text: string; model: string; ms: number; usage?: { prompt: number; completion: number; total: number } };
+export type CompleteResult = { text: string; model: string; ms: number };
 
 export interface LlmProvider {
   readonly name: string;
@@ -172,7 +172,6 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       model?: string;
       error?: { message?: string };
       choices?: { message?: { content?: string | null }; finish_reason?: string }[];
-      usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
     };
     const answeredBy = data.model ?? model;
     // Gateways can report upstream failures inside a 200 response.
@@ -192,14 +191,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       }
     }
     if (process.env.LLM_DEBUG) console.log(`[llm] ${opts.tag ?? ""} ok ${answeredBy} ${Date.now() - started} ms`);
-    const usage = data.usage
-      ? {
-          prompt: data.usage.prompt_tokens ?? 0,
-          completion: data.usage.completion_tokens ?? 0,
-          total: data.usage.total_tokens ?? (data.usage.prompt_tokens ?? 0) + (data.usage.completion_tokens ?? 0),
-        }
-      : undefined;
-    return { text, model: answeredBy, ms: Date.now() - started, usage };
+    return { text, model: answeredBy, ms: Date.now() - started };
   }
 }
 

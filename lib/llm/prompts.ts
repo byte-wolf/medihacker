@@ -4,7 +4,7 @@ import type { Passage } from "@/lib/types";
 import { GLOSSARY } from "./glossary";
 
 // Bump when prompts change so cached LLM responses are not reused.
-export const PROMPT_VERSION = "v6";
+export const PROMPT_VERSION = "v5";
 
 /** Passages that carry no clinical content (address block, salutations). */
 function isBoilerplate(p: Passage): boolean {
@@ -56,21 +56,16 @@ export function extractionPrompt(args: {
 CLINICIAN ROLE: ${roles.join(" + ")}
 SITUATION: ${situation ? `${situation.title}. ${situation.description}` : "General review (no specific situation)."}
 
-SECTION "${args.sectionTitle}". For each item below return the facts this clinician needs for this situation. Give the fewest facts that answer the item, usually one or two; a list (e.g. drugs) may be one fact that cites every element. Answer every item.
+SECTION "${args.sectionTitle}". For each item below return the facts this clinician needs for this situation. Give 1-4 facts per item; prefer fewer, more precise facts. Answer every item.
 ${items.map((i) => `- key "${i.key}": ${i.label}. ${i.guidance}`).join("\n")}
 
 SOURCE PASSAGES:${renderSources(patient)}`;
   return { system, user };
 }
 
-export function selectionPrompt(args: {
-  roles: string[];
-  situation: { title: string; description: string };
-  catalog: { key: string; label: string }[];
-  max: number;
-}) {
-  const system = `You plan a minimal one-screen clinical briefing. A clinician with the given role faces the given situation and will look at the screen for a few seconds. Choose the information they will most likely need from the patient's records for THIS situation, most important first. Pick at most ${args.max} items in total. Prefer keys from the CATALOG. Only if the situation needs something the catalog does not cover, add up to 2 custom items. Always include "allergies". Do not invent patient facts. Reply with JSON: {"keys": ["<catalog key>", ...], "custom": [{"key": "custom_<short_snake_case>", "label": "<keyword phrase, max 8 words, not a question>", "guidance": "<what to look for in the records>"}]}`;
-  const user = `ROLE: ${args.roles.join(" + ")}\nSITUATION: ${args.situation.title}. ${args.situation.description}\nCATALOG:\n${args.catalog.map((c) => `- ${c.key}: ${c.label}`).join("\n")}`;
+export function planPrompt(args: { roles: string[]; situation: { title: string; description: string }; existing: string[] }) {
+  const system = `You help plan a one-screen clinical briefing. Given a clinician's role and situation, list the specific topics this clinician will most likely need answered from the patient's records that are NOT already covered by the existing items. Reply with JSON: {"items": [{"key": "custom_<short_snake_case>", "label": "<keyword phrase, max 8 words, not a question, e.g. \"dental issues or neck mobility affecting airway access\", \"herbal supplements or non-prescribed medications\">", "guidance": "<what to look for in the records>"}]}. Return 0-4 items. Do not invent patient facts.`;
+  const user = `ROLE: ${args.roles.join(" + ")}\nSITUATION: ${args.situation.title}. ${args.situation.description}\nEXISTING ITEMS: ${args.existing.join("; ")}`;
   return { system, user };
 }
 

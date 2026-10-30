@@ -161,7 +161,7 @@ export function retrievalItems(patient: PatientRecord, planned: PlannedItem[]): 
         seen.add(k);
         return true;
       })
-      .slice(0, 2);
+      .slice(0, 3);
     if (!matches.length) {
       return { key: item.key, label: item.label, status: "not_documented" as const, facts: [], note: "No matching passage found (keyword search)." };
     }

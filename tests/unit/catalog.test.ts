@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compactPlan, deterministicPlan, MAX_BRIEFING_ITEMS, profileForRole, restrictPlan } from "@/lib/catalog/roles";
+import { deterministicPlan, profileForRole } from "@/lib/catalog/roles";
 
 describe("deterministicPlan", () => {
   it("puts situation needs first and lists each category once", () => {
@@ -46,51 +46,5 @@ describe("role relevance", () => {
   it("shows tumour biology to the surgeon", () => {
     const keys = deterministicPlan(["Breast surgeon"], "Surgery planning after the tumour board").flatMap((s) => s.items.map((i) => i.key));
     expect(keys).toContain("tumour_receptors");
-  });
-});
-
-describe("compactPlan", () => {
-  const keysOf = (plan: ReturnType<typeof compactPlan>) => plan.flatMap((s) => s.items.map((i) => i.key));
-
-  it("caps the screen and always includes allergies", () => {
-    const keys = keysOf(compactPlan(["Anaesthetist"], "Pre-operative anaesthesia check before surgery"));
-    expect(keys.length).toBeLessThanOrEqual(MAX_BRIEFING_ITEMS);
-    expect(keys).toContain("allergies");
-    expect(keys).toContain("renal_function");
-  });
-
-  it("puts the situation's needs before the role's base needs", () => {
-    const keys = keysOf(compactPlan(["General practitioner"], "Medication review at the GP after the hospital stay"));
-    expect(keys).toEqual(expect.arrayContaining(["current_medication", "medication_changes", "allergies", "renal_function", "diabetes_control"]));
-    expect(keys).not.toContain("followups_done");
-  });
-
-  it("lets a specific situation win over the broad pre-op checklist", () => {
-    const keys = keysOf(compactPlan(["Anaesthetist"], "Glucose management on the day of surgery while she fasts"));
-    expect(keys).toEqual(expect.arrayContaining(["glucose_lowering", "diabetes_control", "renal_function", "allergies"]));
-  });
-
-  it("still respects role exclusions", () => {
-    expect(keysOf(compactPlan(["Breast surgeon"], "Explaining the biopsy result"))).toContain("tumour_receptors");
-    expect(keysOf(compactPlan(["Anaesthetist"], "Breast cancer operation, pre-op check"))).not.toContain("tumour_receptors");
-  });
-});
-
-describe("restrictPlan", () => {
-  it("keeps plan order and puts unknown-to-plan keys in a last section", () => {
-    const plan = restrictPlan(deterministicPlan(["Anaesthetist"], ""), ["renal_function", "allergies", "bone_health"]);
-    expect(plan.flatMap((s) => s.items.map((i) => i.key))).toEqual(["allergies", "renal_function", "bone_health"]);
-    expect(plan.at(-1)?.id).toBe("more");
-  });
-});
-
-describe("groupSections", () => {
-  it("packs consecutive sections up to the per-call limit", async () => {
-    const { groupSections } = await import("@/lib/briefing/pipeline");
-    const sec = (id: string, n: number) => ({ id, title: id, items: Array.from({ length: n }, (_, i) => ({ key: `${id}${i}`, label: "", guidance: "" })) });
-    const plan = [sec("a", 1), sec("b", 1), sec("c", 3), sec("d", 2), sec("e", 1)];
-    expect(groupSections(plan, 2).map((g) => g.map((s) => s.id).join(""))).toEqual(["ab", "c", "d", "e"]);
-    expect(groupSections(plan, 4).map((g) => g.map((s) => s.id).join(""))).toEqual(["ab", "c", "de"]);
-    expect(groupSections(plan, 8).map((g) => g.map((s) => s.id).join(""))).toEqual(["abcde"]);
   });
 });

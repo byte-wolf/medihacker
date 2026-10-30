@@ -258,8 +258,6 @@ function reduce(b: BriefingState, e: BriefingStreamEvent): BriefingState {
       return e.sectionId
         ? { ...b, sectionErrors: { ...b.sectionErrors, [e.sectionId]: e.message } }
         : { ...b, status: "error", error: e.message };
-    case "tokens":
-      return { ...b, tokenCalls: e.calls, tokens: e.total };
     case "done":
       return { ...b, status: "done", ms: e.ms, cached: e.cached, fallback: e.fallback };
   }
