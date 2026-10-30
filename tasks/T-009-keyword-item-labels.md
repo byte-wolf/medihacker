@@ -1,10 +1,10 @@
 ---
 id: T-009
 title: Keyword-style labels for situation-specific items
-status: in_progress
+status: review
 owner: Devin (https://app.devin.ai/sessions/110cff77a54f439799b0e2128c832bfc)
 branch: feat/ui-polish-2
-pr:
+pr: https://github.com/byte-wolf/medihacker/pull/4
 depends_on: []
 touches: [lib/llm/prompts.ts]
 ---
@@ -15,8 +15,8 @@ Situation-specific items in the last briefing section read as long questions. Us
 
 ## Acceptance criteria
 
-- [ ] Generated item labels are keyword phrases, no question form
-- [ ] Eval does not regress
+- [x] Generated item labels are keyword phrases, no question form
+- [x] Eval does not regress
 
 ## Notes
 
@@ -25,3 +25,4 @@ Second UI batch requested by Martin; T-007 to T-014 are built together on one br
 ## Log
 
 - 2026-10-30, Devin: claimed together with T-007–T-014.
+- 2026-10-30, Devin: implemented and tested, PR #4 open for review.

@@ -1,10 +1,10 @@
 ---
 id: T-012
 title: Terse statements for simple values
-status: in_progress
+status: review
 owner: Devin (https://app.devin.ai/sessions/110cff77a54f439799b0e2128c832bfc)
 branch: feat/ui-polish-2
-pr:
+pr: https://github.com/byte-wolf/medihacker/pull/4
 depends_on: []
 touches: [lib/llm/prompts.ts]
 ---
@@ -15,9 +15,9 @@ Simple facts are too wordy, e.g. 'Blood pressure at the most recent visit on Apr
 
 ## Acceptance criteria
 
-- [ ] Simple measurements shown as value + date
-- [ ] Complex facts unchanged
-- [ ] Eval does not regress
+- [x] Simple measurements shown as value + date
+- [x] Complex facts unchanged
+- [x] Eval does not regress
 
 ## Notes
 
@@ -26,3 +26,4 @@ Second UI batch requested by Martin; T-007 to T-014 are built together on one br
 ## Log
 
 - 2026-10-30, Devin: claimed together with T-007–T-014.
+- 2026-10-30, Devin: implemented and tested, PR #4 open for review.
