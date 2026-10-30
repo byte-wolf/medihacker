@@ -43,10 +43,10 @@ bun run index
 | Variable | Purpose |
 |---|---|
 | `LLM_PROVIDER` | `openrouter`, `openai-compatible`, or `mock` (no model: keyword retrieval) |
-| `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` | OpenRouter key and model (default `openrouter/free`, which picks a free model per request) |
-| `OPENROUTER_FAST_MODEL`, `OPENROUTER_BASE_URL` | Optional faster model for planning and translation; optional endpoint override |
+| `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` | OpenRouter key and an ordered model list; the next model answers when one refuses, is rate-limited or answers badly |
+| `OPENROUTER_FAST_MODEL`, `OPENROUTER_BASE_URL`, `OPENROUTER_REASONING_EFFORT` | Optional list for planning and translation; endpoint override; hidden reasoning effort (default `minimal`, faster and never cut off) |
 | `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` | Any other OpenAI-compatible endpoint, e.g. a local Ollama server |
-| `LLM_MAX_CONCURRENCY` | Max parallel LLM requests (default 6); the rest wait in a queue |
+| `LLM_MAX_CONCURRENCY` | Max parallel LLM requests (default 12); the rest wait in a queue |
 | `DATABASE_URL` | SQLite file (default `./medihacker.db`) |
 | `PATIENT_DATA_DIR` | Patient folders (default `./data/data`) |
 | `SESSION_SECRET` | Signs the session cookie |
@@ -84,6 +84,7 @@ Browser (Next.js App Router + Carbon)                 Server (Next.js route hand
 | Document parser | `lib/data/parse.ts`, `lib/data/passages.ts` | Decodes `<BR>` and entities, then splits each German document into **passages** with stable ids (`docId:pNNN`) and exact character offsets: headings, single lines (vitals, diagnosis list items, medication table rows) and sentences of prose. The passage is the unit of citation and highlighting. |
 | Role and situation catalogue | `lib/catalog/roles.ts` | Hard-coded **kinds** of facts per role (anaesthetist, surgeon, GP, emergency physician, pharmacist, oncologist, nurse, radiologist) and per situation type (pre-op, tumour board, diabetes, emergency, contrast, follow-up, medication). A briefing combines the user's role, a role named in the situation, and the situation text. For new situations an LLM call adds up to four situation-specific questions. No patient facts are hard-coded. |
 | Briefing pipeline | `lib/briefing/pipeline.ts` | Builds the plan, runs one extraction call per section **in parallel** (all passages of all documents are in the prompt), verifies and streams each section as soon as it is ready. Age is calculated in code from the date of birth. |
+| Rule-based items | `lib/briefing/items.ts` | Age (from the date of birth) and the weight trend (every `Gewicht:` line with its date, plus the calculated change) are built in code, so they are complete and identical on every run. |
 | Verifier (trust layer) | `lib/briefing/verify.ts`, `lib/briefing/items.ts` | Every fact must cite passages and quote them **verbatim** (normalised for whitespace and decimal commas); every number in the statement must appear in a cited passage or its document date; calculated values (weight change, BMI) are **recomputed in code**. Anything else is dropped and logged, never shown. Items the model could not answer are shown as "not verified" rather than silently missing. |
 | Contradictions | `lib/contradictions/rules.ts`, `lib/contradictions/store.ts` | Deterministic rules for BMI vs. height/weight in the same document, two dates for the same admission/discharge, impossible dates, a finding reported on both sides, and one case number used for different stays. Optionally an LLM scan with a second "skeptic" pass that removes changes over time and measurement noise. Results are stored per patient in SQLite and shown immediately. |
 | Chat | `lib/chat/answer.ts`, `app/api/chat` | Free-text questions with the same rules and verifier, scoped to the conversation's situation, history kept in SQLite. |
@@ -94,7 +95,7 @@ Browser (Next.js App Router + Carbon)                 Server (Next.js route hand
 
 ### Models and services
 
-* **OpenRouter** (configured via `OPENROUTER_*`, default model `openrouter/free`) for extraction, planning, chat, translation and the contradiction scan. Any OpenAI-compatible endpoint, including a local model server, works through the same adapter. If the model fails (rate limit, outage), the affected sections fall back to keyword search with a notice.
+* **OpenRouter** (configured via `OPENROUTER_*`; `google/gemini-3.1-flash-lite` first, then `deepseek/deepseek-v4.1-flash-1017` and `anthropic/claude-haiku-5.5` as fallbacks) for extraction, planning, chat, translation and the contradiction scan. Any OpenAI-compatible endpoint, including a local model server, works through the same adapter. If the model fails (rate limit, outage), the affected sections fall back to keyword search with a notice.
 * No other external services. The IBM JSON extraction files are not used: all facts come from the document text.
 
 ## Testing
@@ -119,10 +120,23 @@ bun run eval        # metrics on the 5 official + 5 extra situations (needs the 
 
 ## Metric results
 
-See [`eval/results.md`](eval/results.md) once `bun run eval` has been run with the model configured.
+Measured on 2026-10-30 with `bun run eval` (5 official situations). Briefing model: `google/gemini-3.1-flash-lite` via OpenRouter (fallbacks `deepseek/deepseek-v4.1-flash-1017`, `anthropic/claude-haiku-5.5`). Judge: `anthropic/claude-haiku-5.5`, a different model from the one that wrote the briefing, given each cited passage with its document date.
+
+| Metric | Result | Target |
+|---|---|---|
+| Correct answers | 15 / 15 | 15 / 15 |
+| Traceability (judge: cited passage supports the fact) | 97.5% of 160 facts | 100% |
+| Facts the judge did not consider supported | 4 | 0 |
+| Contradictions (known found − false alarms) | 5 − 0 | ≥ 5 |
+| Load time, slowest of the 5, cold (no cache) | 4.5 s | < 10 s |
+
+The 4 flagged facts are combinations or inferences rather than invented values: two diagnoses merged into one fact while citing one passage, a tumour diagnosis stated with a date taken from the letter rather than the quoted line, and one "no neoadjuvant chemotherapy" inference. Every number on screen is checked in code against its source; the judge's check is about wording.
+
+Results vary slightly between runs because the model is not fully deterministic (earlier runs: 14–15 of 15). The full per-question report is written to `eval/results.md` (kept out of git because it quotes the hackathon's questions and expected answers). `bun run bench` compares the allowed OpenRouter models on real prompts (speed, valid JSON, verified facts).
 
 ## Known limitations
 
-* `openrouter/free` routes each request to whichever free model is available, so quality and speed vary between requests. Run `bun run llm:smoke` before a demo; pin a specific model in `OPENROUTER_MODEL` for stable results.
+* The OpenRouter key enforces zero data retention, which excludes some providers; a model can then refuse a request, and the next model in `OPENROUTER_MODEL` answers. Run `bun run llm:smoke` before a demo.
+* The briefing model is small and fast; it occasionally merges facts or infers. The verifier blocks invented numbers and quotes, not wording.
 * Without a model the briefing shows keyword-matched German passages and chat is disabled.
 * Login has no password (prototype). One synthetic patient is available, but the code handles any number of patient folders.

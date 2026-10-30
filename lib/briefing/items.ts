@@ -11,6 +11,11 @@ export function verifyContext(patient: PatientRecord): VerifyContext {
   };
 }
 
+/** "No X documented" is a statement about the records, not a finding: it belongs in "not documented". */
+export function isAbsenceClaim(statement: string): boolean {
+  return /\b(not|no|none|nothing)\b[^.]*\b(documented|recorded|mentioned|reported|available|found in the (records|documents))\b/i.test(statement);
+}
+
 type RawItem = { key?: unknown; label?: unknown; status?: unknown; note?: unknown; facts?: unknown };
 
 /**
@@ -38,13 +43,19 @@ export function itemsFromModel(
       continue;
     }
     const facts: Fact[] = [];
+    const absence: string[] = [];
     for (const f of Array.isArray(r.facts) ? (r.facts as RawFact[]) : []) {
+      if (typeof f?.statement === "string" && isAbsenceClaim(f.statement)) {
+        absence.push(f.statement.trim());
+        continue;
+      }
       const v = verifyFact(f, ctx);
       if (v.ok) facts.push(v.fact);
       else rejected.push({ section: sectionTitle, item: p.key, statement: String(f?.statement ?? ""), reason: v.reason });
     }
     const note = typeof r.note === "string" && r.note.trim() ? r.note.trim() : undefined;
     if (facts.length) items.push({ key: p.key, label, status: "documented", facts });
+    else if (absence.length) items.push({ key: p.key, label, status: "not_documented", facts: [], note: absence.join(" ") });
     else if (r.status === "not_documented")
       items.push({ key: p.key, label, status: "not_documented", facts: [], note: note ?? "Not documented in any of the documents." });
     else
@@ -59,7 +70,7 @@ export function itemsFromModel(
   return { items, rejected };
 }
 
-/** Age and sex are calculated in code from the date of birth in the latest document. */
+/** Age is calculated in code from the date of birth in the latest document. */
 export function demographicsItem(patient: PatientRecord): BriefingItem {
   const latest = patient.documents.at(-1);
   const [y, m, d] = patient.dateOfBirth.split("-");
@@ -68,7 +79,6 @@ export function demographicsItem(patient: PatientRecord): BriefingItem {
     [...patient.passages].reverse().find((p) => p.docId === latest?.id && p.text.includes(dobGerman)) ??
     [...patient.passages].reverse().find((p) => p.text.includes(dobGerman));
   const age = ageAt(patient.dateOfBirth, patient.latestDocumentDate);
-  const sex = patient.sex === "female" ? "female" : patient.sex === "male" ? "male" : patient.sex;
   if (!dobPassage) {
     return { key: "demographics", label: CATEGORIES.demographics.label, status: "not_documented", facts: [], note: "Date of birth not found in the documents." };
   }
@@ -78,12 +88,56 @@ export function demographicsItem(patient: PatientRecord): BriefingItem {
     status: "documented",
     facts: [
       {
-        statement: `${age} years old at the latest document (${formatDate(patient.latestDocumentDate)}), ${sex}; born ${formatDate(patient.dateOfBirth)}.`,
+        // Only what the quoted birth date supports; sex is shown in the patient banner.
+        statement: `${age} years old at the latest document (${formatDate(patient.latestDocumentDate)}); born ${formatDate(patient.dateOfBirth)}.`,
         kind: "calculated",
         quotes: [{ passageId: dobPassage.id, text: dobGerman }],
       },
     ],
   };
+}
+
+/**
+ * Weight over time, by rule: every "Gewicht: N kg" line with its document date, plus the
+ * calculated change between the first and the latest weighing. Returns null when no weight
+ * line is found, so the model can still try.
+ */
+export function weightTrendItem(patient: PatientRecord): BriefingItem | null {
+  const docDate = new Map(patient.documents.map((d) => [d.id, d.date]));
+  const weighings = patient.passages
+    .map((p) => ({ p, m: p.text.match(/^\s*Gewicht:\s*(\d+(?:[.,]\d+)?)\s*kg\b/i) }))
+    .filter((x): x is { p: Passage; m: RegExpMatchArray } => !!x.m)
+    .map(({ p, m }) => ({ passage: p, kg: Number(m[1].replace(",", ".")), date: docDate.get(p.docId) ?? "" }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+  if (!weighings.length) return null;
+  const facts: Fact[] = weighings.map((w) => ({
+    statement: `Weight ${w.kg} kg (${formatDate(w.date)}).`,
+    kind: "documented",
+    quotes: [{ passageId: w.passage.id, text: w.passage.text }],
+  }));
+  const first = weighings[0];
+  const last = weighings.at(-1)!;
+  if (weighings.length > 1 && first.kg !== last.kg) {
+    const diff = Math.round((last.kg - first.kg) * 10) / 10;
+    facts.push({
+      statement: `Weight change ${diff > 0 ? "+" : "−"}${Math.abs(diff)} kg between ${formatDate(first.date)} and ${formatDate(last.date)} (${first.kg} → ${last.kg} kg).`,
+      kind: "calculated",
+      quotes: [
+        { passageId: first.passage.id, text: first.passage.text },
+        { passageId: last.passage.id, text: last.passage.text },
+      ],
+      calculation: {
+        type: "difference",
+        inputs: [
+          { passageId: first.passage.id, value: first.kg, unit: "kg" },
+          { passageId: last.passage.id, value: last.kg, unit: "kg" },
+        ],
+        result: diff,
+        unit: "kg",
+      },
+    });
+  }
+  return { key: "weight_trend", label: CATEGORIES.weight_trend.label, status: "documented", facts };
 }
 
 /**

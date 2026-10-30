@@ -3,7 +3,7 @@ import type { PlannedItem } from "@/lib/catalog/roles";
 import type { Passage } from "@/lib/types";
 
 // Bump when prompts change so cached LLM responses are not reused.
-export const PROMPT_VERSION = "v1";
+export const PROMPT_VERSION = "v3";
 
 /** Passages that carry no clinical content (address block, salutations). */
 function isBoilerplate(p: Passage): boolean {
@@ -35,6 +35,8 @@ const FACT_RULES = `RULES (patient safety, follow exactly):
 - If the documents do not contain the information, set status "not_documented" and explain briefly in "note" what is missing (e.g. "No creatinine or eGFR in any of the 8 documents; lab tables are empty."). Never guess.
 - Medication schedules are morning-midday-evening(-night): write "1 0 1 0" as "1-0-1" (leave out the night column when it is 0).
 - Calculated values (weight change, BMI) are allowed: add "calculation": {"type": "difference" | "bmi", "inputs": [{"passageId": "...", "value": <number from that passage>, "unit": "kg"}...], "result": <number>}. Inputs for a difference are ordered oldest first.
+- One fact = one finding. A fact may only say what its quoted passages say. For lists (diagnoses, drugs), either cite a passage for every element or write one fact per element.
+- Absence is never a fact: do not write "no X documented" or "not recorded" as a statement; set status "not_documented" with a note instead. A documented negative finding (e.g. "keine vergrößerten Lymphknoten" = "no enlarged lymph nodes") is a fact and needs its quote.
 - Statements are short clinical English (max ~25 words), key value first. No hedging prose. Do not mention passage ids in statements.`;
 
 const FACT_SCHEMA = `{"items": [{"key": "<item key>", "status": "documented" | "not_documented", "note": "<only for not_documented>", "facts": [{"statement": "<English>", "quotes": [{"passageId": "<id>", "text": "<verbatim German>"}], "calculation": null}]}]}`;
@@ -72,7 +74,7 @@ export function chatPrompt(args: {
   history: { role: "user" | "assistant"; text: string }[];
   question: string;
 }) {
-  const system = `You are a clinical documentation assistant answering a clinician's question about one patient from German hospital documents, in English.\n\n${FACT_RULES}\n\nAnswer with a single JSON object of this shape (usually one item; use several only for clearly separate sub-questions):\n{"items": [{"key": "answer_1", "label": "<short heading for the answer>", "status": "documented" | "not_documented", "note": "...", "facts": [...]}]}`;
+  const system = `You are a clinical documentation assistant answering a clinician's question about one patient from German hospital documents, in English.\n\n${FACT_RULES}\n\nAnswer with a single JSON object of this shape (usually one item; use several only for clearly separate sub-questions):\n{"items": [{"key": "answer_1", "label": "<short heading for the answer>", "status": "documented" | "not_documented", "note": "<only for not_documented>", "facts": [{"statement": "<English>", "quotes": [{"passageId": "<id>", "text": "<verbatim German>"}], "calculation": null}]}]}`;
   const history = args.history
     .slice(-6)
     .map((h) => `${h.role === "user" ? "CLINICIAN" : "ASSISTANT"}: ${h.text}`)

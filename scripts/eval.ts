@@ -9,7 +9,7 @@ import { buildBriefing } from "@/lib/briefing/pipeline";
 import { awaitContradictionScan, ensureContradictions, listContradictions } from "@/lib/contradictions/store";
 import { getPatient, type PatientRecord } from "@/lib/data/patients";
 import { readPresetSituations, roleHintFor, SEED_USERS } from "@/lib/db/seed";
-import { getProvider, MockProvider, parseJsonObject } from "@/lib/llm/provider";
+import { getProvider, MockProvider, OpenAiCompatibleProvider, parseJsonObject, type LlmProvider } from "@/lib/llm/provider";
 import { renderSources } from "@/lib/llm/prompts";
 import type { BriefingSection, Contradiction } from "@/lib/types";
 
@@ -24,6 +24,26 @@ type CaseRun = {
 };
 
 const PATIENT_ID = "0000-0001";
+
+/**
+ * The judge should not be the model that wrote the briefing. With OpenRouter, a different
+ * model list grades (EVAL_JUDGE_MODEL); otherwise the configured provider is used.
+ */
+function judgeProvider(): LlmProvider {
+  if (process.env.LLM_PROVIDER === "openrouter" && process.env.OPENROUTER_API_KEY) {
+    return new OpenAiCompatibleProvider({
+      name: "Judge",
+      baseUrl: process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1",
+      apiKey: process.env.OPENROUTER_API_KEY,
+      model: process.env.EVAL_JUDGE_MODEL || "anthropic/claude-haiku-5.5,deepseek/deepseek-v4.1-flash-1017",
+      timeoutMs: 120_000,
+      perModelTimeoutMs: 90_000,
+      extraBody: { reasoning: { effort: "low" } },
+    });
+  }
+  return getProvider();
+}
+const judge = judgeProvider();
 const officialOnly = process.argv.includes("--official");
 
 function screenText(sections: BriefingSection[]) {
@@ -42,12 +62,12 @@ function screenText(sections: BriefingSection[]) {
 }
 
 async function judgeAnswers(patient: PatientRecord, run: CaseRun) {
-  const provider = getProvider();
+  const provider = judge;
   const system = `You grade a clinical briefing screen. For each question decide if the SCREEN alone answers it correctly. Use the EXPECTED answer when given; otherwise decide from the SOURCE PASSAGES what the correct answer is. Wording may differ. An answer of "not documented" is correct only if the sources really lack it. Also say which fact numbers (#n) carry the answer. Reply JSON: {"results": [{"id": "<question id>", "answered": true|false, "facts": [<numbers>], "reason": "<short>"}]}`;
   const user = `QUESTIONS:\n${run.questions
     .map((q) => `- id ${q.id}: ${q.question}${q.expected ? `\n  EXPECTED: ${q.expected}` : ""}`)
     .join("\n")}\n\nSCREEN:\n${screenText(run.sections)}${run.questions.some((q) => !q.expected) ? `\n\nSOURCE PASSAGES:${renderSources(patient)}` : ""}`;
-  const res = await provider.complete({ messages: [{ role: "system", content: system }, { role: "user", content: user }], json: true, maxTokens: 1500 });
+  const res = await provider.complete({ messages: [{ role: "system", content: system }, { role: "user", content: user }], json: true, maxTokens: 6000 });
   return parseJsonObject<{ results: { id: string; answered: boolean; facts: number[]; reason: string }[] }>(res.text).results ?? [];
 }
 
@@ -56,13 +76,18 @@ async function judgeSupport(patient: PatientRecord, sections: BriefingSection[])
   const passages = new Map(patient.passages.map((p) => [p.id, p]));
   const facts = sections.flatMap((s) => s.items.flatMap((i) => i.facts));
   if (!facts.length) return { total: 0, supported: 0, unsupported: [] as string[] };
-  const system = `For each numbered statement decide if the cited German passages support it (translation, generic drug names and simple arithmetic are fine). Reply JSON: {"results": [{"n": <number>, "supported": true|false}]}`;
+  const system = `For each numbered statement decide if the cited German passages support it (translation, generic drug names, simple arithmetic and dates taken from the document date are fine). Reply JSON: {"results": [{"n": <number>, "supported": true|false}]}`;
   const user = facts
     .map((f, i) => `#${i + 1} ${f.statement}\n${[...f.quotes.map((q) => q.passageId), ...(f.calculation?.inputs.map((x) => x.passageId) ?? [])]
-      .map((id) => `   [${id}] ${passages.get(id)?.text.replace(/\s+/g, " ")}`)
+      .map((id) => {
+        const p = passages.get(id);
+        const doc = patient.documents.find((d) => d.id === p?.docId);
+        // The document's date is part of the evidence: facts say "June 2015" from it.
+        return `   [${id}] (${doc?.title ?? ""}, dated ${doc?.date ?? "?"}) ${p?.text.replace(/\s+/g, " ")}`;
+      })
       .join("\n")}`)
     .join("\n");
-  const res = await getProvider().complete({ messages: [{ role: "system", content: system }, { role: "user", content: user }], json: true, maxTokens: 2000 });
+  const res = await judge.complete({ messages: [{ role: "system", content: system }, { role: "user", content: user }], json: true, maxTokens: 8000 });
   const results = parseJsonObject<{ results: { n: number; supported: boolean }[] }>(res.text).results ?? [];
   const unsupported = results.filter((r) => !r.supported).map((r) => facts[r.n - 1]?.statement ?? `#${r.n}`);
   return { total: facts.length, supported: facts.length - unsupported.length, unsupported };
@@ -131,7 +156,7 @@ async function main() {
     }
   }
 
-  const report: string[] = [`# Evaluation results`, ``, `Provider: ${getProvider().name} · ${new Date().toISOString()}`, ``];
+  const report: string[] = [`# Evaluation results`, ``, `Briefing model: ${getProvider().name} (${process.env.OPENROUTER_MODEL ?? process.env.LLM_MODEL ?? "configured model"}) · Judge: ${judge.name}${judge === getProvider() ? " (same provider)" : ` (${process.env.EVAL_JUDGE_MODEL || "anthropic/claude-haiku-5.5"})`} · ${new Date().toISOString()}`, ``];
   const json: Record<string, unknown> = { runs: [] };
   let correct = 0;
   let officialQuestions = 0;

@@ -31,9 +31,14 @@ type OpenAiConfig = {
   name: string;
   baseUrl: string;
   apiKey: string;
+  /** Model, or an ordered fallback list ("a,b,c"): the next one is tried when a model fails */
   model: string;
   fastModel?: string;
+  /** Max time one model gets before the next one is tried */
+  perModelTimeoutMs?: number;
   headers?: Record<string, string>;
+  /** Extra request fields, e.g. OpenRouter's `reasoning` settings */
+  extraBody?: Record<string, unknown>;
   timeoutMs: number;
   /** Max parallel requests; the rest wait (protects per-minute rate limits). */
   maxConcurrency?: number;
@@ -56,10 +61,12 @@ class Limiter {
   }
 }
 
-class RetryableError extends Error {
+/** A failure of one model (refused, rate-limited, timed out, unusable answer): try the next model. */
+class ModelFailure extends Error {
   constructor(
     message: string,
-    readonly delayMs: number,
+    readonly cooldownMs: number,
+    readonly delayMs = 0,
   ) {
     super(message);
   }
@@ -68,81 +75,123 @@ class RetryableError extends Error {
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Retry delay from a Retry-After header, else a short backoff. */
-function retryDelayMs(res: Response, attempt: number): number {
+function retryDelayMs(res: Response): number {
   const header = Number(res.headers.get("retry-after"));
-  return Math.min(Number.isFinite(header) && header > 0 ? header * 1000 : 1500 * attempt, 10_000);
+  return Math.min(Number.isFinite(header) && header > 0 ? header * 1000 : 1500, 10_000);
 }
+
+const list = (v: string | undefined) => (v ?? "").split(",").map((m) => m.trim()).filter(Boolean);
 
 /**
  * Adapter for OpenAI-compatible `chat/completions` endpoints (OpenRouter and others).
- * Requests are queued, rate limits and overloads are retried within the timeout,
- * and a cut-off or empty answer is an error, never half a result.
+ * Requests are queued. Each request walks an ordered model list: when a model refuses
+ * (e.g. excluded by a zero-data-retention rule), is rate-limited, times out or returns
+ * a cut-off, empty or non-JSON answer, the next model is tried and the failing one is
+ * skipped for a while. A failed answer is never returned half-finished.
  */
 export class OpenAiCompatibleProvider implements LlmProvider {
   readonly name: string;
   private limiter: Limiter;
+  private coolingUntil = new Map<string, number>();
   constructor(private cfg: OpenAiConfig) {
     this.name = cfg.name;
     this.limiter = new Limiter(cfg.maxConcurrency ?? 6);
   }
 
   async complete(opts: CompleteOptions): Promise<CompleteResult> {
-    return this.limiter.run(() => this.completeWithRetry(opts));
+    return this.limiter.run(() => this.completeWithFallback(opts));
   }
 
-  private async completeWithRetry(opts: CompleteOptions): Promise<CompleteResult> {
+  /** Models to try, healthy ones first, in configured order. */
+  private candidates(fast: boolean): string[] {
+    const models = (fast && list(this.cfg.fastModel).length ? list(this.cfg.fastModel) : list(this.cfg.model));
+    const now = Date.now();
+    const healthy = models.filter((m) => (this.coolingUntil.get(m) ?? 0) <= now);
+    return [...healthy, ...models.filter((m) => !healthy.includes(m))];
+  }
+
+  private async completeWithFallback(opts: CompleteOptions): Promise<CompleteResult> {
     const deadline = Date.now() + this.cfg.timeoutMs;
-    for (let attempt = 1; ; attempt++) {
-      try {
-        return await this.request(opts, deadline, attempt);
-      } catch (err) {
-        const retry = err instanceof RetryableError && attempt < 3 && Date.now() + err.delayMs < deadline - 2000;
-        if (!retry) throw err instanceof RetryableError ? new Error(err.message) : err;
-        await sleep(err.delayMs);
+    const errors: string[] = [];
+    // Two passes: if every model failed, wait briefly once and try the list again.
+    for (let pass = 0; pass < 2; pass++) {
+      let wait = 0;
+      for (const model of this.candidates(!!opts.fast)) {
+        if (deadline - Date.now() < 2000) break;
+        try {
+          return await this.request(opts, model, Math.min(deadline, Date.now() + (this.cfg.perModelTimeoutMs ?? 20_000)));
+        } catch (err) {
+          if (!(err instanceof ModelFailure)) throw err;
+          if (process.env.LLM_DEBUG) console.log(`[llm] ${opts.tag ?? ""} FAILED ${err.message.slice(0, 160)}`);
+          errors.push(err.message);
+          this.coolingUntil.set(model, Date.now() + err.cooldownMs);
+          wait = Math.max(wait, err.delayMs);
+        }
       }
+      if (pass === 0 && Date.now() + Math.max(wait, 1000) < deadline - 2000) await sleep(Math.max(wait, 1000));
+      else break;
     }
+    throw new Error(`${this.name}: no model answered. ${errors.join(" | ").slice(0, 600)}`);
   }
 
-  private async request(opts: CompleteOptions, deadline: number, attempt: number): Promise<CompleteResult> {
-    const model = (opts.fast && this.cfg.fastModel) || this.cfg.model;
+  private async request(opts: CompleteOptions, model: string, deadline: number): Promise<CompleteResult> {
     const started = Date.now();
     const timeout = AbortSignal.timeout(Math.max(1000, deadline - Date.now()));
     const signal = opts.signal ? AbortSignal.any([opts.signal, timeout]) : timeout;
-    const res = await fetch(`${this.cfg.baseUrl.replace(/\/$/, "")}/chat/completions`, {
-      method: "POST",
-      signal,
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${this.cfg.apiKey}`,
-        ...this.cfg.headers,
-      },
-      body: JSON.stringify({
-        model,
-        messages: opts.messages,
-        temperature: opts.temperature ?? 0,
-        max_tokens: opts.maxTokens ?? 4000,
-        ...(opts.json ? { response_format: { type: "json_object" } } : {}),
-      }),
-    });
+    let res: Response;
+    try {
+      res = await fetch(`${this.cfg.baseUrl.replace(/\/$/, "")}/chat/completions`, {
+        method: "POST",
+        signal,
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${this.cfg.apiKey}`,
+          ...this.cfg.headers,
+        },
+        body: JSON.stringify({
+          model,
+          messages: opts.messages,
+          temperature: opts.temperature ?? 0,
+          max_tokens: opts.maxTokens ?? 4000,
+          ...(opts.json ? { response_format: { type: "json_object" } } : {}),
+          ...this.cfg.extraBody,
+        }),
+      });
+    } catch (err) {
+      if (opts.signal?.aborted) throw err;
+      throw new ModelFailure(`${model}: no answer in time (${err instanceof Error ? err.name : "error"})`, 30_000);
+    }
     if (!res.ok) {
       const body = await res.text().catch(() => "");
-      const message = `${this.name} request failed: HTTP ${res.status} ${body.slice(0, 300)}`;
-      if (res.status === 429 || res.status === 502 || res.status === 503) throw new RetryableError(message, retryDelayMs(res, attempt));
-      throw new Error(message);
+      const message = `${model}: HTTP ${res.status} ${body.slice(0, 200)}`;
+      // Key or account problems affect every model: stop instead of walking the list.
+      if (res.status === 401 || res.status === 402 || res.status === 403) throw new Error(`${this.name} request failed: ${message}`);
+      throw new ModelFailure(message, res.status === 429 ? 60_000 : 120_000, res.status === 429 ? retryDelayMs(res) : 0);
     }
     const data = (await res.json()) as {
       model?: string;
       error?: { message?: string };
       choices?: { message?: { content?: string | null }; finish_reason?: string }[];
     };
-    // Some gateways report upstream failures inside a 200 response.
-    if (data.error) throw new RetryableError(`${this.name} upstream error: ${data.error.message ?? "unknown"}`, 1500 * attempt);
+    const answeredBy = data.model ?? model;
+    // Gateways can report upstream failures inside a 200 response.
+    if (data.error) throw new ModelFailure(`${model}: upstream error ${data.error.message ?? ""}`.trim(), 30_000, 1000);
     const choice = data.choices?.[0];
-    if (choice?.finish_reason === "length") throw new Error(`${this.name} answer was cut off at max_tokens (${data.model ?? model})`);
+    if (choice?.finish_reason === "length") {
+      if (process.env.LLM_DEBUG) console.log(`[llm] cut-off answer from ${answeredBy}, ${choice.message?.content?.length ?? 0} chars, ends with: ${(choice.message?.content ?? "").slice(-300).replace(/\s+/g, " ")}`);
+      throw new ModelFailure(`${answeredBy}: answer was cut off at max_tokens`, 0);
+    }
     const text = choice?.message?.content ?? "";
-    if (!text.trim()) throw new RetryableError(`${this.name} returned an empty answer (${data.model ?? model})`, 1000);
-    // With a router model (e.g. openrouter/free) the response names the model that actually answered.
-    return { text, model: data.model ?? model, ms: Date.now() - started };
+    if (!text.trim()) throw new ModelFailure(`${answeredBy}: empty answer`, 30_000);
+    if (opts.json) {
+      try {
+        parseJsonObject(text);
+      } catch {
+        throw new ModelFailure(`${answeredBy}: answer was not valid JSON`, 0);
+      }
+    }
+    if (process.env.LLM_DEBUG) console.log(`[llm] ${opts.tag ?? ""} ok ${answeredBy} ${Date.now() - started} ms`);
+    return { text, model: answeredBy, ms: Date.now() - started };
   }
 }
 
@@ -161,7 +210,7 @@ export class MockProvider implements LlmProvider {
 export function providerFromEnv(env: NodeJS.ProcessEnv = process.env): LlmProvider {
   const kind = (env.LLM_PROVIDER ?? "mock").toLowerCase();
   const timeoutMs = Number(env.LLM_TIMEOUT_MS ?? 30000);
-  const maxConcurrency = Number(env.LLM_MAX_CONCURRENCY ?? 6);
+  const maxConcurrency = Number(env.LLM_MAX_CONCURRENCY ?? 12);
   if (kind === "openrouter") {
     if (!env.OPENROUTER_API_KEY) return new MockProvider();
     return new OpenAiCompatibleProvider({
@@ -169,11 +218,14 @@ export function providerFromEnv(env: NodeJS.ProcessEnv = process.env): LlmProvid
       baseUrl: env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1",
       apiKey: env.OPENROUTER_API_KEY,
       model: env.OPENROUTER_MODEL || "openrouter/free",
+      perModelTimeoutMs: Number(env.LLM_MODEL_TIMEOUT_MS ?? 20_000),
       fastModel: env.OPENROUTER_FAST_MODEL || undefined,
       timeoutMs,
       maxConcurrency,
       // Optional attribution headers OpenRouter shows in its dashboard
       headers: { "X-Title": "MediHacker" },
+      // Hidden reasoning counts against max_tokens; keep it short so answers are not cut off.
+      extraBody: { reasoning: { effort: env.OPENROUTER_REASONING_EFFORT || "minimal" } },
     });
   }
   if (kind === "openai-compatible") {

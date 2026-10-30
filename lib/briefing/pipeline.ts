@@ -5,7 +5,13 @@ import { cachedComplete } from "@/lib/llm/cache";
 import { LlmUnavailableError, llmConfigured, parseJsonObject } from "@/lib/llm/provider";
 import { extractionPrompt, planPrompt } from "@/lib/llm/prompts";
 import type { BriefingItem, BriefingSection, BriefingStreamEvent, Contradiction } from "@/lib/types";
-import { demographicsItem, itemsFromModel, retrievalItems, verifyContext } from "./items";
+import { demographicsItem, itemsFromModel, retrievalItems, verifyContext, weightTrendItem } from "./items";
+
+/** Items built by rules in code (always the same, no model needed). */
+const RULE_ITEMS: Record<string, (p: PatientRecord) => BriefingItem | null> = {
+  demographics: demographicsItem,
+  weight_trend: weightTrendItem,
+};
 
 export type SituationInput = { title: string; description: string } | null;
 
@@ -54,30 +60,44 @@ async function extractSection(
   section: PlannedSection,
 ): Promise<{ section: BriefingSection; rejected: BriefingStreamEvent & { type: "debug" }; cached: boolean; fallback: boolean }> {
   const ctx = verifyContext(patient);
-  const llmItems = section.items.filter((i) => i.key !== "demographics");
-  const fixed: BriefingItem[] = section.items.some((i) => i.key === "demographics") ? [demographicsItem(patient)] : [];
+  // Rule items fall back to the model when the rule finds nothing (e.g. weights written differently).
+  const fixed = new Map<string, BriefingItem>();
+  for (const i of section.items) {
+    const item = RULE_ITEMS[i.key]?.(patient);
+    if (item) fixed.set(i.key, item);
+  }
+  const llmItems = section.items.filter((i) => !fixed.has(i.key));
   if (!llmItems.length) {
-    return { section: { id: section.id, title: section.title, items: fixed }, rejected: { type: "debug", rejected: [] }, cached: true, fallback: false };
+    return { section: { id: section.id, title: section.title, items: [...fixed.values()] }, rejected: { type: "debug", rejected: [] }, cached: true, fallback: false };
   }
   try {
-    const { system, user } = extractionPrompt({ patient, roles, situation, sectionTitle: section.title, items: llmItems });
-    const { text, cached } = await cachedComplete({
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
-      json: true,
-      tag: `extract:${section.id}`,
-      maxTokens: 2500,
-    });
-    const { items, rejected } = itemsFromModel(parseJsonObject(text), llmItems, ctx, section.title);
-    const ordered = section.items.map((p) => (p.key === "demographics" ? fixed[0] : items.find((i) => i.key === p.key)!)).filter(Boolean);
+    // At most two items per call, all in parallel: short answers keep every call fast.
+    const chunks = Array.from({ length: Math.ceil(llmItems.length / 2) }, (_, i) => llmItems.slice(i * 2, i * 2 + 2));
+    const results = await Promise.all(
+      chunks.map(async (chunk) => {
+        const { system, user } = extractionPrompt({ patient, roles, situation, sectionTitle: section.title, items: chunk });
+        const { text, cached } = await cachedComplete({
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: user },
+          ],
+          json: true,
+          tag: `extract:${section.id}`,
+          maxTokens: 3000,
+        });
+        return { ...itemsFromModel(parseJsonObject(text), chunk, ctx, section.title), cached };
+      }),
+    );
+    const items = results.flatMap((r) => r.items);
+    const rejected = results.flatMap((r) => r.rejected);
+    const cached = results.every((r) => r.cached);
+    const ordered = section.items.map((p) => fixed.get(p.key) ?? items.find((i) => i.key === p.key)!).filter(Boolean);
     return { section: { id: section.id, title: section.title, items: ordered }, rejected: { type: "debug", rejected }, cached, fallback: false };
   } catch (err) {
     // No model, or the model failed (quota, outage, timeout): show grounded keyword matches instead of an empty section.
     if (!(err instanceof LlmUnavailableError)) console.error(`[briefing] section ${section.id} fell back to keyword search:`, err instanceof Error ? err.message.slice(0, 200) : err);
     const items = retrievalItems(patient, llmItems);
-    const ordered = section.items.map((p) => (p.key === "demographics" ? fixed[0] : items.find((i) => i.key === p.key)!)).filter(Boolean);
+    const ordered = section.items.map((p) => fixed.get(p.key) ?? items.find((i) => i.key === p.key)!).filter(Boolean);
     return { section: { id: section.id, title: section.title, items: ordered }, rejected: { type: "debug", rejected: [] }, cached: false, fallback: true };
   }
 }

@@ -39,7 +39,7 @@ export async function llmContradictions(patient: PatientRecord, existing: Contra
     ],
     json: true,
     tag: "contradictions",
-    maxTokens: 3000,
+    maxTokens: 6000,
   });
   type Cand = { title?: string; explanation?: string; severity?: string; passageIds?: string[] };
   const raw = parseJsonObject<{ contradictions?: Cand[] }>(text).contradictions ?? [];

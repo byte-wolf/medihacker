@@ -64,7 +64,8 @@ export const CATEGORIES: Record<string, Category> = {
   weight_trend: {
     key: "weight_trend",
     label: "Weight, height and BMI over time",
-    guidance: "Every documented weight with its date, height and BMI. If two or more weights exist, add a calculated weight change.",
+    guidance:
+      "One fact per weighing: 'Weight X kg (date)', quoting that document's weight line; never combine values from different documents in one fact. The latest weight is the one in the most recently dated document. Then one calculated fact for the change between the first and the latest weight, citing both weight lines.",
     terms: /gewicht|größe|BMI|kg\b/i,
   },
   blood_pressure: {
@@ -160,7 +161,8 @@ export const CATEGORIES: Record<string, Category> = {
   followups_done: {
     key: "followups_done",
     label: "Evidence that follow-ups took place",
-    guidance: "For each recommended follow-up: is there a later document recording that it happened? If none, return not_documented for that follow-up.",
+    guidance:
+      "For each recommended follow-up, check every later document for a record that it took place. If none records it, return not_documented with a note that names the follow-up and says that none of the documents records it.",
     terms: /kontrolle|duplex|sonograph|augen/i,
   },
   lab_values: {

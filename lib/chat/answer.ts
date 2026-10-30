@@ -32,7 +32,7 @@ export async function answerQuestion(args: {
       ],
       json: true,
       tag: "chat",
-      maxTokens: 1500,
+      maxTokens: 3000,
     });
     const { items, rejected } = itemsFromModel(parseJsonObject(text), [], verifyContext(args.patient), "chat");
     const contradictions = listContradictions(args.patient.id);

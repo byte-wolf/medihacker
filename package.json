@@ -15,7 +15,8 @@
     "db:seed": "tsx scripts/seed.ts",
     "index": "tsx scripts/index-patients.ts",
     "eval": "tsx scripts/eval.ts",
-    "llm:smoke": "tsx scripts/llm-smoke.ts"
+    "llm:smoke": "tsx scripts/llm-smoke.ts",
+    "bench": "tsx scripts/bench-models.ts"
   },
   "dependencies": {
     "@carbon/icons-react": "^11.91.0",

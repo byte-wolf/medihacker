@@ -34,7 +34,31 @@ describe("OpenAiCompatibleProvider", () => {
   });
 
   it("rejects an answer that was cut off", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(json({ choices: [{ message: { content: '{"items": [' }, finish_reason: "length" }] })));
+    vi.stubGlobal("fetch", vi.fn().mockImplementation(async () => json({ choices: [{ message: { content: '{"items": [' }, finish_reason: "length" }] })));
     await expect(provider().complete({ messages: [{ role: "user", content: "hi" }] })).rejects.toThrow(/cut off/);
+  });
+
+  it("moves to the next model when one is excluded, and skips it next time", async () => {
+    const fetchMock = vi.fn().mockImplementation(async (_url: string, init: RequestInit) => {
+      const { model } = JSON.parse(String(init.body)) as { model: string };
+      return model === "a/excluded"
+        ? json({ error: { message: "0 endpoints available matching your guardrail restrictions" } }, 404)
+        : json({ model, choices: [{ message: { content: '{"ok":true}' }, finish_reason: "stop" }] });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const p = new OpenAiCompatibleProvider({ name: "Test", baseUrl: "https://x.test/v1", apiKey: "k", model: "a/excluded, b/works", timeoutMs: 10_000 });
+    const first = await p.complete({ messages: [{ role: "user", content: "hi" }], json: true });
+    expect(first.model).toBe("b/works");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    await p.complete({ messages: [{ role: "user", content: "hi" }], json: true });
+    expect(fetchMock).toHaveBeenCalledTimes(3); // the excluded model is cooling down
+  });
+
+  it("does not walk the list when the key is rejected", async () => {
+    const fetchMock = vi.fn().mockImplementation(async () => json({ error: { message: "bad key" } }, 401));
+    vi.stubGlobal("fetch", fetchMock);
+    const p = new OpenAiCompatibleProvider({ name: "Test", baseUrl: "https://x.test/v1", apiKey: "k", model: "a,b,c", timeoutMs: 10_000 });
+    await expect(p.complete({ messages: [{ role: "user", content: "hi" }] })).rejects.toThrow(/401/);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

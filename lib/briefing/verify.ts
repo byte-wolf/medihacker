@@ -23,7 +23,12 @@ const ROMAN: Record<string, string> = { i: "1", ii: "2", iii: "3", iv: "4", v: "
 /** Numbers that occur in a text, normalised ("6,4" → "6.4", "05" → "5", "Typ II" → "2"). */
 export function numbersIn(text: string): Set<string> {
   const out = new Set<string>();
-  for (const m of text.matchAll(/\d+(?:[.,]\d+)?/g)) out.add(String(Number(m[0].replace(",", "."))));
+  // Dates first ("16.05.2016", "10/04/2016"): day, month and year are separate numbers, not "16.05".
+  const withoutDates = text.replace(/\b(\d{1,2})[./](\d{1,2})[./](\d{2,4})\b/g, (_, d: string, m: string, y: string) => {
+    for (const n of [d, m, y]) out.add(String(Number(n)));
+    return " ";
+  });
+  for (const m of withoutDates.matchAll(/\d+(?:[.,]\d+)?/g)) out.add(String(Number(m[0].replace(",", "."))));
   for (const m of text.matchAll(/\b(i{1,3}|iv|v)\b/gi)) out.add(ROMAN[m[1].toLowerCase()]);
   // "1/2" in a schedule means a half dose
   if (/\b1\/2\b/.test(text)) out.add("0.5");
@@ -50,6 +55,30 @@ function tokenOverlap(a: string, b: string): number {
   return ta.filter((t) => tb.has(t)).length / ta.length;
 }
 
+/**
+ * A verbatim quote that runs across neighbouring passages of one document (e.g. two lines of a
+ * finding). Returns the covered passages, each with its own part of the quote.
+ */
+function quoteAcrossPassages(q: Quote, ctx: VerifyContext): Quote[] | null {
+  const nq = normalizeForMatch(q.text ?? "");
+  const docId = q.passageId.split(":")[0];
+  if (nq.length < 12) return null;
+  const docPassages = [...ctx.passages.values()].filter((p) => p.docId === docId).sort((a, b) => a.start - b.start);
+  let joined = "";
+  const spans: { id: string; from: number; to: number; text: string }[] = [];
+  for (const p of docPassages) {
+    const t = normalizeForMatch(p.text);
+    if (joined) joined += " ";
+    spans.push({ id: p.id, from: joined.length, to: joined.length + t.length, text: p.text });
+    joined += t;
+  }
+  const at = joined.indexOf(nq);
+  if (at < 0) return null;
+  const covered = spans.filter((s) => s.to > at && s.from < at + nq.length);
+  if (covered.length < 2 || covered.length > 3) return null;
+  return covered.map((s) => ({ passageId: s.id, text: s.text }));
+}
+
 function verifyQuote(q: Quote, ctx: VerifyContext): Quote | null {
   const passage = ctx.passages.get(q.passageId);
   const nq = normalizeForMatch(q.text ?? "");
@@ -58,6 +87,14 @@ function verifyQuote(q: Quote, ctx: VerifyContext): Quote | null {
   if (nq.length >= 8) {
     for (const p of ctx.passages.values()) {
       if (normalizeForMatch(p.text).includes(nq)) return { passageId: p.id, text: q.text };
+    }
+  }
+  // Short quotes ("SLE", "BMI: 29") are ambiguous across documents: re-anchor only to a passage
+  // of the same document whose whole text is exactly the quote.
+  const docId = q.passageId.split(":")[0];
+  if (nq) {
+    for (const p of ctx.passages.values()) {
+      if (p.docId === docId && normalizeForMatch(p.text) === nq) return { passageId: p.id, text: q.text };
     }
   }
   // Paraphrased quote of the cited passage: accept the passage itself if nearly all words match.
@@ -104,12 +141,14 @@ export function verifyFact(raw: RawFact, ctx: VerifyContext): VerifyResult {
   for (const q of rawQuotes) {
     if (!q || typeof q.passageId !== "string") return { ok: false, reason: "malformed quote" };
     const v = verifyQuote(q, ctx);
-    if (!v) return { ok: false, reason: `quote not found in ${q.passageId}: "${String(q.text).slice(0, 60)}"` };
-    if (!quotes.some((x) => x.passageId === v.passageId)) quotes.push(v);
+    const parts = v ? [v] : quoteAcrossPassages(q, ctx);
+    if (!parts) return { ok: false, reason: `quote not found in ${q.passageId}: "${String(q.text).slice(0, 60)}"` };
+    for (const part of parts) if (!quotes.some((x) => x.passageId === part.passageId)) quotes.push(part);
   }
 
-  const calculation = raw.calculation ? verifyCalculation(raw.calculation, ctx) : undefined;
-  if (raw.calculation && !calculation) return { ok: false, reason: "calculation could not be reproduced" };
+  // A calculation we cannot reproduce is ignored: the fact then stands only if every
+  // number in it is found in the cited passages (checked below), so a wrong result is still rejected.
+  const calculation = raw.calculation ? verifyCalculation(raw.calculation, ctx) ?? undefined : undefined;
 
   // Every number in the statement must be in a cited passage, a cited document's date, or the calculation.
   const allowed = new Set<string>();
@@ -130,14 +169,27 @@ export function verifyFact(raw: RawFact, ctx: VerifyContext): VerifyResult {
       if (doc) dateNumbers(doc.date).forEach((n) => allowed.add(n));
     }
   }
-  const unsupported = claimedNumbers(statement).filter((n) => !allowed.has(n));
+  let unsupported = claimedNumbers(statement).filter((n) => !allowed.has(n));
+  // An undeclared difference ("lost 12 kg" from 78 kg and 66 kg) is accepted when it is exactly
+  // the difference of two cited numbers; the fact is then marked as calculated.
+  let derived = false;
+  if (unsupported.length && !calculation) {
+    // Only measured values from the passage text (not document dates or years) can be subtracted.
+    const textNumbers = new Set(quotes.flatMap((q) => [...numbersIn(ctx.passages.get(q.passageId)!.text)]));
+    const cited = [...textNumbers].map(Number).filter((n) => n >= 10 && n < 1000);
+    const isDifference = (n: number) => cited.some((a) => cited.some((b) => a > b && Math.abs(a - b - n) < 0.05));
+    if (unsupported.every((n) => isDifference(Number(n)))) {
+      derived = true;
+      unsupported = [];
+    }
+  }
   if (unsupported.length) return { ok: false, reason: `unsupported number(s) ${unsupported.join(", ")}` };
 
   return {
     ok: true,
     fact: {
       statement,
-      kind: calculation ? "calculated" : "documented",
+      kind: calculation || derived ? "calculated" : "documented",
       quotes,
       ...(calculation ? { calculation } : {}),
     },

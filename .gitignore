@@ -52,6 +52,8 @@ medihacker.db
 /test-results/
 /playwright-report/
 /eval/results.json
+# contains the hackathon questions and expected answers
+/eval/results.md
 *.db-journal
 *.db-wal
 *.db-shm

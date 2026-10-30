@@ -16,7 +16,7 @@ async function main() {
       { role: "user", content: "Translate: KM-Allergie (Übelkeit, Schwindel, Erbrechen)" },
     ],
     json: true,
-    maxTokens: 100,
+    maxTokens: 1000,
   });
   console.log(`Model: ${res.model}\nLatency: ${res.ms} ms\nOutput: ${res.text}`);
 }

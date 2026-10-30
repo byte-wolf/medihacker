@@ -46,3 +46,16 @@ describe("contradiction rules", () => {
     expect(rules.runContradictionRules(patient).map((c) => c.id)).toEqual(rules.runContradictionRules(patient).map((c) => c.id));
   });
 });
+
+describe("weight trend by rule", () => {
+  it("lists every weighing with its date and the calculated change", async () => {
+    const { weightTrendItem } = await import("@/lib/briefing/items");
+    const item = weightTrendItem(patient)!;
+    expect(item.facts.map((f) => f.statement)).toEqual([
+      "Weight 80 kg (20 Mar 2020).",
+      "Weight 72 kg (1 Sep 2020).",
+      "Weight change −8 kg between 20 Mar 2020 and 1 Sep 2020 (80 → 72 kg).",
+    ]);
+    expect(item.facts[2].kind).toBe("calculated");
+  });
+});
