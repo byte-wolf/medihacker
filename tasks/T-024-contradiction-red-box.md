@@ -1,7 +1,7 @@
 ---
 id: T-024
 title: Contradicting facts shown inside a red box
-status: review
+status: done
 owner: Devin (https://app.devin.ai/sessions/110cff77a54f439799b0e2128c832bfc)
 branch: feat/logo-situation-contradiction
 pr: https://github.com/byte-wolf/medihacker/pull/10
