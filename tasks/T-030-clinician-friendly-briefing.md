@@ -1,7 +1,7 @@
 ---
 id: T-030
 title: Make the briefing quicker to read for clinicians
-status: in_progress
+status: review
 owner: Devin (https://app.devin.ai/sessions/8229f74360564ff28bf9cc08a8bfe94b)
 branch: feat/t-030-clinician-briefing
 pr:
@@ -16,12 +16,13 @@ mirraman: the briefing is too detailed and should be more intuitive for a clinic
 
 ## Acceptance criteria
 
-- [ ] Answers read first: sources are a quiet link in a right-hand column, one per fact (latest document), "+N" for the rest.
-- [ ] No check icon on every row; label hints like "(echo, ECG, rhythm)" and "why this matters" buttons don't compete with the answer.
-- [ ] "Not documented" rows are one short muted line (reason in tooltip).
-- [ ] Footer is one short line.
-- [ ] Every answer still visible without a click, with at least one source link (eval rule).
+- [x] Answers read first: sources are a quiet link in a right-hand column, one per fact (latest document), "+N" for the rest.
+- [x] No check icon on every row; label hints like "(echo, ECG, rhythm)" and "why this matters" buttons don't compete with the answer.
+- [x] "Not documented" rows are one short muted line (reason in tooltip).
+- [x] Footer is one short line.
+- [x] Every answer still visible without a click, with at least one source link (eval rule).
 
 ## Log
 
 - 2026-10-30, Devin: claimed.
+- 2026-10-30, Devin: built on `feat/t-030-clinician-briefing`; lint, typecheck, unit tests pass. Checked at 1568 and 390 px in mock mode.
