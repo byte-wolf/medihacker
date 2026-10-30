@@ -60,3 +60,6 @@ medihacker.db
 
 # local database backups (contain patient-derived data)
 /backups/
+
+# Impeccable engine binaries (downloaded per platform)
+.devin/skills/impeccable/scripts/bin/

@@ -12,6 +12,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 Several people and agents work on this repo at the same time. Before starting, read [`tasks/README.md`](tasks/README.md): pick or add a task in `tasks/`, claim it on `main`, and work on the branch named in the task file.
 
+## Design skill
+
+UI work can use the Impeccable skill in `.devin/skills/impeccable/` (https://impeccable.style): `/impeccable polish`, `audit`, `critique`, `distill`, `typeset`, ... Its scripts download a detector engine into `scripts/bin/` (gitignored). The folder is an unmodified upstream build; to update, copy `.devin/skills/impeccable` from github.com/pbakaus/impeccable again.
+
 ## Environment gotchas (read before running `next dev` or `bun run test`)
 
 - **Use official Node, not Fedora's system node.** `better-sqlite3` segfaults under `/usr/bin/node-20` (`libnode.so.115` ABI mismatch — crashes in `napi_module_register_by_symbol` when the app first opens the DB). Symptom: `bun run dev` prints "Ready" then silently exits ~10–30 s later; `next start` dies with SIGSEGV. Fix: Node ≥ 22 installed with `n` (`N_PREFIX=$HOME/.local n lts`, currently v26.13.0 at `~/.local/bin/node`). `~/.local/bin` must precede `/usr/bin` in PATH — `.bashrc` already does this for interactive shells; non-login shells need it exported.
