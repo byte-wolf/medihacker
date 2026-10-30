@@ -48,7 +48,6 @@ export function ContextBar(props: {
     else props.onSelect(id);
   };
 
-  const perspective = situation?.role && situation.role !== props.userRole ? `${props.userRole} + ${situation.role}` : props.userRole;
 
   return (
     <section className="context-bar" aria-label="Situation">
@@ -64,20 +63,6 @@ export function ContextBar(props: {
           helperText="The situation stays fixed for this conversation until you change it."
           size="md"
         />
-      </div>
-      <div className="context-bar__perspective">
-        <span className="context-bar__label">Perspective</span>
-        <span>
-          <strong>{perspective}</strong>
-          {situation ? (
-            <>
-              {" "}· <span title={situation.description}>{situation.title}</span>
-            </>
-          ) : (
-            " · no situation"
-          )}
-        </span>
-        {situation?.description && <p className="context-bar__desc">{situation.description}</p>}
       </div>
       <div className="context-bar__actions">
         <Button kind="ghost" size="md" renderIcon={Chat} onClick={props.onNewConversation} disabled={!props.hasMessages}>

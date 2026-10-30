@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91020101",
+    "title": "Radiologischer Befund",
+    "version": "1",
+    "date": "2025-01-20",
+    "type": "Sonographie",
+    "group": "Bildgebung",
+    "division": "Bildgebung",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Institut für Radiologie",
+    "admission": {
+      "id": "TEST-0201",
+      "type": "outpatient",
+      "admission": {
+        "date": "2025-01-20",
+        "time": "09:40:00"
+      },
+      "discharge": {
+        "date": "2025-01-20",
+        "time": "11:15:00"
+      }
+    }
+  },
+  "text": "Frau<BR>Testpatientin<BR>Straße XY/AB<BR>PLZ Ort<BR><BR> Patient(in): NN_TEST-0002 VN_TEST-0002 | geb. 03.09.1967<BR><BR> Fall: 20250120<BR><BR>Anamnese: rezidivierende kolikartige Schmerzen im rechten Oberbauch<BR>Fragestellung: Cholezystolithiasis?<BR>Zuweisung freigegeben durch / Tel.: Arzt / 0055<BR><BR>OrtXX, am 20.01.2025<BR><BR>Radiologischer Befund<BR><BR>Sonographie des Abdomens:<BR>Gallenblase mit mehreren Steinen bis 1,4 cm Durchmesser, keine Wandverdickung, kein pericholezystischer Saum, Choledochus nicht erweitert (5 mm). Leber, Milz, Nieren und Pankreas soweit sonographisch beurteilbar unauffällig. Keine freie Flüssigkeit im Abdomen.<BR><BR>Gesamtbeurteilung<BR>Cholezystolithiasis ohne sonographische Zeichen einer Cholezystitis.<BR><BR>Befund: Dr. Arzt<BR>Vidiert: Dr. Arzt"
+}

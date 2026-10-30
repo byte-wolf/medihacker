@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91020104",
+    "title": "Laborbefund",
+    "version": "1",
+    "date": "2025-02-24",
+    "type": "Laborbefund",
+    "group": "Befund",
+    "division": "Sonstige",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Zentrallabor",
+    "admission": {
+      "id": "TEST-0202",
+      "type": "outpatient",
+      "admission": {
+        "date": "2025-02-24",
+        "time": "08:10:00"
+      },
+      "discharge": {
+        "date": "2025-02-24",
+        "time": "09:35:00"
+      }
+    }
+  },
+  "text": "Frau<BR>Testpatientin<BR>Straße XY/AB<BR>PLZ Ort<BR><BR>OrtXX, am 24.02.2025<BR><BR>Laborbefund<BR><BR>Testpatientin, geb 03.09.1967<BR>Patienten-ID: TEST-0002<BR>Fallzahl: 20250224<BR><BR>Parameter<BR>Fettgedruckte Werte außerhalb des Referenzbereichs. Ausgangswert Kontrollwert Grenzwert Einheit<BR><BR>Hämoglobin 13,1 g/dl<BR>Leukozyten 6,8 G/l<BR>Thrombozyten 245 G/l<BR>Kreatinin 0,8 mg/dl<BR>Quick 98%<BR>INR 1,0<BR>Glukose 92 mg/dl<BR>GPT 24 U/l<BR><BR>befundet: Dr. Arzt<BR>vidiert: Dr. Arzt"
+}

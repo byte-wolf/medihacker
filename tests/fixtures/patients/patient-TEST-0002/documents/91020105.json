@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91020105",
+    "title": "OP-Bericht",
+    "version": "1",
+    "date": "2025-03-10",
+    "type": "OP-Bericht",
+    "group": "Befund",
+    "division": "Chirurgie",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Abteilung für Allgemein- und Viszeralchirurgie",
+    "admission": {
+      "id": "TEST-0203",
+      "type": "inpatient",
+      "admission": {
+        "date": "2025-03-10",
+        "time": "07:30:00"
+      },
+      "discharge": {
+        "date": "2025-03-12",
+        "time": "11:00:00"
+      }
+    }
+  },
+  "text": "Frau<BR>Testpatientin<BR>Straße XY/AB<BR>PLZ Ort<BR><BR>OrtXX, am 10.03.2025<BR><BR>OP-Bericht<BR><BR>Testpatientin, geb 03.09.1967<BR>Patienten-ID: TEST-0002<BR>Fallzahl: 20250310<BR><BR>Operation: Laparoskopische Cholezystektomie<BR>Eingriffsdatum: 10.03.2025<BR>Dauer: 55 Minuten<BR>Anästhesie: Allgemeinanästhesie mit Intubation<BR>Operateur: Dr. Arzt<BR><BR>OP-Verlauf:<BR>Zugang über 4 Trokare. Darstellung des Calot-Dreiecks mit Critical View of Safety. Die Gallenblase konnte ohne Komplikationen entnommen werden, ein intraoperativer Steinabgang in den Choledochus wurde ausgeschlossen. Keine Drainage eingelegt. Blutverlust gering (&lt; 50 ml).<BR><BR>Befund: Dr. Arzt<BR>Vidiert: Dr. Arzt"
+}

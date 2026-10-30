@@ -1,0 +1,230 @@
+{
+  "metadata": {
+    "status": [
+      "positive",
+      "negative",
+      "suspected",
+      "statuspost"
+    ]
+  },
+  "values": [
+    {
+      "id": "d_ujPeIxdGcBefB0hoO8Kz-c2sjh",
+      "name": "ERKRANKUNGEN DER GALLENBLASE UND GALLENWEGE",
+      "values": [
+        {
+          "id": "d_t0lLOxJednRBuLDtYSpKH4Us-h",
+          "name": "Cholezystolithiasis",
+          "values": [
+            {
+              "id": "d_LqaAxK8SGNRd5X3ZzzgOdenkvd_K80.20",
+              "name": "Symptomatische Cholezystolithiasis",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "K80.20",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_AWjFcQWK4uSMLD18EQdSP_0syQ",
+                  "name": "Cholezystolithiasis",
+                  "text": "Cholezystolithiasis",
+                  "date": {
+                    "value": "2025-01-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020101",
+                    "91020102"
+                  ]
+                },
+                {
+                  "id": "d_bDkhdXipz3fCJ403rAw49jlooF",
+                  "name": "Symptomatische Cholezystolithiasis",
+                  "text": "Symptomatische Cholezystolithiasis",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020106"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "d_IbH-3SqxkXIXvoZ_2Z0VoHwbbr_K81.9",
+              "name": "Cholezystitis",
+              "status": "negative",
+              "code": {
+                "catalog": "ICD10",
+                "value": "K81.9",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_ajgxb3Njqwxh2_DEfgvq1kb8Hj",
+                  "name": "ohne Zeichen der Cholezystitis",
+                  "text": "ohne Zeichen der Cholezystitis",
+                  "date": {
+                    "value": "2025-01-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020101"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "d_vZ-zz8Ukij5Zj0-QwJia-PH7B3_Z90.4",
+              "name": "Z.n. laparoskopischer Cholezystektomie",
+              "status": "statuspost",
+              "code": {
+                "catalog": "ICD10",
+                "value": "Z90.4",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_qS9C7_9xoomnN51EPZfQ6YWElY",
+                  "name": "Z.n. laparoskopischer Cholezystektomie 10.03.2025",
+                  "text": "Z.n. laparoskopischer Cholezystektomie 10.03.2025",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020105",
+                    "91020106"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d_0nqspLqAi6wDL5A6GIHbClaZlE",
+      "name": "HERZ-KREISLAUF-ERKRANKUNGEN",
+      "values": [
+        {
+          "id": "d_UJuHJYgJprXGJW6CNGGSCIE8S4",
+          "name": "Arterielle Hypertonie",
+          "values": [
+            {
+              "id": "d_hkdmttWsGlwbqaUJmE7g0BF1zG_I10.90",
+              "name": "Arterielle Hypertonie",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "I10.90",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_8qJ81ihCepeQY5jTQj49o8zF_1",
+                  "name": "Arterielle Hypertonie, gut eingestellt",
+                  "text": "Arterielle Hypertonie, gut eingestellt",
+                  "date": {
+                    "value": "2025-01-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020102"
+                  ]
+                },
+                {
+                  "id": "d_kBGvmuUbJCbvNGe_Y-gqcXriB6",
+                  "name": "Arterielle Hypertonie",
+                  "text": "Arterielle Hypertonie",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020103"
+                  ]
+                },
+                {
+                  "id": "d_0qj6KSfdSBe8OZf2e3DvJ7riHp",
+                  "name": "Arterielle Hypertonie",
+                  "text": "Arterielle Hypertonie",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020106"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d_S-v1TOzwdieVqkf13QspsDkCq9",
+      "name": "ZUSTÄNDE NACH OPERATIONEN",
+      "values": [
+        {
+          "id": "d_-Jp9twayEGmGaqfzcbtoLHWQT4",
+          "name": "Z.n. Appendektomie",
+          "values": [
+            {
+              "id": "d_09Crn8nLjH8i0G4To5FbaFCtjw_Z98.8",
+              "name": "Z.n. Appendektomie 1998",
+              "status": "statuspost",
+              "code": {
+                "catalog": "ICD10",
+                "value": "Z98.8",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_yu_jUPc15OUZiHG1Z0L5RSobix",
+                  "name": "Z.n. Appendektomie 1998",
+                  "text": "Z.n. Appendektomie 1998",
+                  "date": {
+                    "value": "2025-01-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020102"
+                  ]
+                },
+                {
+                  "id": "d_g1JOORFaZVGIQeVqeqUnV-FyER",
+                  "name": "Z.n. Appendektomie 1998",
+                  "text": "Z.n. Appendektomie 1998",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020103"
+                  ]
+                },
+                {
+                  "id": "d_XNPejqVtKadrRSRsHDDh5m-7bD",
+                  "name": "Z.n. Appendektomie 1998",
+                  "text": "Z.n. Appendektomie 1998",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020106"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91020106",
+    "title": "Stat. Patientenbrief (Interne)",
+    "version": "1",
+    "date": "2025-03-12",
+    "type": "Arztbrief(Inter.)",
+    "group": "Patientenbrief",
+    "division": "Chirurgie",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Abteilung für Allgemein- und Viszeralchirurgie",
+    "admission": {
+      "id": "TEST-0203",
+      "type": "inpatient",
+      "admission": {
+        "date": "2025-03-10",
+        "time": "07:30:00"
+      },
+      "discharge": {
+        "date": "2025-03-12",
+        "time": "11:00:00"
+      }
+    }
+  },
+  "text": "ORTXXX, am 12.03.2025<BR><BR>Frau<BR>Testpatientin<BR>Straße XY/AB<BR>PLZ Ort<BR><BR> Patient(in): NN_TEST-0002 VN_TEST-0002 | geb. 03.09.1967<BR><BR> Fall: 20250310<BR><BR> Aufnahme am 10/03/2025 | Entlassen am 12/03/2025<BR><BR>Diagnosen:<BR>Symptomatische Cholezystolithiasis<BR>Z.n. laparoskopischer Cholezystektomie 10.03.2025<BR>Arterielle Hypertonie<BR>Z.n. Appendektomie 1998<BR><BR>Sehr geehrte Damen und Herren!<BR><BR>Wir berichten über den Aufenthalt von Frau NN_TEST-0002, geb. am 03.09.1967, welche zur elektiven laparoskopischen Cholezystektomie an unserer Abteilung aufgenommen war.<BR><BR>Anamnese:<BR>Seit ca. 4 Monaten bestehen rezidivierende kolikartige Schmerzen im rechten Oberbauch bei sonographisch gesicherter Cholezystolithiasis.<BR><BR>Größe: 168 cm<BR>Gewicht: 74 kg<BR>BMI: 26,2<BR><BR>Körpertemperatur: 36.6°C<BR>EKG: HF 70/min, Sinusrhythmus<BR><BR>Erhobene Befunde:<BR><BR>Labor:<BR>Gem. Beilage.<BR><BR>Sonographie vom 20.01.2025:<BR>Zusammenfassung:<BR>Cholezystolithiasis ohne Zeichen der Cholezystitis.<BR><BR>Therapie und Verlauf:<BR>Am 10.03.2025 erfolgte die komplikationslose laparoskopische Cholezystektomie. Postoperativ bestand eine gute Schmerzfreiheit unter Metamizol, der Kostaufbau erfolgte planmäßig und die Mobilisierung war ausreichend. Während des Aufenthalts erhielt die Patientin eine Thromboseprophylaxe mit Enoxaparin 40 mg s.c. 0-0-1. Frau NN_TEST-0002 konnte am 12.03.2025 nach Hause entlassen werden.<BR><BR>Weiteres Procedere:<BR>Fadenentfernung beim Hausarzt in 10 Tagen. Wiedervorstellung in der chirurgischen Ambulanz in 6 Wochen.<BR><BR>Entlassungsmedikation:<BR>Applikation mo mi ab na Einheit Info<BR>Bisoprolol 5mg oral 1 0 0 0 ST<BR>Pantoprazol 40mg oral 1 0 0 0 ST<BR>Metamizol 500mg oral 1 0 1 0 ST bei Bedarf<BR>Mit freundlichen Grüßen<BR><BR> OA XYZ Prim. Dr. X.<BR><BR>Laborbefund<BR><BR>NN_TEST-0002 VN_TEST-0002 | geb. 03.09.1967<BR><BR> Parameter<BR>Fettgedruckte Werte außerhalb des Referenzbereichs. Ausgangswert Kontrollwert Grenzwert Einheit"
+}

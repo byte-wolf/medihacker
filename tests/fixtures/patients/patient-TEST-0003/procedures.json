@@ -1,0 +1,288 @@
+{
+  "metadata": {
+    "status": [
+      "positive",
+      "statuspost",
+      "recommended"
+    ]
+  },
+  "values": [
+    {
+      "id": "p_wnJuelc5m6N9EqfNSR6gPT8q7b",
+      "name": "DIAGNOSTIK",
+      "values": [
+        {
+          "id": "p_LuHlywDznkD_2jOju_vgJLG8Gx",
+          "name": "Andere Diagnostik - Verdauungstrakt",
+          "values": [
+            {
+              "id": "p_coDTpCQsQdAO3GQQPCui4XPWul_DK110",
+              "name": "Koloskopie",
+              "status": "statuspost",
+              "code": {
+                "catalog": "MEL",
+                "value": "DK110",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_nLVGyq2_LTukdN6SR2ABq1SHX6",
+                  "name": "Koloskopie",
+                  "text": "Koloskopie",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030102"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "p_JnF_-tvhMli6J4nlKSlGJFuChg_DH510",
+              "name": "Histologische Untersuchung",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "DH510",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_IDP3zxT4KM56c-gJF-oc9DDBrb",
+                  "name": "Histologie",
+                  "text": "Histologie",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030101",
+                    "91030102"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "p_Yx7inGhMInVfFr8jyTt0heaJEI_DL110",
+              "name": "Blutbild",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "DL110",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_d1pRh4bZI64adpc3jR8S_Py-nJ",
+                  "name": "Blutbild vor Zyklus 2",
+                  "text": "Blutbild vor Zyklus 2",
+                  "date": {
+                    "value": "2025-04-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030104"
+                  ]
+                },
+                {
+                  "id": "p_AIt9_SF88d4gfqxE9jPGi_6w3C",
+                  "name": "Blutbild vor Zyklus 3",
+                  "text": "Blutbild vor Zyklus 3",
+                  "date": {
+                    "value": "2025-04-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030105"
+                  ]
+                },
+                {
+                  "id": "p_R7OxdDLrKbqEETorUsjNwL--Y-",
+                  "name": "Blutbildkontrolle vor jedem Zyklus",
+                  "text": "Blutbildkontrolle vor jedem Zyklus",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030103"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p_E4njp1Zha_9rIdGlRjKvE8H-Uo",
+      "name": "OPERATIONEN",
+      "values": [
+        {
+          "id": "p_q0XjZtK56ljrM9PW0EyZN4_Dwi",
+          "name": "Operationen - Verdauungstrakt",
+          "values": [
+            {
+              "id": "p_KQx3bmzNP4wPSkxCMHinvfX5Uo_EF310",
+              "name": "Hemikolektomie rechts",
+              "status": "statuspost",
+              "code": {
+                "catalog": "MEL",
+                "value": "EF310",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_LuuGURDPO6R2p2a0aMrkViRfnz",
+                  "name": "laparoskopische Hemikolektomie rechts am 03.02.2025",
+                  "text": "laparoskopische Hemikolektomie rechts am 03.02.2025",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030102"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "p_gUvBZ8svXC5xds5L-0RlAbvn7j_EG120",
+              "name": "Port-a-Cath-Anlage",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "EG120",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_LcnqMLIkGV3xC3cMgZRec8tLLy",
+                  "name": "Anlage eines Port-a-Cath rechts subklavisch",
+                  "text": "Anlage eines Port-a-Cath rechts subklavisch",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030103"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p_wbjSzG0SnVRLG6Md1QrX7UE0fd",
+      "name": "THERAPIE",
+      "values": [
+        {
+          "id": "p_zHPQHxUJnKDYS_WGQsJ_hBBTmR",
+          "name": "Chemotherapie",
+          "values": [
+            {
+              "id": "p_5adSlUaszOVRm2dCdXEC7pPSeX_TK110",
+              "name": "Chemotherapie XELOX Zyklus",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "TK110",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_h9fPVJrx5DJ9E0M1NioroLAxb_",
+                  "name": "XELOX, Zyklus 1 von 6",
+                  "text": "XELOX, Zyklus 1 von 6",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030103"
+                  ]
+                },
+                {
+                  "id": "p_FnQfj8QwiUpurOpd2Hie6GJ5bg",
+                  "name": "Zyklus 2",
+                  "text": "Zyklus 2",
+                  "date": {
+                    "value": "2025-04-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030104"
+                  ]
+                },
+                {
+                  "id": "p_nShJYzQcExRzQ570T9BbZxv8zi",
+                  "name": "Zyklus 3",
+                  "text": "Zyklus 3",
+                  "date": {
+                    "value": "2025-04-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030105"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "p_0tL2zLm8KC2rIA5G80hLFj40-F_TK100",
+              "name": "Adjuvante Chemotherapie",
+              "status": "recommended",
+              "code": {
+                "catalog": "MEL",
+                "value": "TK100",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_vUWvzAgKU9CJOWQ919CJkGGw74",
+                  "name": "adjuvante Chemotherapie nach Schema XELOX über 6 Zyklen",
+                  "text": "adjuvante Chemotherapie nach Schema XELOX über 6 Zyklen",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030102"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "p_wC1y8twsYhkZVjBd24cYp-j8sJ_TG510",
+              "name": "Antibiotische Therapie i.v.",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "TG510",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_jP1rWEy-S-X1nVgXSzL9Rt9YtA",
+                  "name": "antibiotische Therapie mit Piperacillin/Tazobactam i.v.",
+                  "text": "antibiotische Therapie mit Piperacillin/Tazobactam i.v.",
+                  "date": {
+                    "value": "2025-05-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030107"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

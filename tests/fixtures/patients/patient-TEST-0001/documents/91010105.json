@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91010105",
+    "title": "Ambulanter Patientenbrief",
+    "version": "1",
+    "date": "2024-07-08",
+    "type": "Ambulanzbrief(Inter.)",
+    "group": "Patientenbrief ambulant",
+    "division": "Innere Medizin - Allgemein",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Allgemeine internistische Ambulanz",
+    "admission": {
+      "id": "TEST-0102",
+      "type": "outpatient",
+      "admission": {
+        "date": "2024-07-08",
+        "time": "10:30:00"
+      },
+      "discharge": {
+        "date": "2024-07-08",
+        "time": "11:45:00"
+      }
+    }
+  },
+  "text": "Herr<BR>Testpatient<BR>Straße XY/AB<BR>PLZ Ort<BR><BR> Patient(in): NN_TEST-0001 VN_TEST-0001 | geb. 14.02.1949<BR><BR> Fall: 20240708<BR><BR>XXX, am 08.07.2024<BR><BR>Ambulanter Patientenbrief<BR><BR>Wir berichten über den ambulanten Besuch von Herrn Testpatient, geb 14.02.1949, welcher am 08.07.2024 an unserer Abteilung in Behandlung war.<BR><BR>Diagnosen:<BR>Arterielle Hypertonie<BR>Diabetes mellitus Typ II<BR>COPD GOLD II<BR>Chronische Niereninsuffizienz Stadium G3a<BR>Z.n. inferiorem Hinterwandinfarkt 2018<BR>Karotisstenose<BR>Adipositas<BR><BR>Allergien:<BR>Jodhaltiges Kontrastmittel (Exanthem)<BR><BR>Vitalparameter:<BR>Größe: 172 cm<BR>Gewicht: 85 kg<BR>BMI: 28,7<BR>Körpertemperatur: 36.6°C<BR><BR>Befunde:<BR>RR: 152/88 mmHg<BR>HF: 76/min<BR><BR>Verlauf:<BR>Der Patient kommt zur Verlaufskontrolle nach dem stationären Aufenthalt im März 2024. Der Blutdruck ist weiterhin grenzwertig eingestellt. Die inhalative Therapie wird gut vertragen, die Belastungsdyspnoe ist rückläufig. Eine Nierenkontrolle wurde angeordnet.<BR><BR>Procedere:<BR>Blutdrucktagebuch, nächste Kontrolle in 3 Monaten.<BR><BR>Mit kollegialen Grüßen,<BR><BR>ARZT XX"
+}

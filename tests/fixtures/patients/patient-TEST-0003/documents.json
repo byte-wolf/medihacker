@@ -1,0 +1,165 @@
+{
+  "documents": [
+    {
+      "id": "91030101",
+      "title": "Histologie-Befund",
+      "version": "1",
+      "date": "2025-02-07",
+      "type": "HistoBefund",
+      "group": "Befund",
+      "division": "Sonstige",
+      "hospital": "Testklinikum Musterstadt",
+      "department": "Pathologisches Institut",
+      "admission": {
+        "id": "TEST-0301",
+        "type": "inpatient",
+        "admission": {
+          "date": "2025-02-03",
+          "time": "08:20:00"
+        },
+        "discharge": {
+          "date": "2025-02-10",
+          "time": "10:45:00"
+        }
+      }
+    },
+    {
+      "id": "91030102",
+      "title": "Stat. Patientenbrief (Interne)",
+      "version": "1",
+      "date": "2025-02-10",
+      "type": "Arztbrief(Inter.)",
+      "group": "Patientenbrief",
+      "division": "Chirurgie",
+      "hospital": "Testklinikum Musterstadt",
+      "department": "Abteilung für Allgemein- und Viszeralchirurgie",
+      "admission": {
+        "id": "TEST-0301",
+        "type": "inpatient",
+        "admission": {
+          "date": "2025-02-03",
+          "time": "08:20:00"
+        },
+        "discharge": {
+          "date": "2025-02-10",
+          "time": "10:45:00"
+        }
+      }
+    },
+    {
+      "id": "91030103",
+      "title": "Ambulanter Patientenbrief",
+      "version": "1",
+      "date": "2025-03-17",
+      "type": "Ambulanzbrief(Inter.)",
+      "group": "Patientenbrief ambulant",
+      "division": "Onkologie/Hämatologie/Strahlentherapie",
+      "hospital": "Testklinikum Musterstadt",
+      "department": "Onkologische Ambulanz",
+      "admission": {
+        "id": "TEST-0302",
+        "type": "outpatient",
+        "admission": {
+          "date": "2025-03-17",
+          "time": "09:00:00"
+        },
+        "discharge": {
+          "date": "2025-03-17",
+          "time": "13:30:00"
+        }
+      }
+    },
+    {
+      "id": "91030104",
+      "title": "Ambulanter Patientenbrief",
+      "version": "1",
+      "date": "2025-04-07",
+      "type": "Ambulanzbrief(Inter.)",
+      "group": "Patientenbrief ambulant",
+      "division": "Onkologie/Hämatologie/Strahlentherapie",
+      "hospital": "Testklinikum Musterstadt",
+      "department": "Onkologische Ambulanz",
+      "admission": {
+        "id": "TEST-0303",
+        "type": "outpatient",
+        "admission": {
+          "date": "2025-04-07",
+          "time": "09:10:00"
+        },
+        "discharge": {
+          "date": "2025-04-07",
+          "time": "13:00:00"
+        }
+      }
+    },
+    {
+      "id": "91030105",
+      "title": "Ambulanter Patientenbrief",
+      "version": "1",
+      "date": "2025-04-28",
+      "type": "Ambulanzbrief(Inter.)",
+      "group": "Patientenbrief ambulant",
+      "division": "Onkologie/Hämatologie/Strahlentherapie",
+      "hospital": "Testklinikum Musterstadt",
+      "department": "Onkologische Ambulanz",
+      "admission": {
+        "id": "TEST-0304",
+        "type": "outpatient",
+        "admission": {
+          "date": "2025-04-28",
+          "time": "09:05:00"
+        },
+        "discharge": {
+          "date": "2025-04-28",
+          "time": "12:50:00"
+        }
+      }
+    },
+    {
+      "id": "91030106",
+      "title": "Laborbefund",
+      "version": "1",
+      "date": "2025-05-06",
+      "type": "Laborbefund",
+      "group": "Befund",
+      "division": "Sonstige",
+      "hospital": "Testklinikum Musterstadt",
+      "department": "Zentrallabor",
+      "admission": {
+        "id": "TEST-0305",
+        "type": "inpatient",
+        "admission": {
+          "date": "2025-05-06",
+          "time": "16:40:00"
+        },
+        "discharge": {
+          "date": "2025-05-12",
+          "time": "11:15:00"
+        }
+      }
+    },
+    {
+      "id": "91030107",
+      "title": "Stat. Patientenbrief (Interne)",
+      "version": "1",
+      "date": "2025-05-12",
+      "type": "Arztbrief(Inter.)",
+      "group": "Patientenbrief",
+      "division": "Onkologie/Hämatologie/Strahlentherapie",
+      "hospital": "Testklinikum Musterstadt",
+      "department": "3. Medizinische Abteilung mit Onkologie",
+      "admission": {
+        "id": "TEST-0305",
+        "type": "inpatient",
+        "admission": {
+          "date": "2025-05-06",
+          "time": "16:40:00"
+        },
+        "discharge": {
+          "date": "2025-05-12",
+          "time": "11:15:00"
+        }
+      }
+    }
+  ]
+}

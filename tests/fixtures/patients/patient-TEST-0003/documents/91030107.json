@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91030107",
+    "title": "Stat. Patientenbrief (Interne)",
+    "version": "1",
+    "date": "2025-05-12",
+    "type": "Arztbrief(Inter.)",
+    "group": "Patientenbrief",
+    "division": "Onkologie/Hämatologie/Strahlentherapie",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "3. Medizinische Abteilung mit Onkologie",
+    "admission": {
+      "id": "TEST-0305",
+      "type": "inpatient",
+      "admission": {
+        "date": "2025-05-06",
+        "time": "16:40:00"
+      },
+      "discharge": {
+        "date": "2025-05-12",
+        "time": "11:15:00"
+      }
+    }
+  },
+  "text": "ORTXXX, am 12.05.2025<BR><BR>Herr<BR>Testpatient<BR>Straße XY/AB<BR>PLZ Ort<BR><BR> Patient(in): NN_TEST-0003 VN_TEST-0003 | geb. 30.06.1957<BR><BR> Fall: 20250506<BR><BR> Aufnahme am 06/05/2025 | Entlassen am 12/05/2025<BR><BR>Diagnosen:<BR>Febrile Neutropenie CTC Grad IV nach 3. Zyklus XELOX<BR>Adenokarzinom des Colon ascendens pT3 pN1 (2/24) cM0 G2 R0<BR>Z.n. Hemikolektomie rechts 02/2025<BR>Art. Hypertonie<BR><BR>Allergien:<BR>Jodhaltiges Kontrastmittel (Exanthem)<BR><BR>Sehr geehrte Damen und Herren!<BR><BR>Wir berichten über den Aufenthalt von Herrn NN_TEST-0003, geb. am 30.06.1957, welcher mit Fieber bis 38,9°C acht Tage nach dem 3. Zyklus der adjuvanten Chemotherapie aufgenommen war.<BR><BR>Größe: 178 cm<BR>Gewicht: 78 kg<BR>BMI: 24,6<BR><BR>Körpertemperatur: 38.9°C<BR>EKG: HF 96/min, Sinusrhythmus<BR><BR>Erhobene Befunde:<BR><BR>Labor vom 06.05.2025:<BR>Zusammenfassung:<BR>Leukopenie 1,9 G/l mit Neutropenie 0,7 G/l, Thrombozytopenie 92 G/l, CRP 86 mg/l.<BR><BR>Therapie und Verlauf:<BR>Bei febriler Neutropenie erfolgte die sofortige antibiotische Therapie mit Piperacillin/Tazobactam i.v. sowie G-CSF (Filgrastim) s.c. Ein Fokus konnte nicht erhoben werden. Seit dem 09.05.2025 ist der Patient afebril, die Blutwerte erholen sich (Leukozyten 4,6 G/l am 11.05.2025).<BR>Herr NN_TEST-0003 konnte am 12.05.2025 nach Hause entlassen werden.<BR><BR>Weiteres Procedere:<BR>Zyklus 4 verschoben auf den 26.05.2025 mit Dosisreduktion von Oxaliplatin um 25%.<BR><BR>Entlassungsmedikation:<BR>Applikation mo mi ab na Einheit Info<BR>Ramipril 5mg oral 1 0 0 0 ST<BR>Ondansetron 8mg oral 1 0 1 0 ST bei Bedarf<BR>Metamizol 500mg oral 1 0 1 0 ST bei Bedarf<BR>Mit freundlichen Grüßen<BR><BR> OA XYZ Prim. Dr. X.<BR><BR>Laborbefund<BR><BR>NN_TEST-0003 VN_TEST-0003 | geb. 30.06.1957<BR><BR> Parameter<BR>Fettgedruckte Werte außerhalb des Referenzbereichs. Ausgangswert Kontrollwert Grenzwert Einheit"
+}

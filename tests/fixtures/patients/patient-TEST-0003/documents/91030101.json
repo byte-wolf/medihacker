@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91030101",
+    "title": "Histologie-Befund",
+    "version": "1",
+    "date": "2025-02-07",
+    "type": "HistoBefund",
+    "group": "Befund",
+    "division": "Sonstige",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Pathologisches Institut",
+    "admission": {
+      "id": "TEST-0301",
+      "type": "inpatient",
+      "admission": {
+        "date": "2025-02-03",
+        "time": "08:20:00"
+      },
+      "discharge": {
+        "date": "2025-02-10",
+        "time": "10:45:00"
+      }
+    }
+  },
+  "text": "Herr<BR>Testpatient<BR>Straße XY/AB<BR>PLZ Ort<BR><BR> Patient(in): NN_TEST-0003 VN_TEST-0003 | geb. 30.06.1957<BR><BR> Fall: 20250203<BR><BR>Ort, am 07.02.2025<BR><BR>Histopathologischer Befund<BR><BR>Zuweiser: Dr Arzt<BR>Entnahmedatum: 03.02.2025<BR>Untersuchungsmaterial/Lokalisation: Hemikolektomiepräparat, Colon ascendens<BR>Entnahmetechnik: Resektat<BR><BR>Makroskopischer Befund:<BR>30 cm langes Kolonsegment mit exophytischem Tumor von 4,2 cm Durchmesser, 12 cm vom oralen Resektionsrand entfernt.<BR><BR>Mikroskopischer Befund:<BR>Mäßig differenziertes Adenokarzinom des Kolons mit Infiltration der Subserosa. 2 von 24 beigebgebenen regionären Lymphknoten metastasiert. Resektion in toto (R0).<BR><BR>Molekularpathologie:<BR>Mikrosatellitenstabiles Karzinom (MSS). KRAS-Mutation in Exon 2 (Codon 12), BRAF Wildtyp.<BR><BR>Zusammenfassung:<BR><BR>Mäßig differenziertes Adenokarzinom des Colon ascendens, pT3 pN1 (2/24) cM0 G2 R0.<BR>Befundet: Dr Arzt<BR>Vidiert: Dr. Arzt"
+}

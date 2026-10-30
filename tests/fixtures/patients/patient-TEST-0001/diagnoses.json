@@ -1,0 +1,473 @@
+{
+  "metadata": {
+    "status": [
+      "positive",
+      "negative",
+      "suspected",
+      "statuspost"
+    ]
+  },
+  "values": [
+    {
+      "id": "d_ObroVR5fBbnGbmPIoLZaZSvj9v",
+      "name": "HERZ-KREISLAUF-ERKRANKUNGEN",
+      "values": [
+        {
+          "id": "d_fg2MZUI-yJ1N3KTcosfogrOxxn",
+          "name": "Arterielle Hypertonie",
+          "values": [
+            {
+              "id": "d_td48fFeWXiEJq3BnIUmt_PCHho_I10.90",
+              "name": "Arterielle Hypertonie mit hypertensiver Entgleisung",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "I10.90",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_r7PMkUky_OJR1Xocurn84uPz6D",
+                  "name": "hypertensive Entgleisung",
+                  "text": "hypertensive Entgleisung",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010101",
+                    "91010102",
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "d_qpJqL5zo_GfdhOYBey_H-3aURI",
+                  "name": "Arterielle Hypertonie",
+                  "text": "Arterielle Hypertonie",
+                  "date": {
+                    "value": "2024-07-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010105"
+                  ]
+                },
+                {
+                  "id": "d_rPhBD94qGl63tOMjWIXHaub741",
+                  "name": "Arterielle Hypertonie",
+                  "text": "Arterielle Hypertonie",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "d_ph4pMNALH7nTpzQtuWeD__enq7_N18.3",
+              "name": "Stadium G3a",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "N18.3",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_vLooeOo53epQni7KEYZmgBBDUR",
+                  "name": "Chronische Niereninsuffizienz Stadium G3a",
+                  "text": "Chronische Niereninsuffizienz Stadium G3a",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "d_-gzv3pmCBrp7C3Jd_1-72kFnzd",
+                  "name": "Chronische Niereninsuffizienz Stadium G3a",
+                  "text": "Chronische Niereninsuffizienz Stadium G3a",
+                  "date": {
+                    "value": "2024-07-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010105",
+                    "91010106"
+                  ]
+                },
+                {
+                  "id": "d_y_qYDB9_JTjs9LIVdLG2k9flMR",
+                  "name": "Chronische Niereninsuffizienz Stadium G3a",
+                  "text": "Chronische Niereninsuffizienz Stadium G3a",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "d_44xk1TN_Pa0tQ8ihgJrMTnOqF5",
+          "name": "Ischämische Herzkrankheit",
+          "values": [
+            {
+              "id": "d_DtYobmv39rPz-I8h-l9qgBUuMG_I25.2",
+              "name": "Z.n. inferiorem Hinterwandinfarkt 2018",
+              "status": "statuspost",
+              "code": {
+                "catalog": "ICD10",
+                "value": "I25.2",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_2fBraXOqVJBae45I1Ljit5Y35n",
+                  "name": "Z.n. inferiorem Hinterwandinfarkt 2018",
+                  "text": "Z.n. inferiorem Hinterwandinfarkt 2018",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "d_pgX4ANj73-Z4bVv7Z3ZrYg32o0",
+                  "name": "Z.n. inferiorem Hinterwandinfarkt 2018",
+                  "text": "Z.n. inferiorem Hinterwandinfarkt 2018",
+                  "date": {
+                    "value": "2024-07-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010105"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "d_TeAIAnA5LS2WyawW29AVIMooBb_I65.2",
+              "name": "Karotisstenose",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "I65.2",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_yKqTa7IUVQxeQvu2UttAzsiA8R",
+                  "name": "50%ige Stenose der A. carotis interna links",
+                  "text": "50%ige Stenose der A. carotis interna links",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010101"
+                  ]
+                },
+                {
+                  "id": "d_5NtJasBLPDCnE5YkfGOv0WRomb",
+                  "name": "Karotisstenose rechts (ca. 50%)",
+                  "text": "Karotisstenose rechts (ca. 50%)",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "d_pE2eAOmSFpPaWXgBl9Hdp2DZQ_",
+                  "name": "Karotisstenose",
+                  "text": "Karotisstenose",
+                  "date": {
+                    "value": "2024-07-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010105"
+                  ]
+                },
+                {
+                  "id": "d_M85NUG1J5VEqpOXHOresruIioS",
+                  "name": "Karotisstenose links (ca. 50%)",
+                  "text": "Karotisstenose links (ca. 50%)",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d_vRzkDiNbzKbPiDdynuWyW1qfbI",
+      "name": "ENDOKRINE UND STOFFWECHSELERKRANKUNGEN",
+      "values": [
+        {
+          "id": "d__wPXPW8mbjiQKnSXkMVh09gbtR",
+          "name": "Diabetes mellitus",
+          "values": [
+            {
+              "id": "d_IWlnEU-HsgmolaIr-JSi3F3KEC_E11.9",
+              "name": "Diabetes mellitus Typ II",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "E11.9",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_9zTeSOgX2Mh-YwBxGv20g9O1TB",
+                  "name": "Diabetes mellitus Typ II",
+                  "text": "Diabetes mellitus Typ II",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "d_U9rZIEBUr21f4pDNyb2lnZv4Sr",
+                  "name": "Diabetes mellitus Typ II",
+                  "text": "Diabetes mellitus Typ II",
+                  "date": {
+                    "value": "2024-07-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010105"
+                  ]
+                },
+                {
+                  "id": "d_a8fUFWSPFYfoStLEHBVvSrqhmh",
+                  "name": "Diabetes mellitus Typ II",
+                  "text": "Diabetes mellitus Typ II",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "d_ld8E0zeOdjKt_hWMYoHCC3_tNN",
+          "name": "Fettstoffwechselstörungen",
+          "values": [
+            {
+              "id": "d_0ektVKshSS8GFfcBuqf91K8_Rr_E78.5",
+              "name": "Hyperlipidämie",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "E78.5",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_V8nnQkleaCMsoTSDR7YOQ7BIP6",
+                  "name": "Hyperlipidämie",
+                  "text": "Hyperlipidämie",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010104"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "d_1FTGr1-pJy6G43rYA7G0stL_Fj_E66.9",
+              "name": "Adipositas",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "E66.9",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_cWEP6lLOFfwvQ2vSs80JDuu-zG",
+                  "name": "Adipositas",
+                  "text": "Adipositas",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "d__QIAmxWOWnJ7CSh-MpkJJf_6Dh",
+                  "name": "Adipositas",
+                  "text": "Adipositas",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d_IwJIDumSKoXcVTZyQ0-FcGL33C",
+      "name": "ERKRANKUNGEN DER ATEMWEGE",
+      "values": [
+        {
+          "id": "d_HDUAPjE-vSP222yuTW3ceO6_VB",
+          "name": "Chronisch obstruktive Lungenerkrankung",
+          "values": [
+            {
+              "id": "d_F5sZMwONRUQ1O5PtCLUfsVliI-_J44.9",
+              "name": "COPD GOLD II",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "J44.9",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_gO3CS5cYsxjHKYkf3Np6jDqqaZ",
+                  "name": "COPD GOLD II",
+                  "text": "COPD GOLD II",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010103",
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "d_5RkCwLOBq2myEpKK_s-QrKRVdM",
+                  "name": "COPD GOLD II",
+                  "text": "COPD GOLD II",
+                  "date": {
+                    "value": "2024-07-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010105"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "d_08gob4J6oe06tAi8tFg4iDQV8A_J44.1",
+              "name": "COPD mit akuter Exazerbation",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "J44.1",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_H61q0EZVvh9j93U-9ZxYaIDRRL",
+                  "name": "COPD GOLD II mit akuter Exazerbation",
+                  "text": "COPD GOLD II mit akuter Exazerbation",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010107",
+                    "91010108"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "d_YpiKeWnn3vj5a2jiqlQbaYpuld_J18.9",
+              "name": "Pneumonie",
+              "status": "negative",
+              "code": {
+                "catalog": "ICD10",
+                "value": "J18.9",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_VjAgFA8cxC82gRI-wzmh2DQPMb",
+                  "name": "Kein radiologischer Nachweis einer Pneumonie",
+                  "text": "Kein radiologischer Nachweis einer Pneumonie",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010107"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "d_OJu_HDMgS2PXUnCovDAgBQxj7e_G47.3",
+              "name": "Schlafapnoe",
+              "status": "suspected",
+              "code": {
+                "catalog": "ICD10",
+                "value": "G47.3",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_VHVEXGgG8cY3HD9dEzRF6efMer",
+                  "name": "Vd.a. Schlafapnoe",
+                  "text": "Vd.a. Schlafapnoe",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010103"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
