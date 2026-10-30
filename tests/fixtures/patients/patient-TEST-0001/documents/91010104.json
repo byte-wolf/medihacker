@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91010104",
+    "title": "Stat. Patientenbrief (Interne)",
+    "version": "1",
+    "date": "2024-03-15",
+    "type": "Arztbrief(Inter.)",
+    "group": "Patientenbrief",
+    "division": "Innere Medizin - Kardiologie, Angiologie",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "1. Medizinische Abteilung",
+    "admission": {
+      "id": "TEST-0101",
+      "type": "inpatient",
+      "admission": {
+        "date": "2024-03-12",
+        "time": "09:15:00"
+      },
+      "discharge": {
+        "date": "2024-03-15",
+        "time": "11:30:00"
+      }
+    }
+  },
+  "text": "ORTXXX, am 15.03.2024<BR><BR>Herr<BR>Testpatient<BR>Straße XY/AB<BR>PLZ Ort<BR><BR> Patient(in): NN_TEST-0001 VN_TEST-0001 | geb. 14.02.1949<BR><BR> Fall: 20240312<BR><BR> Aufnahme am 12/03/2024 | Entlassen am 15/03/2024<BR><BR>Diagnosen:<BR>Arterielle Hypertonie mit hypertensiver Entgleisung<BR>Karotisstenose rechts (ca. 50%)<BR>Diabetes mellitus Typ II<BR>COPD GOLD II<BR>Chronische Niereninsuffizienz Stadium G3a<BR>Z.n. inferiorem Hinterwandinfarkt 2018<BR>Hyperlipidämie<BR>Adipositas<BR><BR>Allergien:<BR>Penicillin-Allergie (Exanthem)<BR><BR>Sehr geehrte Damen und Herren!<BR><BR>Wir berichten über den Aufenthalt von Herrn NN_TEST-0001, geb. am 14.02.1949, welcher bei einer hypertensiven Entgleisung mit Werten bis 190/110 mmHg an unserer Abteilung aufgenommen war.<BR><BR>Anamnese:<BR>Seit Wochen berichtet der Patient über morgendliche Kopfschmerzen und zunehmende Belastungsdyspnoe. Der Hausarzt maß wiederholt systolische Werte über 180 mmHg.<BR><BR>Größe: 172 cm<BR>Gewicht: 88 kg<BR>BMI: 25,4<BR><BR>Körpertemperatur: 36.7°C<BR>EKG: HF 78/min, Sinusrhythmus<BR><BR>Erhobene Befunde:<BR><BR>Labor:<BR>Gem. Beilage.<BR><BR>Duplexsonographie der hirnversorgenden Arterien vom 13.03.2024:<BR>Zusammenfassung:<BR>Mäßiggradige, etwa 50%ige Abgangsstenose der Arteria carotis interna links.<BR><BR>24h-RR-Messung vom 14.03.2024:<BR>Zusammenfassung:<BR>24-Mittelwert 152/91 mmHg, Spitzen bis 186/104 mmHg.<BR><BR>Pneumologisches Konsil vom 14.03.2024:<BR>Zusammenfassung:<BR>COPD GOLD II, FEV1 62% des Sollwerts.<BR><BR>Therapie und Verlauf:<BR>Unter Umstellung der antihypertensiven Therapie auf Ramipril 5 mg 1-0-0 und Amlodipin 5 mg 0-1-0 normalisierte sich der Blutdruck. Der Patient wurde über Nikotinabstinenz aufgeklärt.<BR>Herr NN_TEST-0001 konnte am 15.03.2024 in gebessertem Allgemeinzustand entlassen werden.<BR><BR>Weiteres Procedere:<BR>Kontrolle der Nierenwerte und des HbA1c beim Hausarzt in 4 Wochen. Pneumologische Kontrolle in 6 Monaten.<BR><BR>Entlassungsmedikation:<BR>Applikation mo mi ab na Einheit Info<BR>Thrombo ASS 100mg oral 1 0 0 0 ST<BR>Glucophage 1000mg oral 1 0 1 0 ST<BR>Ramipril 5mg oral 1 0 0 0 ST<BR>Amlodipin 5mg oral 0 1 0 0 ST<BR>Atorvastatin 40mg oral 0 0 1 0 ST<BR>Tiotropiumbromid 18mcg Inhalation 1 0 0 0 Kapseln<BR>Salbutamol Dosieraerosol 100mcg Inhalation 1 0 1 0 Hub<BR>Mit freundlichen Grüßen<BR><BR> OA XYZ Prim. Dr. X.<BR><BR>Laborbefund<BR><BR>NN_TEST-0001 VN_TEST-0001 | geb. 14.02.1949<BR><BR> Parameter<BR>Fettgedruckte Werte außerhalb des Referenzbereichs. Ausgangswert Kontrollwert Grenzwert Einheit"
+}

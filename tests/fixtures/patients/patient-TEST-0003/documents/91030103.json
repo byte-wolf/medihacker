@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91030103",
+    "title": "Ambulanter Patientenbrief",
+    "version": "1",
+    "date": "2025-03-17",
+    "type": "Ambulanzbrief(Inter.)",
+    "group": "Patientenbrief ambulant",
+    "division": "Onkologie/Hämatologie/Strahlentherapie",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Onkologische Ambulanz",
+    "admission": {
+      "id": "TEST-0302",
+      "type": "outpatient",
+      "admission": {
+        "date": "2025-03-17",
+        "time": "09:00:00"
+      },
+      "discharge": {
+        "date": "2025-03-17",
+        "time": "13:30:00"
+      }
+    }
+  },
+  "text": "Herr<BR>Testpatient<BR>Straße XY/AB<BR>PLZ Ort<BR><BR> Patient(in): NN_TEST-0003 VN_TEST-0003 | geb. 30.06.1957<BR><BR> Fall: 20250317<BR><BR>XXX, am 17.03.2025<BR><BR>Ambulanter Patientenbrief<BR><BR>Wir berichten über den ambulanten Besuch von Herrn Testpatient, geb 30.06.1957, welcher am 17.03.2025 an unserer Abteilung in Behandlung war.<BR><BR>Diagnosen:<BR>Adenokarzinom des Colon ascendens pT3 pN1 (2/24) cM0 G2 R0<BR>Z.n. Hemikolektomie rechts 02/2025<BR>Art. Hypertonie<BR><BR>Therapieprotokoll:<BR>Adjuvante Chemotherapie nach Schema XELOX, Zyklus 1 von 6:<BR>Oxaliplatin 130 mg/m² i.v. am Tag 1 (= 250 mg bei KOF 1,92 m²)<BR>Capecitabin 1000 mg/m² p.o. 2x täglich Tag 1-14 (= 2x 1000 mg)<BR>Zykluslänge 21 Tage<BR>Premedikation: Ondansetron 8 mg i.v., Dexamethason 8 mg i.v.<BR><BR>Eingriffe:<BR>Anlage eines Port-a-Cath rechts subklavisch, komplikationslos.<BR><BR>Vitalparameter:<BR>Größe: 178 cm<BR>Gewicht: 80 kg<BR>BMI: 25,2<BR>Körpertemperatur: 36.4°C<BR><BR>Verlauf:<BR>Erste Applikation gut vertragen, keine akute Reaktion.<BR><BR>Procedere:<BR>Zyklus 2 geplant für 07.04.2025. Blutbildkontrolle vor jedem Zyklus.<BR><BR>Mit kollegialen Grüßen,<BR><BR>ARZT XX"
+}

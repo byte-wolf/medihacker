@@ -1,0 +1,223 @@
+{
+  "scores": [
+    {
+      "name": "Blutdruck",
+      "unit": "mmHg",
+      "values": [
+        {
+          "id": "w_v-GF5cTOv3xEHXnBBJ0s0zGrG-",
+          "date": {
+            "value": "2025-01-xx",
+            "type": "document"
+          },
+          "value": "128|78",
+          "documentIds": [
+            "91020102"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Body-Mass-Index",
+      "unit": "kg/m2",
+      "values": [
+        {
+          "id": "w_PYvutLOYcU4Idtam6MQY6NNOSM",
+          "date": {
+            "value": "2025-01-xx",
+            "type": "document"
+          },
+          "value": "26,2",
+          "documentIds": [
+            "91020102"
+          ]
+        },
+        {
+          "id": "w_RnQDWglcX6Px0YJqtAuBP7dKch",
+          "date": {
+            "value": "2025-03-xx",
+            "type": "document"
+          },
+          "value": "26,2",
+          "documentIds": [
+            "91020106"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gewicht",
+      "unit": "kg",
+      "values": [
+        {
+          "id": "w_ZK6CayL8-EAgPnjaaRh9f3ibUp",
+          "date": {
+            "value": "2025-01-xx",
+            "type": "document"
+          },
+          "value": "74",
+          "documentIds": [
+            "91020102"
+          ]
+        },
+        {
+          "id": "w_UldXT2UfOTD7q9TaaP0ftUk3Fd",
+          "date": {
+            "value": "2025-02-xx",
+            "type": "document"
+          },
+          "value": "74",
+          "documentIds": [
+            "91020103"
+          ]
+        },
+        {
+          "id": "w_xKCRjZxPOAyY8YKsd-T0vM-1Mt",
+          "date": {
+            "value": "2025-03-xx",
+            "type": "document"
+          },
+          "value": "74",
+          "documentIds": [
+            "91020106"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Größe",
+      "unit": "m",
+      "values": [
+        {
+          "id": "w_B4yRM5ZsaqBL04c1Z3Kr2ZR6wf",
+          "date": {
+            "value": "2025-01-xx",
+            "type": "document"
+          },
+          "value": "1,68",
+          "documentIds": [
+            "91020102"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hämoglobin",
+      "unit": "g/dl",
+      "values": [
+        {
+          "id": "w_JZmW7oMRDnqWYDfZXoL54HELmm",
+          "date": {
+            "value": "2025-02-xx",
+            "type": "document"
+          },
+          "value": "13,1",
+          "documentIds": [
+            "91020104"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Herzfrequenz",
+      "unit": "/min",
+      "values": [
+        {
+          "id": "w_lSxKzHjc_xgOYjMwHbc_3FKqXB",
+          "date": {
+            "value": "2025-01-xx",
+            "type": "document"
+          },
+          "value": "72",
+          "documentIds": [
+            "91020102"
+          ]
+        },
+        {
+          "id": "w_8X09qcmlfdJ3D86eMzh9qKP9Qz",
+          "date": {
+            "value": "2025-02-xx",
+            "type": "document"
+          },
+          "value": "72",
+          "documentIds": [
+            "91020103"
+          ]
+        },
+        {
+          "id": "w_Ck9_ocqw551dYTP_djW8RtLWgu",
+          "date": {
+            "value": "2025-03-xx",
+            "type": "document"
+          },
+          "value": "70",
+          "documentIds": [
+            "91020106"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Körpertemperatur",
+      "unit": "°C",
+      "values": [
+        {
+          "id": "w_qhEkpjRaTmc7o734iCg71OCv0E",
+          "date": {
+            "value": "2025-01-xx",
+            "type": "document"
+          },
+          "value": "36,5",
+          "documentIds": [
+            "91020102"
+          ]
+        },
+        {
+          "id": "w_OjodTJj3rAjr1vkFu5h-d5QnEs",
+          "date": {
+            "value": "2025-03-xx",
+            "type": "document"
+          },
+          "value": "36,6",
+          "documentIds": [
+            "91020106"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Kreatinin",
+      "unit": "mg/dl",
+      "values": [
+        {
+          "id": "w_qmx__7gs5dUs-bZvia1HlB6nKi",
+          "date": {
+            "value": "2025-02-xx",
+            "type": "document"
+          },
+          "value": "0,8",
+          "documentIds": [
+            "91020104"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Thrombozyten",
+      "unit": "G/l",
+      "values": [
+        {
+          "id": "w_lXTmffMFrnNTZLmeUAUdZv13Fa",
+          "date": {
+            "value": "2025-02-xx",
+            "type": "document"
+          },
+          "value": "245",
+          "documentIds": [
+            "91020104"
+          ]
+        }
+      ]
+    }
+  ]
+}

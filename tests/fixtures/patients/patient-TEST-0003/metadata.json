@@ -1,0 +1,105 @@
+{
+  "fields": [
+    {
+      "type": "admission",
+      "values": [
+        {
+          "id": "TEST-0305",
+          "type": "inpatient",
+          "admission": {
+            "date": "2025-05-06",
+            "time": "16:40:00"
+          },
+          "discharge": {
+            "date": "2025-05-12",
+            "time": "11:15:00"
+          }
+        },
+        {
+          "id": "TEST-0304",
+          "type": "outpatient",
+          "admission": {
+            "date": "2025-04-28",
+            "time": "09:05:00"
+          },
+          "discharge": {
+            "date": "2025-04-28",
+            "time": "12:50:00"
+          }
+        },
+        {
+          "id": "TEST-0303",
+          "type": "outpatient",
+          "admission": {
+            "date": "2025-04-07",
+            "time": "09:10:00"
+          },
+          "discharge": {
+            "date": "2025-04-07",
+            "time": "13:00:00"
+          }
+        },
+        {
+          "id": "TEST-0302",
+          "type": "outpatient",
+          "admission": {
+            "date": "2025-03-17",
+            "time": "09:00:00"
+          },
+          "discharge": {
+            "date": "2025-03-17",
+            "time": "13:30:00"
+          }
+        },
+        {
+          "id": "TEST-0301",
+          "type": "inpatient",
+          "admission": {
+            "date": "2025-02-03",
+            "time": "08:20:00"
+          },
+          "discharge": {
+            "date": "2025-02-10",
+            "time": "10:45:00"
+          }
+        }
+      ]
+    },
+    {
+      "type": "documentType",
+      "values": [
+        {
+          "id": "Befund"
+        },
+        {
+          "id": "Patientenbrief"
+        },
+        {
+          "id": "Patientenbrief ambulant"
+        }
+      ]
+    },
+    {
+      "type": "division",
+      "values": [
+        {
+          "id": "Chirurgie"
+        },
+        {
+          "id": "Onkologie/Hämatologie/Strahlentherapie"
+        },
+        {
+          "id": "Sonstige"
+        }
+      ]
+    },
+    {
+      "type": "hospital",
+      "values": [
+        {
+          "id": "Testklinikum Musterstadt"
+        }
+      ]
+    }
+  ]
+}

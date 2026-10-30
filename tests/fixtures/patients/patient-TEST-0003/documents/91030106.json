@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91030106",
+    "title": "Laborbefund",
+    "version": "1",
+    "date": "2025-05-06",
+    "type": "Laborbefund",
+    "group": "Befund",
+    "division": "Sonstige",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Zentrallabor",
+    "admission": {
+      "id": "TEST-0305",
+      "type": "inpatient",
+      "admission": {
+        "date": "2025-05-06",
+        "time": "16:40:00"
+      },
+      "discharge": {
+        "date": "2025-05-12",
+        "time": "11:15:00"
+      }
+    }
+  },
+  "text": "Herr<BR>Testpatient<BR>Straße XY/AB<BR>PLZ Ort<BR><BR>OrtXX, am 06.05.2025<BR><BR>Laborbefund<BR><BR>Testpatient, geb 30.06.1957<BR>Patienten-ID: TEST-0003<BR>Fallzahl: 20250506<BR><BR>Parameter<BR>Fettgedruckte Werte außerhalb des Referenzbereichs. Ausgangswert Kontrollwert Grenzwert Einheit<BR><BR>Leukozyten 1,9 G/l (Referenz 4,0-10,0)<BR>Neutrophile absolut 0,7 G/l<BR>Hämoglobin 10,8 g/dl<BR>Thrombozyten 92 G/l (Referenz 150-350)<BR>CRP 86 mg/l (Referenz &lt; 5)<BR>Kreatinin 1,0 mg/dl<BR><BR>befundet: Dr. Arzt<BR>vidiert: Dr. Arzt"
+}

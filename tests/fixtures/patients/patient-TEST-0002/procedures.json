@@ -1,0 +1,222 @@
+{
+  "metadata": {
+    "status": [
+      "positive",
+      "statuspost",
+      "recommended"
+    ]
+  },
+  "values": [
+    {
+      "id": "p_u1aW1h7T5sxz_LxBrdg1s7prGm",
+      "name": "DIAGNOSTIK",
+      "values": [
+        {
+          "id": "p_x94ZO68JUdUCWPsd7iEvtV-qPt",
+          "name": "Andere Diagnostik - Abdomen",
+          "values": [
+            {
+              "id": "p_-pgjHR8UPWDJcYo6PtiqOSheHL_DU410",
+              "name": "Sonographie des Abdomens",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "DU410",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_Jzkkn5Fo6_CimfvfpqK4VAAHyv",
+                  "name": "Sonographie des Abdomens",
+                  "text": "Sonographie des Abdomens",
+                  "date": {
+                    "value": "2025-01-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020101"
+                  ]
+                },
+                {
+                  "id": "p_dr9iGO3nrpzC923bcT5ELaz702",
+                  "name": "Abdomensonographie",
+                  "text": "Abdomensonographie",
+                  "date": {
+                    "value": "2025-01-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020102"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "p_RmZVGn-t0ooWs8FloAQ8jzn-jd_DE510",
+              "name": "EKG",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "DE510",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_yoMatD9P4Epp9TtbFRAqQ7ocvA",
+                  "name": "EKG",
+                  "text": "EKG",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020103"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "p_0BdEx6mx5bAZXcce6qV5vr9NqT_KA310",
+              "name": "Präanästhesiologische Evaluation",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "KA310",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_dz54U_7vl7VcQyxvkarw9h9nw0",
+                  "name": "Präanästhesiologische Evaluation",
+                  "text": "Präanästhesiologische Evaluation",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020103"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p_uraW6O8boE99yqBF7lZV0XMuux",
+      "name": "OPERATIONEN",
+      "values": [
+        {
+          "id": "p_YfmWpecJu-4_qfgFTCoANRV2Qh",
+          "name": "Operationen - Gallenblase",
+          "values": [
+            {
+              "id": "p_hm-L7x3CqX8gMNnxjnqMPnauRl_EE240",
+              "name": "Laparoskopische Cholezystektomie",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "EE240",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_1sKxVmppj4Luz_GoZP_gE016cs",
+                  "name": "laparoskopische Cholezystektomie",
+                  "text": "laparoskopische Cholezystektomie",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020105",
+                    "91020106"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "p_a5B0z4DkaJP6fNxGjsH7gFZ9mi_EE150",
+              "name": "Appendektomie",
+              "status": "statuspost",
+              "code": {
+                "catalog": "MEL",
+                "value": "EE150",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_tnYJegzJOfkSAst9tKwA3_xmUn",
+                  "name": "Appendektomie 1998",
+                  "text": "Appendektomie 1998",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020103"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p_8-Ed7y5N0kYoz21lnzHyhpU5cJ",
+          "name": "Nachsorge",
+          "values": [
+            {
+              "id": "p_fCGcOfUXGdGy8i2_U0m-F96kY7_KA420",
+              "name": "Fadenentfernung",
+              "status": "recommended",
+              "code": {
+                "catalog": "MEL",
+                "value": "KA420",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_Wc1hMJOtALBQCCbNFpWXDlEgiB",
+                  "name": "Fadenentfernung beim Hausarzt in 10 Tagen",
+                  "text": "Fadenentfernung beim Hausarzt in 10 Tagen",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020106"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "p_3JL4g_OzZq_KxWClVd0qO-LQua_KA120",
+              "name": "Wiedervorstellung chirurgische Ambulanz",
+              "status": "recommended",
+              "code": {
+                "catalog": "MEL",
+                "value": "KA120",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_ewWk5r0jG6nqGuclk7R5kYhHOx",
+                  "name": "Wiedervorstellung in der chirurgischen Ambulanz in 6 Wochen",
+                  "text": "Wiedervorstellung in der chirurgischen Ambulanz in 6 Wochen",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91020106"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
