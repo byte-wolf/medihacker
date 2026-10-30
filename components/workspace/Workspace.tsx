@@ -180,7 +180,7 @@ export function Workspace(props: {
         </div>
       )}
       <div className={`workspace__grid${source ? " workspace__grid--source" : ""}`}>
-        <div className={`workspace__main${messages.some((m) => m.role === "user") ? " workspace__main--chatting" : ""}`}>
+        <div className="workspace__main">
           <BriefingView
             state={situationId ? briefing : { ...briefing, status: "idle" }}
             situation={situation}
