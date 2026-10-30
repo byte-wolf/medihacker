@@ -24,14 +24,9 @@ export function ensureTranslations(patient: PatientRecord): Promise<void> {
   const todo = patient.passages.filter((p) => !done.has(p.id));
   if (!todo.length) return Promise.resolve();
   const docs = [...new Set(todo.map((p) => p.docId))];
-  // One document at a time: translations are background work and must not crowd out briefing requests.
-  const job = (async () => {
-    // Small batches: long JSON answers from the fast model are more often malformed.
-    const batches = docs.flatMap((docId) => {
-      const all = todo.filter((p) => p.docId === docId);
-      return Array.from({ length: Math.ceil(all.length / 20) }, (_, i) => ({ docId, batch: all.slice(i * 20, i * 20 + 20) }));
-    });
-    for (const { docId, batch } of batches) {
+  const job = Promise.all(
+    docs.map(async (docId) => {
+      const batch = todo.filter((p) => p.docId === docId);
       const { system, user } = translationPrompt(batch);
       try {
         const { text } = await cachedComplete({
@@ -42,7 +37,7 @@ export function ensureTranslations(patient: PatientRecord): Promise<void> {
           json: true,
           fast: true,
           tag: "translate",
-          maxTokens: 3000,
+          maxTokens: 6000,
         });
         const map = parseJsonObject<{ translations?: Record<string, string> }>(text).translations ?? {};
         for (const p of batch) {
@@ -54,10 +49,12 @@ export function ensureTranslations(patient: PatientRecord): Promise<void> {
             .run();
         }
       } catch (err) {
-        console.error(`[translations] ${docId} failed:`, err instanceof Error ? err.message : err);
+        console.error(`[translations] ${docId} failed:`, err);
       }
-    }
-  })().finally(() => running.delete(patient.id));
+    }),
+  )
+    .then(() => undefined)
+    .finally(() => running.delete(patient.id));
   running.set(patient.id, job);
   return job;
 }

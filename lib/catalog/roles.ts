@@ -239,7 +239,7 @@ const DEFAULT_PROFILE: SectionTemplate[] = [
 ];
 
 /** Situation templates add or prioritise categories when their trigger matches the situation text. */
-export const SITUATION_TEMPLATES: { id: string; trigger: RegExp; sections: SectionTemplate[]; excludeRoles?: string[] }[] = [
+export const SITUATION_TEMPLATES: { id: string; trigger: RegExp; sections: SectionTemplate[] }[] = [
   {
     id: "preop",
     trigger: /pre-?op|anaesth|anesth|surgery|operation|procedure|scheduled for/i,
@@ -252,10 +252,7 @@ export const SITUATION_TEMPLATES: { id: string; trigger: RegExp; sections: Secti
   },
   {
     id: "tumour",
-    // Mentioning the operation site ("removal of the breast") is not a reason to show tumour biology.
-    trigger: /tumou?r|cancer|carcinoma|oncolog|histolog|biopsy|receptor|staging/i,
-    // Tumour biology does not change these roles' decisions (e.g. receptor status for anaesthesia).
-    excludeRoles: ["Anaesthetist", "Emergency physician", "Ward nurse", "Clinical pharmacist"],
+    trigger: /tumou?r|cancer|carcinoma|oncolog|breast|histolog/i,
     sections: [
       { id: "tumour", title: "Tumour", items: ["tumour_histology", "tumour_receptors", "tumour_imaging"] },
       { id: "plan", title: "Plan", items: ["tumour_board", "planned_procedure"] },
@@ -317,11 +314,7 @@ export function deterministicPlan(roles: string[], situationText: string): Plann
     if (existing) existing.items.push(...tpl.items.filter((i) => !existing.items.includes(i)));
     else sections.push({ ...tpl, items: [...tpl.items] });
   };
-  for (const t of SITUATION_TEMPLATES) {
-    if (!t.trigger.test(situationText)) continue;
-    if (t.excludeRoles && roles.every((r) => t.excludeRoles!.includes(r))) continue;
-    t.sections.forEach(add);
-  }
+  for (const t of SITUATION_TEMPLATES) if (t.trigger.test(situationText)) t.sections.forEach(add);
   for (const role of roles) profileForRole(role).forEach(add);
   // Each category appears once, in the first section that lists it.
   const seen = new Set<string>();

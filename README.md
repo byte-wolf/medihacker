@@ -14,7 +14,7 @@ bun install
 cp .env.local.example .env.local
 ```
 
-Fill in the LLM settings in `.env.local` or `.env` (see [Configuration](#configuration)). Without them the app still runs, in keyword-retrieval mode.
+Fill in the LLM settings in `.env.local` (see [Configuration](#configuration)). Without them the app still runs, in keyword-retrieval mode.
 
 Put the hackathon data next to the code. It is **not** part of this repository and is gitignored:
 
@@ -42,11 +42,12 @@ bun run index
 
 | Variable | Purpose |
 |---|---|
-| `LLM_PROVIDER` | `gemini`, `openai-compatible`, or `mock` (no model: keyword retrieval) |
-| `GEMINI_API_KEY`, `GEMINI_MODEL` | Google Gemini API key and model (used through Google's OpenAI-compatible endpoint) |
-| `GEMINI_FAST_MODEL` | Optional faster model for planning and translation |
-| `GEMINI_BASE_URL` | Optional endpoint override |
-| `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` | Any other OpenAI-compatible endpoint, e.g. a local Ollama server |
+| `LLM_PROVIDER` | `bob` (IBM Bob inference API), `openai-compatible`, or `mock` (no model: keyword retrieval) |
+| `BOB_BASE_URL`, `BOB_API_KEY`, `BOB_MODEL` | Bob endpoint (OpenAI-style `…/chat/completions`), key and model |
+| `BOB_TEAM_ID`, `BOB_INSTANCE_ID` | Sent as `x-team-id` / `x-instance-id` headers when set |
+| `BOB_FAST_MODEL` | Optional faster model for planning and translation |
+| `BOB_EXTRA_HEADERS` | Optional JSON object of extra headers |
+| `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` | Any other OpenAI-compatible endpoint |
 | `DATABASE_URL` | SQLite file (default `./medihacker.db`) |
 | `PATIENT_DATA_DIR` | Patient folders (default `./data/data`) |
 | `SESSION_SECRET` | Signs the session cookie |
@@ -74,7 +75,7 @@ Browser (Next.js App Router + Carbon)                 Server (Next.js route hand
           data/data/patient-*/documents/*.json ──▶ parse + segment ──┤──▶ SQLite (Drizzle): users, situations,
                                                     into passages    │    conversations, messages, audit_log,
                                                                      │    contradictions, translations, llm_cache
-                                                                     └──▶ LLM provider (Gemini / OpenAI-compatible)  
+                                                                     └──▶ LLM provider (IBM Bob / OpenAI-compatible)
 ```
 
 ### Components
@@ -87,14 +88,14 @@ Browser (Next.js App Router + Carbon)                 Server (Next.js route hand
 | Verifier (trust layer) | `lib/briefing/verify.ts`, `lib/briefing/items.ts` | Every fact must cite passages and quote them **verbatim** (normalised for whitespace and decimal commas); every number in the statement must appear in a cited passage or its document date; calculated values (weight change, BMI) are **recomputed in code**. Anything else is dropped and logged, never shown. Items the model could not answer are shown as "not verified" rather than silently missing. |
 | Contradictions | `lib/contradictions/rules.ts`, `lib/contradictions/store.ts` | Deterministic rules for BMI vs. height/weight in the same document, two dates for the same admission/discharge, impossible dates, a finding reported on both sides, and one case number used for different stays. Optionally an LLM scan with a second "skeptic" pass that removes changes over time and measurement noise. Results are stored per patient in SQLite and shown immediately. |
 | Chat | `lib/chat/answer.ts`, `app/api/chat` | Free-text questions with the same rules and verifier, scoped to the conversation's situation, history kept in SQLite. |
-| LLM provider | `lib/llm/provider.ts`, `lib/llm/prompts.ts`, `lib/llm/cache.ts` | OpenAI-compatible adapter used for Gemini (Google's OpenAI-compatible endpoint) and any other compatible server, a mock for tests, response cache keyed by prompt and prompt version. Without a model the briefing falls back to keyword retrieval of German passages (clearly labelled). |
+| LLM provider | `lib/llm/provider.ts`, `lib/llm/prompts.ts`, `lib/llm/cache.ts` | OpenAI-compatible adapter used for IBM Bob (team/instance headers), a mock for tests, response cache keyed by prompt and prompt version. Without a model the briefing falls back to keyword retrieval of German passages (clearly labelled). |
 | Translations | `lib/data/translations.ts` | Passages are machine-translated once in the background for the source panel's "English translation" toggle. |
 | UI | `app/`, `components/` | Carbon Design System (white theme, optional dark theme), IBM Plex. Login, patient list, workspace with patient banner, context bar, briefing, contradictions rail, source side panel and chat. |
 | Auth and audit | `lib/auth/session.ts`, `proxy.ts`, `lib/repo.ts` | Username-only login with a signed cookie (prototype). Logins, patient views, situation changes, briefings (with the passages shown), opened sources and questions are written to `audit_log`. |
 
 ### Models and services
 
-* **Google Gemini API** (configured via `GEMINI_*`) for extraction, planning, chat, translation and the contradiction scan. Any OpenAI-compatible endpoint, including a local model server, works through the same adapter.
+* **IBM Bob inference API** (configured via `BOB_*`) for extraction, planning, chat, translation and the contradiction scan. Any OpenAI-compatible endpoint works through the same adapter.
 * No other external services. The IBM JSON extraction files are not used: all facts come from the document text.
 
 ## Testing
@@ -123,6 +124,6 @@ See [`eval/results.md`](eval/results.md) once `bun run eval` has been run with t
 
 ## Known limitations
 
-* Run `bun run llm:smoke` to confirm the model connection before a demo.
+* The IBM Bob endpoint shape is assumed to be OpenAI-compatible; run `bun run llm:smoke` to confirm before a demo.
 * Without a model the briefing shows keyword-matched German passages and chat is disabled.
 * Login has no password (prototype). One synthetic patient is available, but the code handles any number of patient folders.
