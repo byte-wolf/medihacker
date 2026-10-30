@@ -1,0 +1,26 @@
+app = "medihacker"
+primary_region = "fra"
+
+[build]
+
+[env]
+  LLM_PROVIDER = "openrouter"
+  OPENROUTER_MODEL = "google/gemini-3.1-flash-lite,deepseek/deepseek-v4.1-flash-1017,anthropic/claude-haiku-5.5"
+  OPENROUTER_FAST_MODEL = "google/gemini-3.1-flash-lite,deepseek/deepseek-v4.1-flash-1017"
+  LLM_TIMEOUT_MS = "30000"
+
+[mounts]
+  source = "medihacker_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1
