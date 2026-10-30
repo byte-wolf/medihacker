@@ -1,12 +1,12 @@
 ---
 id: T-026
 title: Minimal briefing with AI-selected items
-status: claimed
+status: in_progress
 owner: Devin for mirraman (https://app.devin.ai/sessions/b5e677a322d14b239181836c7ede0378)
 branch: feat/t-026-minimal-briefing
 pr:
 depends_on: []
-touches: [lib/briefing/pipeline.ts, lib/catalog/roles.ts, lib/llm/prompts.ts, lib/briefing/items.ts, components/workspace/BriefingView.tsx, components/workspace/ItemRow.tsx, components/workspace/SourceTags.tsx, app/globals.css, tests/]
+touches: [lib/llm/tokens.ts, lib/llm/provider.ts, lib/llm/cache.ts, lib/briefing/pipeline.ts, lib/catalog/roles.ts, lib/llm/prompts.ts, lib/briefing/items.ts, components/workspace/BriefingView.tsx, components/workspace/ItemRow.tsx, components/workspace/SourceTags.tsx, app/globals.css, tests/]
 ---
 
 ## Goal
@@ -20,6 +20,7 @@ The briefing shows too much at once (the role checklist plus the situation check
 - [ ] Extraction asks for 1-2 facts per item.
 - [ ] Flat list layout: no section cards or section titles, no status icons, no info buttons, no "Ready in" text or footer paragraph. Item label small and muted, answer with source link inline.
 - [ ] "Not documented" rows are one muted line without a link.
+- [ ] Token policy: fixed output cap per step (TOKEN_LIMITS), every model call logged with input/output tokens, briefing total shown next to "Ready in".
 - [ ] lint, typecheck, unit tests pass; e2e selectors still work.
 
 ## Notes
@@ -29,3 +30,4 @@ Requested by mirraman: "rethink ai to be much more minimalistic ... the screen s
 ## Log
 
 - 2026-10-30, Devin: claimed.
+- 2026-10-30, Devin: in progress on feat/t-026-minimal-briefing (PR to be opened by mirraman); added token logging per user request.
