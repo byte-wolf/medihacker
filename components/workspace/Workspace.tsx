@@ -153,7 +153,6 @@ export function Workspace(props: {
   const contradictions = briefing.contradictions.length ? briefing.contradictions : props.initialContradictions;
   const relevantContradictions = situationId ? briefing.relevantContradictions : [];
   const contradictionTitles = useMemo(() => Object.fromEntries(contradictions.map((c) => [c.id, c.title])), [contradictions]);
-  const roleSituations = situations.filter((s) => s.group !== "preset");
   const focused = focusContradiction ? (contradictions.find((c) => c.id === focusContradiction) ?? null) : null;
 
   return (
@@ -185,8 +184,6 @@ export function Workspace(props: {
           <BriefingView
             state={situationId ? briefing : { ...briefing, status: "idle" }}
             situation={situation}
-            roleSituations={roleSituations}
-            onSelectSituation={setSituationId}
             documents={patient.documents}
             contradictionTitles={contradictionTitles}
             onOpenSource={openSource}

@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     agentUpgrade: false,
   },
   cacheComponents: true,
+  devIndicators: false,
   partialPrefetching: true,
   transpilePackages: ["@carbon/react", "@carbon/icons-react", "@carbon/ibm-products", "@carbon/elements"],
 };
