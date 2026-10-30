@@ -1,0 +1,19 @@
+{
+  "id": "TEST-0002",
+  "name": "Testpatientin Erika Muster",
+  "sex": "female",
+  "age": 57,
+  "dateOfBirth": "1967-09-03",
+  "latestAdmission": {
+    "id": "TEST-0203",
+    "type": "inpatient",
+    "admission": {
+      "date": "2025-03-10",
+      "time": "07:30:00"
+    },
+    "discharge": {
+      "date": "2025-03-12",
+      "time": "11:00:00"
+    }
+  }
+}

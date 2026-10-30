@@ -1,0 +1,90 @@
+{
+  "fields": [
+    {
+      "type": "admission",
+      "values": [
+        {
+          "id": "TEST-0203",
+          "type": "inpatient",
+          "admission": {
+            "date": "2025-03-10",
+            "time": "07:30:00"
+          },
+          "discharge": {
+            "date": "2025-03-12",
+            "time": "11:00:00"
+          }
+        },
+        {
+          "id": "TEST-0202",
+          "type": "outpatient",
+          "admission": {
+            "date": "2025-02-24",
+            "time": "08:10:00"
+          },
+          "discharge": {
+            "date": "2025-02-24",
+            "time": "09:35:00"
+          }
+        },
+        {
+          "id": "TEST-0201",
+          "type": "outpatient",
+          "admission": {
+            "date": "2025-01-20",
+            "time": "09:40:00"
+          },
+          "discharge": {
+            "date": "2025-01-20",
+            "time": "11:15:00"
+          }
+        }
+      ]
+    },
+    {
+      "type": "documentType",
+      "values": [
+        {
+          "id": "Befund"
+        },
+        {
+          "id": "Bildgebung"
+        },
+        {
+          "id": "Konsil"
+        },
+        {
+          "id": "Patientenbrief"
+        },
+        {
+          "id": "Patientenbrief ambulant"
+        }
+      ]
+    },
+    {
+      "type": "division",
+      "values": [
+        {
+          "id": "Anästhesiologie und Intensivmedizin"
+        },
+        {
+          "id": "Bildgebung"
+        },
+        {
+          "id": "Chirurgie"
+        },
+        {
+          "id": "Sonstige"
+        }
+      ]
+    },
+    {
+      "type": "hospital",
+      "values": [
+        {
+          "id": "Testklinikum Musterstadt"
+        }
+      ]
+    }
+  ]
+}

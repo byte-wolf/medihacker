@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91030105",
+    "title": "Ambulanter Patientenbrief",
+    "version": "1",
+    "date": "2025-04-28",
+    "type": "Ambulanzbrief(Inter.)",
+    "group": "Patientenbrief ambulant",
+    "division": "Onkologie/Hämatologie/Strahlentherapie",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Onkologische Ambulanz",
+    "admission": {
+      "id": "TEST-0304",
+      "type": "outpatient",
+      "admission": {
+        "date": "2025-04-28",
+        "time": "09:05:00"
+      },
+      "discharge": {
+        "date": "2025-04-28",
+        "time": "12:50:00"
+      }
+    }
+  },
+  "text": "Herr<BR>Testpatient<BR>Straße XY/AB<BR>PLZ Ort<BR><BR> Patient(in): NN_TEST-0003 VN_TEST-0003 | geb. 30.06.1957<BR><BR> Fall: 20250428<BR><BR>XXX, am 28.04.2025<BR><BR>Ambulanter Patientenbrief<BR><BR>Wir berichten über den ambulanten Besuch von Herrn Testpatient, geb 30.06.1957, welcher am 28.04.2025 zur Applikation von Zyklus 3 an unserer Abteilung war.<BR><BR>Diagnosen:<BR>Adenokarzinom des Colon ascendens pT3 pN1 (2/24) cM0 G2 R0<BR>Z.n. Hemikolektomie rechts 02/2025<BR><BR>Verlauf:<BR>Der Patient berichtet zunehmende Fatigue. Die Polyneuropathie bleibt bei CTC Grad I.<BR>Blutbild vor Zyklus 3: Leukozyten 3,4 G/l, Thrombozyten 132 G/l, Hb 11,2 g/dl - beginnende Zytopenie, Applikation dennoch vertretbar.<BR><BR>Procedere:<BR>Zyklus 4 geplant für 19.05.2025. Kontrolle des Blutbilds in einer Woche angeraten.<BR><BR>Mit kollegialen Grüßen,<BR><BR>ARZT XX"
+}

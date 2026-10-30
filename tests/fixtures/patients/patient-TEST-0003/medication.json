@@ -1,0 +1,335 @@
+{
+  "metadata": {
+    "status": []
+  },
+  "values": [
+    {
+      "id": "m_JYwYZQdCo_A4AqmTgEH91ewBXg",
+      "name": "ANTINEOPLASTISCHE MITTEL",
+      "values": [
+        {
+          "id": "m_SsMxk21wxnwAh6CqqkEAYunkTk",
+          "name": "Platinverbindungen",
+          "values": [
+            {
+              "id": "m_2RZjB29T-vQ7kNuH4BhGLrZtEJ_L01XA03",
+              "name": "Oxaliplatin",
+              "code": {
+                "catalog": "ATC",
+                "value": "L01XA03",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_jfIvVx2pyX3ZRFB7vARI6v0Vi6",
+                  "name": "Oxaliplatin 130 mg/m² i.v. am Tag 1",
+                  "text": "Oxaliplatin 130 mg/m² i.v. am Tag 1",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Oxaliplatin",
+                  "drug": "Oxaliplatin",
+                  "documentIds": [
+                    "91030103"
+                  ]
+                },
+                {
+                  "id": "m_S7H4I5Zm4kGvCstVzHjkSAK6fq",
+                  "name": "Dosisreduktion von Oxaliplatin um 25%",
+                  "text": "Dosisreduktion von Oxaliplatin um 25%",
+                  "date": {
+                    "value": "2025-05-xx",
+                    "type": "document"
+                  },
+                  "agent": "Oxaliplatin",
+                  "drug": "Oxaliplatin",
+                  "documentIds": [
+                    "91030107"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m_b5Or6XMFSoDbdMH2OVQzUl-NCR",
+          "name": "Antimetabolite",
+          "values": [
+            {
+              "id": "m_g1JMjwVNzv5EnROTrDwcEPF5tS_L01BC06",
+              "name": "Capecitabin",
+              "code": {
+                "catalog": "ATC",
+                "value": "L01BC06",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_CtO9L4z97Wf6KD0L1Kl7oHoeFA",
+                  "name": "Capecitabin 1000 mg/m² p.o. 2x täglich Tag 1-14",
+                  "text": "Capecitabin 1000 mg/m² p.o. 2x täglich Tag 1-14",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Capecitabin",
+                  "drug": "Capecitabin",
+                  "documentIds": [
+                    "91030103"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m_0Uk-lcLsvjZcu_iSOwNk12Scuk",
+          "name": "Antiemetika",
+          "values": [
+            {
+              "id": "m_yJJD5-E4p6cULSsPDoBQ_3SESp_A04AA01",
+              "name": "Ondansetron",
+              "code": {
+                "catalog": "ATC",
+                "value": "A04AA01",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_-aX87o4hBVCoNy20f0nn_8K4Mq",
+                  "name": "Ondansetron 8 mg i.v.",
+                  "text": "Ondansetron 8 mg i.v.",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Ondansetron",
+                  "drug": "Ondansetron",
+                  "documentIds": [
+                    "91030103"
+                  ]
+                },
+                {
+                  "id": "m_GQhvWPei-i4Vsryim_F1YnVZfw",
+                  "name": "Ondansetron 8mg   oral   1   0   1   0   ST",
+                  "text": "Ondansetron 8mg   oral   1   0   1   0   ST",
+                  "date": {
+                    "value": "2025-05-xx",
+                    "type": "document"
+                  },
+                  "agent": "Ondansetron",
+                  "drug": "Ondansetron",
+                  "documentIds": [
+                    "91030107"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m_x0uddcUd0CGxVUPJrJCG-J0EB3",
+          "name": "Wachstumsfaktoren",
+          "values": [
+            {
+              "id": "m_xnTTV_wLLACBzCYO55upH6ixFg_L03AA02",
+              "name": "Filgrastim",
+              "code": {
+                "catalog": "ATC",
+                "value": "L03AA02",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_pXUpl35DlnKodP4e7cniDtFnGT",
+                  "name": "G-CSF (Filgrastim) s.c.",
+                  "text": "G-CSF (Filgrastim) s.c.",
+                  "date": {
+                    "value": "2025-05-xx",
+                    "type": "document"
+                  },
+                  "agent": "Filgrastim",
+                  "drug": "Filgrastim",
+                  "documentIds": [
+                    "91030107"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m_32uYnhOvx0WO3u20KqDX7uP58k",
+      "name": "ANTIINFEKTIÖSA",
+      "values": [
+        {
+          "id": "m_ElXX7ATboDIGKKQcZcaMaVyI5P",
+          "name": "Betajunktam-Antibiotika",
+          "values": [
+            {
+              "id": "m_cnpNrOdWikWagM2aiNsYurQb5l_J01CR05",
+              "name": "Piperacillin/Tazobactam",
+              "code": {
+                "catalog": "ATC",
+                "value": "J01CR05",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_XnAyoCxybGxp2Ro3Zdfe6UJO-G",
+                  "name": "Piperacillin/Tazobactam i.v.",
+                  "text": "Piperacillin/Tazobactam i.v.",
+                  "date": {
+                    "value": "2025-05-xx",
+                    "type": "document"
+                  },
+                  "agent": "Piperacillin/Tazobactam",
+                  "drug": "Piperacillin/Tazobactam",
+                  "documentIds": [
+                    "91030107"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m_U11MgAlTakSN2W3HA3jcr5yslW",
+      "name": "HERZ-KREISLAUF-SYSTEM",
+      "values": [
+        {
+          "id": "m_pmTTsYQD7QecTMg3hjsNS7qcll",
+          "name": "ACE-Hemmer",
+          "values": [
+            {
+              "id": "m_vQpaBwKG_j6-QGu9F5OhFxzhCt_C09AA05",
+              "name": "Ramipril",
+              "code": {
+                "catalog": "ATC",
+                "value": "C09AA05",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_2zAG5gynp6gw46SzFR_6N8BE23",
+                  "name": "Ramipril 5mg   oral   1   0   0   0   ST",
+                  "text": "Ramipril 5mg   oral   1   0   0   0   ST",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "agent": "Ramipril",
+                  "drug": "Ramipril",
+                  "documentIds": [
+                    "91030102"
+                  ]
+                },
+                {
+                  "id": "m_0MdHWEM0qH3-5aNS14EAg1V3wq",
+                  "name": "Ramipril 5mg   oral   1   0   0   0   ST",
+                  "text": "Ramipril 5mg   oral   1   0   0   0   ST",
+                  "date": {
+                    "value": "2025-05-xx",
+                    "type": "document"
+                  },
+                  "agent": "Ramipril",
+                  "drug": "Ramipril",
+                  "documentIds": [
+                    "91030107"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m_qZuCij9dMkJXLSH8Crt5UVQQs5",
+      "name": "ALIMENTÄRES SYSTEM UND STOFFWECHSEL",
+      "values": [
+        {
+          "id": "m_2P-Wj7R4EbuOic8tQonYpJCu1-",
+          "name": "Analgetika",
+          "values": [
+            {
+              "id": "m_U-R4fGQ-s4K6xu2MPM0wd4Ne97_N02BB02",
+              "name": "Metamizol",
+              "code": {
+                "catalog": "ATC",
+                "value": "N02BB02",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_MveX7-dVjuXWmNJt7WfdMvLWGP",
+                  "name": "Metamizol 500mg   oral   1   0   1   0   ST",
+                  "text": "Metamizol 500mg   oral   1   0   1   0   ST",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "agent": "Metamizol",
+                  "drug": "Metamizol",
+                  "documentIds": [
+                    "91030102"
+                  ]
+                },
+                {
+                  "id": "m_7VCT_FYHfUj61Q9cY7szdUbPHQ",
+                  "name": "Metamizol 500mg   oral   1   0   1   0   ST",
+                  "text": "Metamizol 500mg   oral   1   0   1   0   ST",
+                  "date": {
+                    "value": "2025-05-xx",
+                    "type": "document"
+                  },
+                  "agent": "Metamizol",
+                  "drug": "Metamizol",
+                  "documentIds": [
+                    "91030107"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m_JuVZ2KY9SAjqI8hN2yBXyavd8B",
+          "name": "Glukokortikoide",
+          "values": [
+            {
+              "id": "m_xFBzWuAinA4pPGacvRiioCeXB2_H02AB02",
+              "name": "Dexamethason",
+              "code": {
+                "catalog": "ATC",
+                "value": "H02AB02",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_3iwSiABbu-CeRvD3lgxGFB4XYV",
+                  "name": "Dexamethason 8 mg i.v.",
+                  "text": "Dexamethason 8 mg i.v.",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Dexamethason",
+                  "drug": "Dexamethason",
+                  "documentIds": [
+                    "91030103"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

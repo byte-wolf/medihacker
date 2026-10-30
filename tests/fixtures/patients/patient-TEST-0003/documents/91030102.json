@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91030102",
+    "title": "Stat. Patientenbrief (Interne)",
+    "version": "1",
+    "date": "2025-02-10",
+    "type": "Arztbrief(Inter.)",
+    "group": "Patientenbrief",
+    "division": "Chirurgie",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Abteilung für Allgemein- und Viszeralchirurgie",
+    "admission": {
+      "id": "TEST-0301",
+      "type": "inpatient",
+      "admission": {
+        "date": "2025-02-03",
+        "time": "08:20:00"
+      },
+      "discharge": {
+        "date": "2025-02-10",
+        "time": "10:45:00"
+      }
+    }
+  },
+  "text": "ORTXXX, am 10.02.2025<BR><BR>Herr<BR>Testpatient<BR>Straße XY/AB<BR>PLZ Ort<BR><BR> Patient(in): NN_TEST-0003 VN_TEST-0003 | geb. 30.06.1957<BR><BR> Fall: 20250203<BR><BR> Aufnahme am 03/02/2025 | Entlassen am 10/02/2025<BR><BR>Diagnosen:<BR>Adenokarzinom des Colon ascendens pT3 pN1 (2/24) cM0 G2 R0<BR>Z.n. Hemikolektomie rechts 03.02.2025<BR>Art. Hypertonie<BR><BR>Allergien:<BR>Jodhaltiges Kontrastmittel (Exanthem)<BR><BR>Sehr geehrte Damen und Herren!<BR><BR>Wir berichten über den Aufenthalt von Herrn NN_TEST-0003, geb. am 30.06.1957, welcher bei einem in der Koloskopie gesicherten Tumor des Colon ascendens zur Operation aufgenommen war.<BR><BR>Anamnese:<BR>Ein positiver Hämoccult-Test führte zur Koloskopie, welche einen stenosierenden Tumor im Colon ascendens zeigte. Die Biopsie ergab ein Adenokarzinom.<BR><BR>Größe: 178 cm<BR>Gewicht: 82 kg<BR>BMI: 25,9<BR><BR>Körpertemperatur: 36.5°C<BR>EKG: HF 74/min, Sinusrhythmus<BR><BR>Erhobene Befunde:<BR><BR>Labor:<BR>Gem. Beilage.<BR><BR>Histologie vom 07.02.2025:<BR>Zusammenfassung:<BR>Mäßig differenziertes Adenokarzinom des Colon ascendens, pT3 pN1 (2/24) cM0 G2 R0, MSS, KRAS-mutiert.<BR><BR>Therapie und Verlauf:<BR>Am 03.02.2025 erfolgte die laparoskopische Hemikolektomie rechts. Der postoperative Verlauf war komplikationslos. Der Fall wurde im Tumorboard besprochen: Empfohlen wird eine adjuvante Chemotherapie nach Schema XELOX (Oxaliplatin plus Capecitabin) über 6 Zyklen, Beginn geplant für Mitte März 2025.<BR>Herr NN_TEST-0003 konnte am 10.02.2025 in gutem Allgemeinzustand entlassen werden.<BR><BR>Weiteres Procedere:<BR>Anmeldung in der onkologischen Ambulanz am 17.03.2025 für Zyklus 1 inklusive Port-a-Cath-Anlage.<BR><BR>Entlassungsmedikation:<BR>Applikation mo mi ab na Einheit Info<BR>Ramipril 5mg oral 1 0 0 0 ST<BR>Metamizol 500mg oral 1 0 1 0 ST bei Bedarf<BR>Mit freundlichen Grüßen<BR><BR> OA XYZ Prim. Dr. X.<BR><BR>Laborbefund<BR><BR>NN_TEST-0003 VN_TEST-0003 | geb. 30.06.1957<BR><BR> Parameter<BR>Fettgedruckte Werte außerhalb des Referenzbereichs. Ausgangswert Kontrollwert Grenzwert Einheit"
+}

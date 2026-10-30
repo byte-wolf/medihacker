@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91020102",
+    "title": "Ambulanter Patientenbrief",
+    "version": "1",
+    "date": "2025-01-20",
+    "type": "Ambulanzbrief(Inter.)",
+    "group": "Patientenbrief ambulant",
+    "division": "Chirurgie",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Chirurgische Ambulanz",
+    "admission": {
+      "id": "TEST-0201",
+      "type": "outpatient",
+      "admission": {
+        "date": "2025-01-20",
+        "time": "09:40:00"
+      },
+      "discharge": {
+        "date": "2025-01-20",
+        "time": "11:15:00"
+      }
+    }
+  },
+  "text": "Frau<BR>Testpatientin<BR>Straße XY/AB<BR>PLZ Ort<BR><BR> Patient(in): NN_TEST-0002 VN_TEST-0002 | geb. 03.09.1967<BR><BR> Fall: 20250120<BR><BR>XXX, am 20.01.2025<BR><BR>Ambulanter Patientenbrief<BR><BR>Wir berichten über den ambulanten Besuch von Frau Testpatientin, geb 03.09.1967, welche am 20.01.2025 an unserer Abteilung in Behandlung war.<BR><BR>Diagnosen:<BR>Symptomatische Cholezystolithiasis<BR>Arterielle Hypertonie, gut eingestellt<BR>Z.n. Appendektomie 1998<BR><BR>Vitalparameter:<BR>Größe: 168 cm<BR>Gewicht: 74 kg<BR>BMI: 26,2<BR>Körpertemperatur: 36.5°C<BR><BR>Befunde:<BR>RR: 128/78 mmHg<BR>HF: 72/min<BR><BR>Verlauf:<BR>Die Patientin berichtet seit ca. 4 Monaten über wiederkehrende kolikartige Schmerzen im rechten Oberbauch, zuletzt nach fettreichen Mahlzeiten. Die heute durchgeführte Abdomensonographie bestätigt eine Cholezystolithiasis ohne Zeichen einer Cholezystitis. Nach Aufklärung besteht die Indikation zur elektiven laparoskopischen Cholezystektomie.<BR><BR>Procedere:<BR>Operation für den 10.03.2025 terminiert. Bis dahin anästhesiologische Evaluation und präoperatives Labor in der Anästhesie-Ambulanz.<BR><BR>Mit kollegialen Grüßen,<BR><BR>ARZT XX"
+}

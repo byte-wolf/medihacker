@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91010101",
+    "title": "Radiologischer Befund",
+    "version": "1",
+    "date": "2024-03-13",
+    "type": "Duplexsonographie",
+    "group": "Bildgebung",
+    "division": "Bildgebung",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Institut für Radiologie",
+    "admission": {
+      "id": "TEST-0101",
+      "type": "inpatient",
+      "admission": {
+        "date": "2024-03-12",
+        "time": "09:15:00"
+      },
+      "discharge": {
+        "date": "2024-03-15",
+        "time": "11:30:00"
+      }
+    }
+  },
+  "text": "Herr<BR>Testpatient<BR>Straße XY/AB<BR>PLZ Ort<BR><BR> Patient(in): NN_TEST-0001 VN_TEST-0001 | geb. 14.02.1949<BR><BR> Fall: 20240312<BR><BR>Anamnese: hypertensive Entgleisung, Z.n. HWI 2018<BR>Fragestellung: Karotisstenose?<BR>Zuweisung freigegeben durch / Tel.: Arzt / 0041<BR><BR>OrtXX, am 13.03.2024<BR><BR>Radiologischer Befund<BR><BR>Folgende Untersuchungen wurden durchgeführt:<BR><BR> US Hirnversorgende Arterien 13.03.2024 09:18<BR><BR>Doppler/Duplex Sonographie der hirnversorgenden Halsarterien:<BR>Links zeigt sich eine abgangsnahe, etwa 50%ige Stenose der A. carotis interna durch Kalkplaques mit einer Flussgeschwindigkeit von 160 cm/sek.<BR>Auf der rechten Seite finden sich lediglich geringe verkalkte Plaques ohne hämodynamisch wirksame Einengung.<BR><BR>Die Arteriae vertebrales sind beidseits normkalibriert und orthograd durchströmt.<BR><BR>Gesamtbeurteilung<BR>Mäßiggradige, etwa 50%ige Abgangsstenose der Arteria carotis interna links.<BR><BR>Befund: Dr. Arzt<BR>Vidiert: Dr. Arzt"
+}

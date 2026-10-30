@@ -1,0 +1,291 @@
+{
+  "scores": [
+    {
+      "name": "Blutdruck",
+      "unit": "mmHg",
+      "values": [
+        {
+          "id": "w_Pk7rPqx5kztSoPTaEioRaS0_Bi",
+          "date": {
+            "value": "2024-03-xx",
+            "type": "document"
+          },
+          "value": "152|91",
+          "documentIds": [
+            "91010102"
+          ]
+        },
+        {
+          "id": "w_eyUgu4iXWi_jHaPCUOjAR3fgWL",
+          "date": {
+            "value": "2024-03-xx",
+            "type": "document"
+          },
+          "value": "158|95",
+          "documentIds": [
+            "91010102"
+          ]
+        },
+        {
+          "id": "w_y9uirfJMMXS2QtHGVsd59FhFMH",
+          "date": {
+            "value": "2024-03-xx",
+            "type": "document"
+          },
+          "value": "186|104",
+          "documentIds": [
+            "91010102",
+            "91010104"
+          ]
+        },
+        {
+          "id": "w_-_7i3KxRW9XbeqcdYGOGASfINr",
+          "date": {
+            "value": "2024-07-xx",
+            "type": "document"
+          },
+          "value": "152|88",
+          "documentIds": [
+            "91010105"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Body-Mass-Index",
+      "unit": "kg/m2",
+      "values": [
+        {
+          "id": "w_tGnZIzO1ReSU2dfBDMtVVhTSk8",
+          "date": {
+            "value": "2024-03-xx",
+            "type": "document"
+          },
+          "value": "25,4",
+          "documentIds": [
+            "91010104"
+          ]
+        },
+        {
+          "id": "w_HYUkiXr4XbZreTKeDxFKxqgKUo",
+          "date": {
+            "value": "2024-07-xx",
+            "type": "document"
+          },
+          "value": "28,7",
+          "documentIds": [
+            "91010105"
+          ]
+        },
+        {
+          "id": "w_Gc3pEyj72J6VAuAUrexG5lZ-9e",
+          "date": {
+            "value": "2024-10-xx",
+            "type": "document"
+          },
+          "value": "29,1",
+          "documentIds": [
+            "91010108"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FEV1",
+      "unit": "%",
+      "values": [
+        {
+          "id": "w_Ds2uJamKtNDLFXm5WpaAow148a",
+          "date": {
+            "value": "2024-03-xx",
+            "type": "document"
+          },
+          "value": "62",
+          "documentIds": [
+            "91010103",
+            "91010104"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gewicht",
+      "unit": "kg",
+      "values": [
+        {
+          "id": "w_Q2UgHpFd_Tf65HSx-fgi0eKB9p",
+          "date": {
+            "value": "2024-03-xx",
+            "type": "document"
+          },
+          "value": "88",
+          "documentIds": [
+            "91010104"
+          ]
+        },
+        {
+          "id": "w_quZSVuremXLjkDAI9ntqhkR0Sc",
+          "date": {
+            "value": "2024-07-xx",
+            "type": "document"
+          },
+          "value": "85",
+          "documentIds": [
+            "91010105"
+          ]
+        },
+        {
+          "id": "w_1ufpwGRq_bzCVpDZia1-i0xOPL",
+          "date": {
+            "value": "2024-10-xx",
+            "type": "document"
+          },
+          "value": "86",
+          "documentIds": [
+            "91010108"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Größe",
+      "unit": "m",
+      "values": [
+        {
+          "id": "w_q0be5Ci51vcDkK0zbRlnlr4cNp",
+          "date": {
+            "value": "2024-03-xx",
+            "type": "document"
+          },
+          "value": "1,72",
+          "documentIds": [
+            "91010104"
+          ]
+        },
+        {
+          "id": "w_sAJdrim4HOZY_YwIF6Gyluo5Xd",
+          "date": {
+            "value": "2024-10-xx",
+            "type": "document"
+          },
+          "value": "1,72",
+          "documentIds": [
+            "91010108"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "HbA1c",
+      "unit": "%",
+      "values": [
+        {
+          "id": "w__HX_-gQr06d_o2Zw12lLZS6bS8",
+          "date": {
+            "value": "2024-07-xx",
+            "type": "document"
+          },
+          "value": "7,2",
+          "documentIds": [
+            "91010106"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Herzfrequenz",
+      "unit": "/min",
+      "values": [
+        {
+          "id": "w_KKm_4FtFfooHa6miT62ubL6X23",
+          "date": {
+            "value": "2024-03-xx",
+            "type": "document"
+          },
+          "value": "78",
+          "documentIds": [
+            "91010104"
+          ]
+        },
+        {
+          "id": "w_9x8zgtik8Y9Pl9S7YoLltSiU88",
+          "date": {
+            "value": "2024-07-xx",
+            "type": "document"
+          },
+          "value": "76",
+          "documentIds": [
+            "91010105"
+          ]
+        },
+        {
+          "id": "w_z_9cM69oK7jVp-k4fTO4Cqpeqg",
+          "date": {
+            "value": "2024-10-xx",
+            "type": "document"
+          },
+          "value": "88",
+          "documentIds": [
+            "91010108"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Körpertemperatur",
+      "unit": "°C",
+      "values": [
+        {
+          "id": "w_ayU-4FyIgE3PRke2su8ekyUJ5f",
+          "date": {
+            "value": "2024-03-xx",
+            "type": "document"
+          },
+          "value": "36,7",
+          "documentIds": [
+            "91010104"
+          ]
+        },
+        {
+          "id": "w_MNEb8k4kgnmSUUqspdK1jxBsQM",
+          "date": {
+            "value": "2024-07-xx",
+            "type": "document"
+          },
+          "value": "36,6",
+          "documentIds": [
+            "91010105"
+          ]
+        },
+        {
+          "id": "w_mbksf2tzFQfIl4xCqDordWQfwI",
+          "date": {
+            "value": "2024-10-xx",
+            "type": "document"
+          },
+          "value": "37,9",
+          "documentIds": [
+            "91010108"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Kreatinin",
+      "unit": "mg/dl",
+      "values": [
+        {
+          "id": "w_-LJ10AI3E4Ef5TG5ZRNhWl--Zi",
+          "date": {
+            "value": "2024-07-xx",
+            "type": "document"
+          },
+          "value": "1,5",
+          "documentIds": [
+            "91010106"
+          ]
+        }
+      ]
+    }
+  ]
+}

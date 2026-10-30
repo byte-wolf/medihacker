@@ -1,0 +1,182 @@
+{
+  "metadata": {
+    "status": []
+  },
+  "values": [
+    {
+      "id": "m_cjNBG5ioPbawgwoLLnNEi7pjgO",
+      "name": "HERZ-KREISLAUF-SYSTEM",
+      "values": [
+        {
+          "id": "m_3YzqaPJwPC7Up5cIzpdXaJ8jmM",
+          "name": "Betablocker",
+          "values": [
+            {
+              "id": "m_S2BUKtnNe6jbg7wjbcSOSVeLx0_C07AB07",
+              "name": "Bisoprolol",
+              "code": {
+                "catalog": "ATC",
+                "value": "C07AB07",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_GP0lttd4YTa2VDVCogocvVS2Tr",
+                  "name": "Bisoprolol 5 mg 1-0-0",
+                  "text": "Bisoprolol 5 mg 1-0-0",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "agent": "Bisoprolol",
+                  "drug": "Bisoprolol",
+                  "documentIds": [
+                    "91020103"
+                  ]
+                },
+                {
+                  "id": "m_JBYHqP9n4aqpV8Vu4vp6OSQ-E1",
+                  "name": "Bisoprolol 5mg   oral   1   0   0   0   ST",
+                  "text": "Bisoprolol 5mg   oral   1   0   0   0   ST",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Bisoprolol",
+                  "drug": "Bisoprolol",
+                  "documentIds": [
+                    "91020106"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m_05e368gnhc2ZO0OsggWnuBbqsT",
+          "name": "Antithrombotika",
+          "values": [
+            {
+              "id": "m_lFw1q8snSFhOfYSYOwzz4f4bnq_B01AB05",
+              "name": "Enoxaparin",
+              "code": {
+                "catalog": "ATC",
+                "value": "B01AB05",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_xu9G2NbABXwTIn3f0kamW-aFFY",
+                  "name": "Enoxaparin 40 mg s.c. 0-0-1",
+                  "text": "Enoxaparin 40 mg s.c. 0-0-1",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Enoxaparin",
+                  "drug": "Enoxaparin",
+                  "documentIds": [
+                    "91020106"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m_5Gy4oDIWWPwuj1QVkCXLiD4pmt",
+      "name": "ALIMENTÄRES SYSTEM UND STOFFWECHSEL",
+      "values": [
+        {
+          "id": "m_T1jjpuHkum-Ug9gy-YUBmOgnyc",
+          "name": "Protonenpumpenhemmer",
+          "values": [
+            {
+              "id": "m_gAYTOqBDNAR7lPXyF-cIkY8HgK_A02BC02",
+              "name": "Pantoprazol",
+              "code": {
+                "catalog": "ATC",
+                "value": "A02BC02",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_zYSGODjMzV6BKVAoU4XS2RPDuO",
+                  "name": "Pantoprazol 40mg   oral   1   0   0   0   ST",
+                  "text": "Pantoprazol 40mg   oral   1   0   0   0   ST",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Pantoprazol",
+                  "drug": "Pantoprazol",
+                  "documentIds": [
+                    "91020106"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m_ITGO1HA8nRzWh_wdrzaAASwqoV",
+          "name": "Analgetika",
+          "values": [
+            {
+              "id": "m_yqBlaUrptEBOQx72d05Yi1Oaa8_N02BB02",
+              "name": "Metamizol",
+              "code": {
+                "catalog": "ATC",
+                "value": "N02BB02",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_8HoZzniXZOEJo9wO00DsJi1w2r",
+                  "name": "Metamizol 500mg   oral   1   0   1   0   ST",
+                  "text": "Metamizol 500mg   oral   1   0   1   0   ST",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Metamizol",
+                  "drug": "Metamizol",
+                  "documentIds": [
+                    "91020106"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "m_oiFdDjFFI3a1DKQ1xA9eOObNR7_M01AE01",
+              "name": "Ibuprofen",
+              "code": {
+                "catalog": "ATC",
+                "value": "M01AE01",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_PqgjoXwj5Yk5MYQ5Y1mSHVC4Jq",
+                  "name": "Ibuprofen bei Kopfschmerzen",
+                  "text": "Ibuprofen bei Kopfschmerzen",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "agent": "Ibuprofen",
+                  "drug": "Ibuprofen",
+                  "documentIds": [
+                    "91020103"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91030104",
+    "title": "Ambulanter Patientenbrief",
+    "version": "1",
+    "date": "2025-04-07",
+    "type": "Ambulanzbrief(Inter.)",
+    "group": "Patientenbrief ambulant",
+    "division": "Onkologie/Hämatologie/Strahlentherapie",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Onkologische Ambulanz",
+    "admission": {
+      "id": "TEST-0303",
+      "type": "outpatient",
+      "admission": {
+        "date": "2025-04-07",
+        "time": "09:10:00"
+      },
+      "discharge": {
+        "date": "2025-04-07",
+        "time": "13:00:00"
+      }
+    }
+  },
+  "text": "Herr<BR>Testpatient<BR>Straße XY/AB<BR>PLZ Ort<BR><BR> Patient(in): NN_TEST-0003 VN_TEST-0003 | geb. 30.06.1957<BR><BR> Fall: 20250407<BR><BR>XXX, am 07.04.2025<BR><BR>Ambulanter Patientenbrief<BR><BR>Wir berichten über den ambulanten Besuch von Herrn Testpatient, geb 30.06.1957, welcher am 07.04.2025 zur Applikation von Zyklus 2 an unserer Abteilung war.<BR><BR>Diagnosen:<BR>Adenokarzinom des Colon ascendens pT3 pN1 (2/24) cM0 G2 R0<BR>Z.n. Hemikolektomie rechts 02/2025<BR><BR>Vitalparameter:<BR>Größe: 178 cm<BR>Gewicht: 79 kg<BR>BMI: 24,9<BR><BR>Verlauf:<BR>Der erste Zyklus wurde insgesamt gut vertragen. Der Patient berichtet über leichte Übelkeit (CTC Grad I) und beginnende Kälteparästhesien an den Fingern (Polyneuropathie CTC Grad I).<BR>Blutbild vor Zyklus 2: Leukozyten 4,1 G/l, Thrombozyten 178 G/l, Hb 12,4 g/dl - Applikation wie geplant.<BR><BR>Procedere:<BR>Zyklus 3 geplant für 28.04.2025.<BR><BR>Mit kollegialen Grüßen,<BR><BR>ARZT XX"
+}

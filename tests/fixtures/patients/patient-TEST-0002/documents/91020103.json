@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91020103",
+    "title": "Präanästhesiologische Evaluation",
+    "version": "1",
+    "date": "2025-02-24",
+    "type": "Anästhesieabklärung",
+    "group": "Konsil",
+    "division": "Anästhesiologie und Intensivmedizin",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Anästhesie-Ambulanz",
+    "admission": {
+      "id": "TEST-0202",
+      "type": "outpatient",
+      "admission": {
+        "date": "2025-02-24",
+        "time": "08:10:00"
+      },
+      "discharge": {
+        "date": "2025-02-24",
+        "time": "09:35:00"
+      }
+    }
+  },
+  "text": "Frau<BR>Testpatientin<BR>Straße XY/AB<BR>PLZ Ort<BR><BR>OrtXX, am 24.02.2025<BR><BR>Präanästhesiologische Evaluation<BR><BR>Testpatientin, geb 03.09.1967<BR>Patienten-ID: TEST-0002<BR>Fallzahl: 20250224<BR><BR>Geplanter Eingriff: Laparoskopische Cholezystektomie am 10.03.2025<BR><BR>Anamnese:<BR>Arterielle Hypertonie unter Bisoprolol 5 mg 1-0-0. Z.n. Appendektomie 1998 in Allgemeinanästhesie, ohne Komplikationen. Nichtraucherin. Gelegentliche Einnahme von Ibuprofen bei Kopfschmerzen, zuletzt vor 2 Wochen.<BR><BR>Körperliche Untersuchung:<BR>Größe: 168 cm, Gewicht: 74 kg. Mundöffnung &gt; 3 Querfinger, Mallampati II, HWS frei beweglich, Zahnbefund unauffällig, kein Zahnersatz.<BR><BR>EKG (24.02.2025): Sinusrhythmus, HF 72/min, Normaltyp.<BR><BR>Einstufung: ASA II. Allgemeinanästhesie mit endotrachealer Intubation geplant.<BR>Anordnung: Nüchtern ab Mitternacht vor dem Eingriff, Bisoprolol am OP-Morgen mit einem Schluck Wasser einnehmen.<BR><BR>befundet: Dr. Arzt<BR>vidiert: Dr. Arzt"
+}

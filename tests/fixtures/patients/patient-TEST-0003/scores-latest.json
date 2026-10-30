@@ -1,0 +1,178 @@
+{
+  "scores": [
+    {
+      "name": "Body-Mass-Index",
+      "unit": "kg/m2",
+      "values": [
+        {
+          "id": "w_i5UJuyiOfyeYoUWDTIFxvEH-9U",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "24,6",
+          "documentIds": [
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CRP",
+      "unit": "mg/l",
+      "values": [
+        {
+          "id": "w_nDXjZ71hhn25Do7T-uRIFJDYDO",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "86",
+          "documentIds": [
+            "91030106",
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gewicht",
+      "unit": "kg",
+      "values": [
+        {
+          "id": "w_6YoYyS5_aAuCU_Qn6rbb1qVlMn",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "78",
+          "documentIds": [
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Größe",
+      "unit": "m",
+      "values": [
+        {
+          "id": "w_pMgksBitpv5ghLbzHVXI0C1SIV",
+          "date": {
+            "value": "2025-02-xx",
+            "type": "document"
+          },
+          "value": "1,78",
+          "documentIds": [
+            "91030102"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hämoglobin",
+      "unit": "g/dl",
+      "values": [
+        {
+          "id": "w_AfbIeVmjde8WMxoqa7R921dUyI",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "10,8",
+          "documentIds": [
+            "91030106",
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Herzfrequenz",
+      "unit": "/min",
+      "values": [
+        {
+          "id": "w_rQHuUCil7N2vBDDj0G-vlbr5OZ",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "96",
+          "documentIds": [
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Körpertemperatur",
+      "unit": "°C",
+      "values": [
+        {
+          "id": "w_GTb2qm8WfRyE62mLLKi1Q9IpNa",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "38,9",
+          "documentIds": [
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Leukozyten",
+      "unit": "G/l",
+      "values": [
+        {
+          "id": "w_2ndpg5x4vz_H8f4SxnJhhE88KL",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "4,6",
+          "documentIds": [
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Neutrophile",
+      "unit": "G/l",
+      "values": [
+        {
+          "id": "w_ASppRVK2G1gk1_hBzJoX88fi9f",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "0,7",
+          "documentIds": [
+            "91030106",
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Thrombozyten",
+      "unit": "G/l",
+      "values": [
+        {
+          "id": "w_p9j0eqK5boZodj1tDIQxgV9CoW",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "92",
+          "documentIds": [
+            "91030106",
+            "91030107"
+          ]
+        }
+      ]
+    }
+  ]
+}

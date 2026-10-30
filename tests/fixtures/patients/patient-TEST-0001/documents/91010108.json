@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91010108",
+    "title": "Stat. Patientenbrief (Interne)",
+    "version": "1",
+    "date": "2024-10-25",
+    "type": "Arztbrief(Inter.)",
+    "group": "Patientenbrief",
+    "division": "Innere Medizin - Pneumologie",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "2. Medizinische Abteilung",
+    "admission": {
+      "id": "TEST-0103",
+      "type": "inpatient",
+      "admission": {
+        "date": "2024-10-21",
+        "time": "14:05:00"
+      },
+      "discharge": {
+        "date": "2024-10-25",
+        "time": "10:20:00"
+      }
+    }
+  },
+  "text": "ORTXXX, am 25.10.2024<BR><BR>Herr<BR>Testpatient<BR>Straße XY/AB<BR>PLZ Ort<BR><BR> Patient(in): NN_TEST-0001 VN_TEST-0001 | geb. 14.02.1949<BR><BR> Fall: 20240312<BR><BR> Aufnahme am 21/10/2024 | Entlassen am 25/10/2024<BR><BR>Diagnosen:<BR>COPD GOLD II mit akuter Exazerbation<BR>Arterielle Hypertonie<BR>Diabetes mellitus Typ II<BR>Chronische Niereninsuffizienz Stadium G3a<BR>Z.n. inferiorem Hinterwandinfarkt 2018<BR>Karotisstenose links (ca. 50%)<BR>Adipositas<BR><BR>Allergien:<BR>Penicillin-Allergie (Exanthem)<BR><BR>Sehr geehrte Damen und Herren!<BR><BR>Wir berichten über den Aufenthalt von Herrn NN_TEST-0001, geb. am 14.02.1949, welcher bei einer Exazerbation seiner COPD mit produktivem Husten und Fieber bis 38,2°C aufgenommen war.<BR><BR>Größe: 172 cm<BR>Gewicht: 86 kg<BR>BMI: 29,1<BR><BR>Körpertemperatur: 37.9°C<BR>EKG: HF 88/min, Sinusrhythmus<BR><BR>Erhobene Befunde:<BR><BR>Labor:<BR>Gem. Beilage.<BR><BR>Röntgen Thorax vom 21.10.2024:<BR>Zusammenfassung:<BR>Kein Nachweis einer Pneumonie, Überblähung bei COPD.<BR><BR>Therapie und Verlauf:<BR>Es erfolgte eine Therapie mit Prednisolon 25 mg, Sauerstoff und vermehrten Inhalationen mit Salbutamol. Das Fieber klingte ab, die Dyspnoe besserte sich deutlich.<BR>Herr NN_TEST-0001 konnte am 25.10.2024 nach Hause entlassen werden.<BR><BR>Weiteres Procedere:<BR>Abklingende Prednisolon-Gabe über 5 Tage. Kontrolle beim Hausarzt in 2 Wochen.<BR><BR>Entlassungsmedikation:<BR>Applikation mo mi ab na Einheit Info<BR>Thrombo ASS 100mg oral 1 0 0 0 ST<BR>Glucophage 1000mg oral 1 0 1 0 ST<BR>Ramipril 5mg oral 1 0 0 0 ST<BR>Amlodipin 5mg oral 0 1 0 0 ST<BR>Atorvastatin 40mg oral 0 0 1 0 ST<BR>Tiotropiumbromid 18mcg Inhalation 1 0 0 0 Kapseln<BR>Salbutamol Dosieraerosol 100mcg Inhalation 1 0 1 0 Hub<BR>Prednisolon 25mg oral 1 0 0 0 ST für 5 Tage<BR>Mit freundlichen Grüßen<BR><BR> OA XYZ Prim. Dr. X.<BR><BR>Laborbefund<BR><BR>NN_TEST-0001 VN_TEST-0001 | geb. 14.02.1949<BR><BR> Parameter<BR>Fettgedruckte Werte außerhalb des Referenzbereichs. Ausgangswert Kontrollwert Grenzwert Einheit"
+}

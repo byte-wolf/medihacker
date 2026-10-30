@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91010103",
+    "title": "Konsil für Pneumologie",
+    "version": "1",
+    "date": "2024-03-14",
+    "type": "Pneumologisches Konsil",
+    "group": "Konsil",
+    "division": "Innere Medizin - Pneumologie",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Pneumologische Ambulanz",
+    "admission": {
+      "id": "TEST-0101",
+      "type": "inpatient",
+      "admission": {
+        "date": "2024-03-12",
+        "time": "09:15:00"
+      },
+      "discharge": {
+        "date": "2024-03-15",
+        "time": "11:30:00"
+      }
+    }
+  },
+  "text": "Herr<BR>Testpatient<BR>Straße XY/AB<BR>PLZ Ort<BR><BR>OrtXX, am 14.03.2024<BR><BR>Konsil für Pneumologie<BR><BR>Testpatient, geb 14.02.1949<BR>Patienten-ID: TEST-0001<BR>Fallzahl: 20240312<BR><BR>Indikation: Belastungsdyspnoe, langjähriger Nikotinabusus (ca. 40 Packungsjahre)<BR>Fragestellung: COPD? Restriktive Komponente?<BR><BR>Befundzusammenfassung:<BR>Spirometrie: FEV1 62% des Sollwerts, FEV1/FVC 0,61 - obstruktive Ventilationsstörung mittleren Grades.<BR>Auskultation: beidseits verlängertes Exspirium, keine Rasselgeräusche. SaO2 94% in Ruhe.<BR>Diagnose: COPD GOLD II. Empfohlen wird eine inhalative Dauertherapie mit Tiotropium 18 mcg 1-0-0 sowie Salbutamol Dosieraerosol bei Bedarf. Pneumologische Kontrolle in 6 Monaten empfohlen.<BR>befundet: Dr. Arzt<BR>vidiert: Dr. Arzt"
+}

@@ -1,0 +1,371 @@
+{
+  "metadata": {
+    "status": []
+  },
+  "values": [
+    {
+      "id": "m_F4PEI2B4UWxzKmJeGWr_Rh-zYv",
+      "name": "HERZ-KREISLAUF-SYSTEM",
+      "values": [
+        {
+          "id": "m_8WmGGcivEDMGuNk_Vtv1ITt0xR",
+          "name": "ACE-Hemmer",
+          "values": [
+            {
+              "id": "m_tsnTuw7YrhRy-09ZssTwCqEmI7_C09AA05",
+              "name": "Ramipril",
+              "code": {
+                "catalog": "ATC",
+                "value": "C09AA05",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_-LYUSbE9YXKULkON1jRc8hbujS",
+                  "name": "Ramipril 5mg   oral   1   0   0   0   ST",
+                  "text": "Ramipril 5mg   oral   1   0   0   0   ST",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Ramipril",
+                  "drug": "Ramipril",
+                  "documentIds": [
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "m_AX63VdinuQHul6vwXUPSNmpJo-",
+                  "name": "Ramipril 5mg   oral   1   0   0   0   ST",
+                  "text": "Ramipril 5mg   oral   1   0   0   0   ST",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "agent": "Ramipril",
+                  "drug": "Ramipril",
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m_SiNLpQHOdATgXaJ7A74Em9uP6f",
+          "name": "Kalziumantagonisten",
+          "values": [
+            {
+              "id": "m_tUaPSdhtzG5Tth6sNoijVMAJEI_C08CA01",
+              "name": "Amlodipin",
+              "code": {
+                "catalog": "ATC",
+                "value": "C08CA01",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_KIU76l4l6_zF7974aKg-s_IF82",
+                  "name": "Amlodipin 5mg   oral   0   1   0   0   ST",
+                  "text": "Amlodipin 5mg   oral   0   1   0   0   ST",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Amlodipin",
+                  "drug": "Amlodipin",
+                  "documentIds": [
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "m_DmhkDqlVYKWl250GfQliupqpW9",
+                  "name": "Amlodipin 5mg   oral   0   1   0   0   ST",
+                  "text": "Amlodipin 5mg   oral   0   1   0   0   ST",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "agent": "Amlodipin",
+                  "drug": "Amlodipin",
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m_QnpW3fCTeKdJGKjuHhnLfGZDGD",
+          "name": "Lipidsenker",
+          "values": [
+            {
+              "id": "m_X4bngcMTdVzon3dGs0UuMRutjQ_C10AA05",
+              "name": "Atorvastatin",
+              "code": {
+                "catalog": "ATC",
+                "value": "C10AA05",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_dDZUz0VLcwe_7e7cAXX-PA_y36",
+                  "name": "Atorvastatin 40mg   oral   0   0   1   0   ST",
+                  "text": "Atorvastatin 40mg   oral   0   0   1   0   ST",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Atorvastatin",
+                  "drug": "Atorvastatin",
+                  "documentIds": [
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "m_yRQIPwlIHUoabtRII0pwr7UhZA",
+                  "name": "Atorvastatin 40mg   oral   0   0   1   0   ST",
+                  "text": "Atorvastatin 40mg   oral   0   0   1   0   ST",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "agent": "Atorvastatin",
+                  "drug": "Atorvastatin",
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m_otd846OBF-8QYuAjyWE2tTZ6J9",
+          "name": "Thrombozytenaggregationshemmer",
+          "values": [
+            {
+              "id": "m_LAjvy1FPRq09PFkYkUF6IPdc28_B01AC06",
+              "name": "Acetylsalicylsäure",
+              "code": {
+                "catalog": "ATC",
+                "value": "B01AC06",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_JipnP72fUmrRM3mWUJE3v9a79h",
+                  "name": "Thrombo ASS 100mg   oral   1   0   0   0   ST",
+                  "text": "Thrombo ASS 100mg   oral   1   0   0   0   ST",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Acetylsalicylsäure",
+                  "drug": "Thrombo ASS",
+                  "documentIds": [
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "m__EpMn6JXyIwqGFg-E16xAKojq7",
+                  "name": "Thrombo ASS 100mg   oral   1   0   0   0   ST",
+                  "text": "Thrombo ASS 100mg   oral   1   0   0   0   ST",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "agent": "Acetylsalicylsäure",
+                  "drug": "Thrombo ASS",
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m_QWA1oTaGxNQNEFaJaHr-b0RZ6g",
+      "name": "ALIMENTÄRES SYSTEM UND STOFFWECHSEL",
+      "values": [
+        {
+          "id": "m_gjmH0rzxzK_oR2P2WfyJdakFBY",
+          "name": "Antidiabetika",
+          "values": [
+            {
+              "id": "m_fNZTfjTOVugatxrilCJAbwfMuy_A10BA02",
+              "name": "Metformin",
+              "code": {
+                "catalog": "ATC",
+                "value": "A10BA02",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_K2gHcn34Ece75Kc7u9LWTzekp1",
+                  "name": "Glucophage 1000mg   oral   1   0   1   0   ST",
+                  "text": "Glucophage 1000mg   oral   1   0   1   0   ST",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Metformin",
+                  "drug": "Glucophage",
+                  "documentIds": [
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "m_y5vWi_UG-dB1vX9zXbr_Fw8BRQ",
+                  "name": "Glucophage 1000mg   oral   1   0   1   0   ST",
+                  "text": "Glucophage 1000mg   oral   1   0   1   0   ST",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "agent": "Metformin",
+                  "drug": "Glucophage",
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m_syf55-KkyitFeBAEeqpOMmgt8v",
+      "name": "ATEMWEGE",
+      "values": [
+        {
+          "id": "m_NZvv03-iu8mu99sSFKpy0zhKLI",
+          "name": "Inhalative Anticholinergika",
+          "values": [
+            {
+              "id": "m_GwbgA9h8jtDnEECSutZh2PRk-p_R03BB04",
+              "name": "Tiotropiumbromid",
+              "code": {
+                "catalog": "ATC",
+                "value": "R03BB04",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_RJ8DTCsS0YAFOpQTYe_EzG6SIY",
+                  "name": "Tiotropiumbromid 18mcg   Inhalation   1   0   0   0   Kapseln",
+                  "text": "Tiotropiumbromid 18mcg   Inhalation   1   0   0   0   Kapseln",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Tiotropiumbromid",
+                  "drug": "Tiotropiumbromid",
+                  "documentIds": [
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "m_x5IOfXQwPc-RzW9BaqGHLKCzXL",
+                  "name": "Tiotropiumbromid 18mcg   Inhalation   1   0   0   0   Kapseln",
+                  "text": "Tiotropiumbromid 18mcg   Inhalation   1   0   0   0   Kapseln",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "agent": "Tiotropiumbromid",
+                  "drug": "Tiotropiumbromid",
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m_lkJ9ozlOBbNmLyTnWZeg3luDq3",
+          "name": "Inhalative Betasympathomimetika",
+          "values": [
+            {
+              "id": "m_VXJhhX0x0cUI_g1Wt_Cw0C_XpZ_R03AC02",
+              "name": "Salbutamol",
+              "code": {
+                "catalog": "ATC",
+                "value": "R03AC02",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_HOMNLw2N0TtNfihtlSGAiylOSP",
+                  "name": "Salbutamol Dosieraerosol 100mcg   Inhalation   1   0   1   0   Hub",
+                  "text": "Salbutamol Dosieraerosol 100mcg   Inhalation   1   0   1   0   Hub",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "agent": "Salbutamol",
+                  "drug": "Salbutamol",
+                  "documentIds": [
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "m__JFiuCdwai09GFRA1FfbWsrIkD",
+                  "name": "Salbutamol Dosieraerosol 100mcg   Inhalation   1   0   1   0   Hub",
+                  "text": "Salbutamol Dosieraerosol 100mcg   Inhalation   1   0   1   0   Hub",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "agent": "Salbutamol",
+                  "drug": "Salbutamol",
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "m_LwTOkinndwrIuTsr2_Rg9Y6_3i",
+          "name": "Glukokortikoide",
+          "values": [
+            {
+              "id": "m_weInBnr1vKKFvRdgYDh2Ca9mSi_H02AB06",
+              "name": "Prednisolon",
+              "code": {
+                "catalog": "ATC",
+                "value": "H02AB06",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "m_3pT1WRFKrACO4fGr7x8uaXUUDQ",
+                  "name": "Prednisolon 25mg   oral   1   0   0   0   ST",
+                  "text": "Prednisolon 25mg   oral   1   0   0   0   ST",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "agent": "Prednisolon",
+                  "drug": "Prednisolon",
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
