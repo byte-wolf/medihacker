@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compactPlan, deterministicPlan, MAX_BRIEFING_ITEMS, profileForRole, restrictPlan } from "@/lib/catalog/roles";
+import { allergiesFirst, compactPlan, deterministicPlan, MAX_BRIEFING_ITEMS, profileForRole, restrictPlan } from "@/lib/catalog/roles";
 
 describe("deterministicPlan", () => {
   it("puts situation needs first and lists each category once", () => {
@@ -92,5 +92,21 @@ describe("groupSections", () => {
     expect(groupSections(plan, 2).map((g) => g.map((s) => s.id).join(""))).toEqual(["ab", "c", "d", "e"]);
     expect(groupSections(plan, 4).map((g) => g.map((s) => s.id).join(""))).toEqual(["ab", "c", "de"]);
     expect(groupSections(plan, 8).map((g) => g.map((s) => s.id).join(""))).toEqual(["abcde"]);
+  });
+});
+
+describe("allergiesFirst", () => {
+  const firstKey = (plan: ReturnType<typeof compactPlan>) => plan[0]?.items[0]?.key;
+
+  it("puts allergies first for every role, even when the role lists them later", () => {
+    for (const role of ["Breast surgeon", "Oncologist", "General practitioner", "Radiologist", "Clinical pharmacist"]) {
+      expect(firstKey(compactPlan([role], "Medication review before surgery with contrast CT")), role).toBe("allergies");
+      expect(firstKey(restrictPlan(deterministicPlan([role], ""), ["allergies", "comorbidities", "current_medication"])), role).toBe("allergies");
+    }
+  });
+
+  it("leaves a plan without allergies unchanged", () => {
+    const plan = [{ id: "a", title: "A", items: [{ key: "comorbidities", label: "C", guidance: "" }] }];
+    expect(allergiesFirst(plan)).toBe(plan);
   });
 });
