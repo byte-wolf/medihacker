@@ -648,7 +648,7 @@ body {
 
 /* Briefing as a compact, internally scrolling box */
 .briefing__body {
-  max-height: 45vh;
+  max-height: clamp(12rem, 32vh, 26rem);
   overflow-y: auto;
   padding-right: 0.25rem;
   overscroll-behavior: contain;

@@ -226,8 +226,7 @@ export function Workspace(props: {
         open={!!focused}
         passiveModal
         size="md"
-        modalLabel={focused && relevantContradictions.includes(focused.id) ? "Contradiction relevant to this situation" : "Contradiction in the documents"}
-        modalHeading={focused?.title ?? ""}
+        modalHeading={focused && relevantContradictions.includes(focused.id) ? "Contradiction relevant to this situation" : "Contradiction in the documents"}
         onRequestClose={() => setFocusContradiction(null)}
       >
         {focused && (
