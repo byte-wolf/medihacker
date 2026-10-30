@@ -41,9 +41,6 @@ export function LoginForm({ users }: { users: LoginUser[] }) {
         <div>
           <Wordmark height={56} className="login-card__logo" />
           <h1 className="login-card__title">Log in</h1>
-          <p className="login-card__lead">
-            Your role and department are linked to your user name and decide which patient facts you see first.
-          </p>
         </div>
         <Form
           aria-label="Log in"

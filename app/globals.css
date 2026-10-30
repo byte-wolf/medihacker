@@ -111,7 +111,6 @@ body {
   font-weight: 400;
   margin-bottom: 0.5rem;
 }
-.login-card__lead,
 .login-card__note {
   color: var(--cds-text-secondary);
   font-size: 0.875rem;
@@ -692,9 +691,13 @@ body {
   border: 1px solid var(--cds-support-error);
   background: var(--cds-notification-background-error, #fff1f1);
   cursor: pointer;
+  transition:
+    background-color 120ms ease-out,
+    box-shadow 120ms ease-out;
 }
-.fact--contradiction:hover {
-  border-color: var(--cds-button-danger-hover, #b81921);
+.fact--contradiction:hover:not(:has(.source-tag:hover)) {
+  background: color-mix(in srgb, var(--cds-support-error) 28%, var(--cds-notification-background-error, #fff1f1));
+  box-shadow: inset 0 0 0 1px var(--cds-support-error);
 }
 .fact__contradiction {
   position: absolute;
