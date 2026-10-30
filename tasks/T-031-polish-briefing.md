@@ -1,7 +1,7 @@
 ---
 id: T-031
 title: Polish the briefing (less detail, same UX)
-status: claimed
+status: review
 owner: Devin (https://app.devin.ai/sessions/6dd08fcd621d471794063f556db90420)
 branch: feat/t-031-polish-briefing
 pr:
@@ -25,3 +25,4 @@ T-026/T-028/T-030.
 ## Log
 
 - 2026-10-30, Devin: claimed.
+- 2026-10-30, Devin: branch pushed (compact citations, status dots, flat sections, one-line footer); waiting for mirraman's review.
