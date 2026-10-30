@@ -1,7 +1,7 @@
 ---
 id: T-027
 title: Create new documents – Preoperative Anesthesia Checklist
-status: review
+status: done
 owner: Anna (Claude Code)
 branch: feat/t-027-preop-checklist
 pr: https://github.com/byte-wolf/medihacker/pull/11
