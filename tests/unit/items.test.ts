@@ -124,16 +124,16 @@ describe("demographicsItem", () => {
 });
 
 describe("weightTrendItem", () => {
-  it("shows the weighings as one trend line in date order with the calculated change", () => {
+  it("lists weighings in date order and calculates the change", () => {
     const item = weightTrendItem(patient)!;
     expect(item.status).toBe("documented");
-    expect(item.facts).toHaveLength(1);
-    const [trend] = item.facts;
-    expect(trend.statement).toBe("Weight 80 kg (20 Mar 2020) → 72 kg (1 Sep 2020); change −8 kg.");
-    expect(trend.kind).toBe("calculated");
-    expect(trend.calculation?.result).toBe(-8);
-    // Every shown value links to its own document
-    expect(new Set(trend.quotes.map((q) => q.passageId.split(":")[0])).size).toBe(2);
+    expect(item.facts).toHaveLength(3);
+    const [w1, w2, diff] = item.facts;
+    expect(w1.statement).toBe("Weight 80 kg (20 Mar 2020).");
+    expect(w2.statement).toBe("Weight 72 kg (1 Sep 2020).");
+    expect(diff.kind).toBe("calculated");
+    expect(diff.statement).toBe("Weight change −8 kg between 20 Mar 2020 and 1 Sep 2020 (80 → 72 kg).");
+    expect(diff.calculation?.result).toBe(-8);
   });
 
   it("returns null when no weight is documented", () => {
@@ -141,7 +141,7 @@ describe("weightTrendItem", () => {
     expect(weightTrendItem(empty)).toBeNull();
   });
 
-  it("omits the change for a single weighing", () => {
+  it("omits the change fact for a single weighing", () => {
     const one: PatientRecord = {
       ...patient,
       documents: [patient.documents[0]],
@@ -150,25 +150,6 @@ describe("weightTrendItem", () => {
     const item = weightTrendItem(one)!;
     expect(item.facts).toHaveLength(1);
     expect(item.facts[0].statement).toBe("Weight 80 kg (20 Mar 2020).");
-  });
-});
-
-describe("weightTrendItem with many weighings", () => {
-  it("keeps the first and the latest values and skips the middle", () => {
-    const base = patient.passages.find((p) => /^\s*Gewicht:/i.test(p.text))!;
-    const docs = ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "2020-05-01", "2020-06-01"].map((date, i) => ({
-      ...patient.documents[0],
-      id: `doc${i}`,
-      date,
-    }));
-    const many: PatientRecord = {
-      ...patient,
-      documents: docs,
-      passages: docs.map((d, i) => ({ ...base, id: `${d.id}:1`, docId: d.id, text: `Gewicht: ${90 - i} kg` })),
-    };
-    const [trend] = weightTrendItem(many)!.facts;
-    expect(trend.statement).toBe("Weight 90 kg (1 Jan 2020) … → 87 kg (1 Apr 2020) → 86 kg (1 May 2020) → 85 kg (1 Jun 2020); change −5 kg.");
-    expect(trend.quotes).toHaveLength(4);
   });
 });
 

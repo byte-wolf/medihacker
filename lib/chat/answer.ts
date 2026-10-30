@@ -2,7 +2,6 @@ import type { PatientRecord } from "@/lib/data/patients";
 import { listContradictions } from "@/lib/contradictions/store";
 import { itemsFromModel, verifyContext } from "@/lib/briefing/items";
 import { cachedComplete } from "@/lib/llm/cache";
-import { TOKEN_LIMITS } from "@/lib/llm/tokens";
 import { LlmUnavailableError, parseJsonObject } from "@/lib/llm/provider";
 import { chatPrompt } from "@/lib/llm/prompts";
 import type { BriefingItem, RejectedFact } from "@/lib/types";
@@ -33,7 +32,7 @@ export async function answerQuestion(args: {
       ],
       json: true,
       tag: "chat",
-      maxTokens: TOKEN_LIMITS.chat,
+      maxTokens: 3000,
     });
     const { items, rejected } = itemsFromModel(parseJsonObject(text), [], verifyContext(args.patient), "chat");
     const contradictions = listContradictions(args.patient.id);

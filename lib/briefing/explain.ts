@@ -1,5 +1,4 @@
 import { cachedComplete } from "@/lib/llm/cache";
-import { TOKEN_LIMITS } from "@/lib/llm/tokens";
 import { parseJsonObject } from "@/lib/llm/provider";
 import { explainPrompt } from "@/lib/llm/prompts";
 
@@ -21,7 +20,7 @@ const GUIDELINE_HOSTS = [
   "leitlinienprogramm-onkologie.de",
 ];
 
-export const EXPLAIN_MAX_TOKENS = TOKEN_LIMITS.explain;
+export const EXPLAIN_MAX_TOKENS = 400;
 export const EXPLAIN_TIMEOUT_MS = 8000;
 
 function safeGuideline(g: unknown): Explanation["guideline"] {

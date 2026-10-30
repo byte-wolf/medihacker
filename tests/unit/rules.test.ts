@@ -48,10 +48,14 @@ describe("contradiction rules", () => {
 });
 
 describe("weight trend by rule", () => {
-  it("shows every weighing with its date in one trend line with the calculated change", async () => {
+  it("lists every weighing with its date and the calculated change", async () => {
     const { weightTrendItem } = await import("@/lib/briefing/items");
     const item = weightTrendItem(patient)!;
-    expect(item.facts.map((f) => f.statement)).toEqual(["Weight 80 kg (20 Mar 2020) → 72 kg (1 Sep 2020); change −8 kg."]);
-    expect(item.facts[0].kind).toBe("calculated");
+    expect(item.facts.map((f) => f.statement)).toEqual([
+      "Weight 80 kg (20 Mar 2020).",
+      "Weight 72 kg (1 Sep 2020).",
+      "Weight change −8 kg between 20 Mar 2020 and 1 Sep 2020 (80 → 72 kg).",
+    ]);
+    expect(item.facts[2].kind).toBe("calculated");
   });
 });

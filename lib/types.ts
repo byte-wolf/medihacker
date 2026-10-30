@@ -85,14 +85,10 @@ export type Contradiction = {
 
 export type RejectedFact = { section: string; item: string; statement: string; reason: string };
 
-/** One model call and its token counts (0 when served from cache). */
-export type TokenCall = { tag: string; model: string; cached: boolean; prompt: number; completion: number; total: number };
-
 export type BriefingStreamEvent =
   | { type: "plan"; sections: { id: string; title: string; items: { key: string; label: string }[] }[] }
   | { type: "section"; section: BriefingSection }
   | { type: "contradictions"; relevant: string[]; all: Contradiction[] }
   | { type: "debug"; rejected: RejectedFact[] }
   | { type: "error"; message: string; sectionId?: string }
-  | { type: "tokens"; calls: TokenCall[]; total: number }
   | { type: "done"; ms: number; cached: boolean; fallback: boolean };

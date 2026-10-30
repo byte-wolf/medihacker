@@ -1,10 +1,9 @@
-import { CATEGORIES, compactPlan, deterministicPlan, MAX_BRIEFING_ITEMS, restrictPlan, type PlannedItem, type PlannedSection } from "@/lib/catalog/roles";
+import { CATEGORIES, deterministicPlan, type PlannedItem, type PlannedSection } from "@/lib/catalog/roles";
 import type { PatientRecord } from "@/lib/data/patients";
 import { listContradictions, ensureContradictions } from "@/lib/contradictions/store";
 import { cachedComplete } from "@/lib/llm/cache";
 import { LlmUnavailableError, llmConfigured, parseJsonObject } from "@/lib/llm/provider";
-import { itemsPerCall, sumTokens, TOKEN_LIMITS, withTokenLog } from "@/lib/llm/tokens";
-import { extractionPrompt, selectionPrompt } from "@/lib/llm/prompts";
+import { extractionPrompt, planPrompt } from "@/lib/llm/prompts";
 import type { BriefingItem, BriefingSection, BriefingStreamEvent, Contradiction } from "@/lib/types";
 import { demographicsItem, itemsFromModel, retrievalItems, verifyContext, weightTrendItem } from "./items";
 
@@ -27,17 +26,11 @@ const ITEM_CONTRADICTION_CATEGORIES: Record<string, string[]> = {
   followups_recommended: ["dates"],
 };
 
-/**
- * The model picks the few items this role needs for this situation (cached, fast model), plus up
- * to two situation-specific items the catalog lacks. Without a model, or if its answer is unusable,
- * a rule picks them.
- */
-async function selectPlan(roles: string[], situation: SituationInput): Promise<PlannedSection[]> {
-  const situationText = situation ? `${situation.title} ${situation.description}` : "";
-  const fallback = compactPlan(roles, situationText);
-  if (!situation || !llmConfigured()) return fallback;
-  const catalog = Object.values(CATEGORIES).map((c) => ({ key: c.key, label: c.label }));
-  const { system, user } = selectionPrompt({ roles, situation, catalog, max: MAX_BRIEFING_ITEMS });
+/** Situation-specific items from the model (cached), merged into the regular briefing sections. */
+async function customItems(roles: string[], situation: SituationInput, plan: PlannedSection[]): Promise<PlannedItem[]> {
+  if (!situation || !llmConfigured()) return [];
+  const existing = plan.flatMap((s) => s.items.map((i) => i.label));
+  const { system, user } = planPrompt({ roles, situation, existing });
   try {
     const { text } = await cachedComplete({
       messages: [
@@ -46,41 +39,18 @@ async function selectPlan(roles: string[], situation: SituationInput): Promise<P
       ],
       json: true,
       fast: true,
-      tag: "select",
-      maxTokens: TOKEN_LIMITS.select,
+      tag: "plan",
+      maxTokens: 600,
     });
-    const raw = parseJsonObject<{ keys?: unknown; custom?: unknown }>(text);
-    const picked = (Array.isArray(raw.keys) ? raw.keys : []).filter((k): k is string => typeof k === "string" && !!CATEGORIES[k]);
-    if (picked.length < 3) return fallback;
-    const custom: PlannedItem[] = (Array.isArray(raw.custom) ? (raw.custom as PlannedItem[]) : [])
+    const items = parseJsonObject<{ items?: PlannedItem[] }>(text).items ?? [];
+    return items
       .filter((i) => typeof i?.key === "string" && typeof i?.label === "string")
-      .slice(0, 2)
+      .slice(0, 4)
       .map((i) => ({ key: i.key.startsWith("custom_") ? i.key : `custom_${i.key}`, label: i.label, guidance: String(i.guidance ?? "") }));
-    const keys = [...new Set(picked.includes("allergies") ? picked : ["allergies", ...picked])].slice(0, MAX_BRIEFING_ITEMS - custom.length);
-    const plan = restrictPlan(deterministicPlan(roles, situationText), keys);
-    if (custom.length) plan.push({ id: "situation", title: "For this situation", items: custom });
-    return plan;
   } catch (err) {
-    if (!(err instanceof LlmUnavailableError)) console.error("[briefing] item selection failed:", err instanceof Error ? err.message.slice(0, 200) : err);
-    return fallback;
+    console.error("[briefing] planning failed:", err);
+    return [];
   }
-}
-
-/** Pack consecutive sections into groups of at most `per` items; a bigger section stays alone. */
-export function groupSections(plan: PlannedSection[], per: number): PlannedSection[][] {
-  const groups: PlannedSection[][] = [];
-  let size = 0;
-  for (const s of plan) {
-    const last = groups.at(-1);
-    if (last && size + s.items.length <= per) {
-      last.push(s);
-      size += s.items.length;
-    } else {
-      groups.push([s]);
-      size = s.items.length;
-    }
-  }
-  return groups;
 }
 
 async function extractSection(
@@ -101,9 +71,8 @@ async function extractSection(
     return { section: { id: section.id, title: section.title, items: [...fixed.values()] }, rejected: { type: "debug", rejected: [] }, cached: true, fallback: false };
   }
   try {
-    // At most itemsPerCall() items per call, all in parallel.
-    const per = itemsPerCall();
-    const chunks = Array.from({ length: Math.ceil(llmItems.length / per) }, (_, i) => llmItems.slice(i * per, i * per + per));
+    // At most two items per call, all in parallel: short answers keep every call fast.
+    const chunks = Array.from({ length: Math.ceil(llmItems.length / 2) }, (_, i) => llmItems.slice(i * 2, i * 2 + 2));
     const results = await Promise.all(
       chunks.map(async (chunk) => {
         const { system, user } = extractionPrompt({ patient, roles, situation, sectionTitle: section.title, items: chunk });
@@ -114,7 +83,7 @@ async function extractSection(
           ],
           json: true,
           tag: `extract:${section.id}`,
-          maxTokens: TOKEN_LIMITS.extract,
+          maxTokens: 3000,
         });
         return { ...itemsFromModel(parseJsonObject(text), chunk, ctx, section.title), cached };
       }),
@@ -158,18 +127,8 @@ export async function buildBriefing(
   emit: (e: BriefingStreamEvent) => void,
 ): Promise<{ sections: BriefingSection[]; ms: number; fallback: boolean }> {
   const started = Date.now();
-  const { result, calls } = await withTokenLog(() => runBriefing(patient, roles, situation, emit));
-  const tokens = sumTokens(calls);
-  emit({ type: "tokens", calls, total: tokens.total });
-  console.log(`[tokens] briefing total ${tokens.prompt} in + ${tokens.completion} out = ${tokens.total} over ${calls.filter((c) => !c.cached).length} model calls (${calls.filter((c) => c.cached).length} cached)`);
-  const ms = Date.now() - started;
-  emit({ type: "done", ms, cached: result.allCached, fallback: result.fallback });
-  return { sections: result.sections, ms, fallback: result.fallback };
-}
-
-async function runBriefing(patient: PatientRecord, roles: string[], situation: SituationInput, emit: (e: BriefingStreamEvent) => void) {
   ensureContradictions(patient);
-  const plan = await selectPlan(roles, situation);
+  const plan = deterministicPlan(roles, situation ? `${situation.title} ${situation.description}` : "");
   emit({ type: "plan", sections: plan.map((s) => ({ id: s.id, title: s.title, items: s.items.map((i) => ({ key: i.key, label: i.label })) })) });
 
   const contradictions = listContradictions(patient.id);
@@ -180,21 +139,19 @@ async function runBriefing(patient: PatientRecord, roles: string[], situation: S
   let fallback = false;
   let allCached = true;
 
-  // Small sections share an extraction call, so each call carries up to itemsPerCall() items.
-  const runGroup = async (group: PlannedSection[]): Promise<BriefingSection[]> => {
-    const merged: PlannedSection = { id: group.map((s) => s.id).join("+"), title: group.map((s) => s.title).join(" · "), items: group.flatMap((s) => s.items) };
+  const runOne = async (s: PlannedSection): Promise<BriefingSection | null> => {
     try {
-      const r = await extractSection(patient, roles, situation, merged);
+      const r = await extractSection(patient, roles, situation, s);
       attachContradictions(r.section, contradictions, relevant);
       fallback ||= r.fallback;
       allCached &&= r.cached;
       if (r.rejected.rejected.length) emit(r.rejected);
-      return group.map((s) => ({ id: s.id, title: s.title, items: r.section.items.filter((i) => s.items.some((p) => p.key === i.key)) }));
+      return r.section;
     } catch (err) {
-      console.error(`[briefing] section ${merged.id} failed:`, err);
+      console.error(`[briefing] section ${s.id} failed:`, err);
       allCached = false;
-      for (const s of group) emit({ type: "error", sectionId: s.id, message: "This section could not be loaded. Please retry." });
-      return [];
+      emit({ type: "error", sectionId: s.id, message: "This section could not be loaded. Please retry." });
+      return null;
     }
   };
   const publish = (section: BriefingSection | null) => {
@@ -204,7 +161,23 @@ async function runBriefing(patient: PatientRecord, roles: string[], situation: S
     else sections.push(section);
     emit({ type: "section", section });
   };
-  await Promise.all(groupSections(plan, itemsPerCall()).map((g) => runGroup(g).then((done) => done.forEach(publish))));
+  const jobs = plan.map((s) => runOne(s).then((section) => (publish(section), section)));
+
+  // Situation-specific items are planned while the standard sections are already extracting,
+  // then appended to the last regular section (no separate "questions" section to read).
+  const customJob = customItems(roles, situation, plan).then(async (items) => {
+    const known = new Set(plan.flatMap((s) => s.items.map((i) => i.key)));
+    const extra = items.filter((i) => !known.has(i.key) && !CATEGORIES[i.key]);
+    const target = plan.at(-1);
+    if (!extra.length || !target) return;
+    const [extraSection, base] = await Promise.all([runOne({ ...target, items: extra }), jobs[plan.length - 1]]);
+    if (!extraSection?.items.length) return;
+    publish({ ...(base ?? { id: target.id, title: target.title, items: [] }), items: [...(base?.items ?? []), ...extraSection.items] });
+  });
+
+  await Promise.all([...jobs, customJob]);
   emit({ type: "contradictions", relevant: [...relevant], all: contradictions });
-  return { sections, allCached, fallback };
+  const ms = Date.now() - started;
+  emit({ type: "done", ms, cached: allCached, fallback });
+  return { sections, ms, fallback };
 }
