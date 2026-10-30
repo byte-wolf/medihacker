@@ -27,7 +27,9 @@ export function SourcePanel(props: {
   const [error, setError] = useState<string | null>(null);
   const [translate, setTranslate] = useState(false);
   const firstMark = useRef<HTMLElement | null>(null);
-  const closeRef = useRef<HTMLButtonElement | null>(null);
+  const headingRef = useRef<HTMLHeadingElement | null>(null);
+  // The element that opened the panel, captured before focus moves into it.
+  const [opener] = useState(() => (typeof document !== "undefined" && document.activeElement instanceof HTMLElement ? document.activeElement : null));
 
   useEffect(() => {
     let cancelled = false;
@@ -53,19 +55,24 @@ export function SourcePanel(props: {
     }
   }, [data, passageIds]);
 
-  // Move focus into the panel when it opens; Esc closes it (capture phase, so tooltips cannot swallow the key).
+  // Move focus to the panel heading when it opens (announced, but no focus ring after a mouse click);
+  // Esc closes it (capture phase, so tooltips cannot swallow the key) and focus returns to the opener.
   const onCloseRef = useRef(onClose);
   useEffect(() => {
     onCloseRef.current = onClose;
   });
   useEffect(() => {
-    closeRef.current?.focus();
+    headingRef.current?.focus({ preventScroll: true });
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onCloseRef.current();
     };
     window.addEventListener("keydown", onKey, true);
-    return () => window.removeEventListener("keydown", onKey, true);
-  }, []);
+    return () => {
+      window.removeEventListener("keydown", onKey, true);
+      const lost = !document.activeElement || document.activeElement === document.body || !document.activeElement.isConnected;
+      if (opener?.isConnected && lost) opener.focus({ preventScroll: true });
+    };
+  }, [opener]);
 
   const meta = props.documents.find((d) => d.id === docId);
   const highlighted = data ? data.passages.filter((p) => passageIds.includes(p.id)).sort((a, b) => a.start - b.start) : [];
@@ -89,14 +96,14 @@ export function SourcePanel(props: {
       <div className="source-panel__head">
         <div>
           <p className="source-panel__eyebrow">Source</p>
-          <h2 className="source-panel__title">{meta ? docKindLabel(meta.title, meta.type) : docId}</h2>
+          <h2 ref={headingRef} tabIndex={-1} className="source-panel__title">{meta ? docKindLabel(meta.title, meta.type) : docId}</h2>
           {meta && (
             <p className="source-panel__meta">
               {meta.title} · {formatDate(meta.date)} · {meta.department}
             </p>
           )}
         </div>
-        <Button ref={closeRef} kind="ghost" size="sm" hasIconOnly renderIcon={Close} iconDescription="Close source (Esc)" onClick={onClose} />
+        <Button kind="ghost" size="sm" hasIconOnly renderIcon={Close} iconDescription="Close source (Esc)" onClick={onClose} />
       </div>
       {props.context && (
         <p className="source-panel__context">
