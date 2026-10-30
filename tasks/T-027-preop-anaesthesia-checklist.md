@@ -1,10 +1,10 @@
 ---
 id: T-027
 title: Create new documents – Preoperative Anesthesia Checklist
-status: in_progress
+status: review
 owner: Anna (Claude Code)
 branch: feat/t-027-preop-checklist
-pr:
+pr: https://github.com/byte-wolf/medihacker/pull/11
 depends_on: []
 touches: [components/workspace/ContextBar.tsx, app/patients/[patientId]/documents/, app/api/patient-documents/, components/documents/, lib/documents/, lib/data/structured.ts, lib/db/schema.ts, drizzle/, app/globals.css, tests/unit/, tests/integration/]
 ---
