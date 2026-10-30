@@ -1,7 +1,5 @@
 "use client";
 
-import { OperationalTag, Tag } from "@carbon/react";
-import { Document } from "@carbon/icons-react";
 import { docKindLabel, formatDate } from "@/lib/format";
 import type { DocumentMeta, Fact } from "@/lib/types";
 import type { OpenSource } from "./types";
@@ -9,6 +7,14 @@ import type { OpenSource } from "./types";
 export function docLabel(documents: DocumentMeta[], docId: string) {
   const d = documents.find((x) => x.id === docId);
   return d ? `${docKindLabel(d.title, d.type)} · ${formatDate(d.date)}` : `Document ${docId}`;
+}
+
+/** Compact label for inline citations, e.g. "Discharge · 25 Oct 24". */
+function shortDocLabel(documents: DocumentMeta[], docId: string) {
+  const d = documents.find((x) => x.id === docId);
+  if (!d) return `Doc ${docId}`;
+  const kind = docKindLabel(d.title, d.type).replace(/ (letter|report|consult)$/, "");
+  return `${kind} · ${formatDate(d.date).replace(/ \d{2}(\d{2})$/, " $1")}`;
 }
 
 /** One clickable source tag per cited document; clicking opens the highlighted passage(s). */
@@ -33,21 +39,21 @@ export function SourceTags({
   return (
     <span className="source-tags">
       {[...byDoc].map(([docId, ids]) => (
-        <OperationalTag
+        <button
           key={docId}
-          type="blue"
-          size="sm"
-          renderIcon={Document}
+          type="button"
+          className="cite"
           onClick={() => onOpenSource(docId, ids, fact.statement)}
-          className="source-tag"
-          text={docLabel(documents, docId)}
+          title={docLabel(documents, docId)}
           aria-label={`Open source: ${docLabel(documents, docId)}`}
-        />
+        >
+          {shortDocLabel(documents, docId)}
+        </button>
       ))}
       {fact.kind === "calculated" && (
-        <Tag type="purple" size="sm" title="Calculated from the linked source values">
-          Calculated
-        </Tag>
+        <span className="cite-calc" title="Calculated from the linked source values">
+          calculated
+        </span>
       )}
     </span>
   );

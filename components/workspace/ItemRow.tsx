@@ -1,7 +1,6 @@
 "use client";
 
-import { Tag } from "@carbon/react";
-import { CheckmarkFilled, HelpFilled, WarningAltFilled } from "@carbon/icons-react";
+import { WarningAltFilled } from "@carbon/icons-react";
 import type { BriefingItem, DocumentMeta } from "@/lib/types";
 import { ExplainButton } from "./ExplainButton";
 import { SourceTags } from "./SourceTags";
@@ -19,6 +18,23 @@ function Statement({ text }: { text: string }) {
     </span>
   );
 }
+
+/** Item label with its trailing "(hint)" set in a lighter style. */
+function Label({ text }: { text: string }) {
+  const m = text.match(/^(.+?)\s*(\([^)]*\))$/);
+  if (!m) return <h3>{text}</h3>;
+  return (
+    <h3>
+      {m[1]} <span className="item-row__hint">{m[2]}</span>
+    </h3>
+  );
+}
+
+const STATUS_LABEL: Record<BriefingItem["status"], string> = {
+  documented: "Documented",
+  not_documented: "Not documented",
+  unverified: "Not verified",
+};
 
 /** One fact; a contradicting fact sits in a red box that opens the contradiction details on click. */
 function FactRow({
@@ -88,10 +104,8 @@ export function ItemRow({
   return (
     <div className={`item-row item-row--${item.status}`} data-item={item.key}>
       <div className="item-row__label">
-        {item.status === "documented" && <CheckmarkFilled size={16} aria-hidden className="icon-ok" />}
-        {item.status === "not_documented" && <HelpFilled size={16} aria-hidden className="icon-muted" />}
-        {item.status === "unverified" && <WarningAltFilled size={16} aria-hidden className="icon-warn" />}
-        <h3>{item.label}</h3>
+        <span className="item-row__status" title={STATUS_LABEL[item.status]} aria-hidden />
+        <Label text={item.label} />
         {explainSituationId !== undefined && <ExplainButton situationId={explainSituationId} label={item.label} />}
       </div>
       <div className="item-row__body">
@@ -110,10 +124,8 @@ export function ItemRow({
           </ul>
         ) : (
           <div className="item-row__note">
-            <Tag type={item.status === "not_documented" ? "gray" : "warm-gray"} size="sm">
-              {item.status === "not_documented" ? "Not documented" : "Not verified"}
-            </Tag>{" "}
-            {item.note}
+            <span className="item-row__verdict">{STATUS_LABEL[item.status]}</span>
+            {item.note && <span className="item-row__why"> · {item.note}</span>}
           </div>
         )}
       </div>

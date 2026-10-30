@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, InlineNotification, SkeletonText, Tile } from "@carbon/react";
+import { Button, InlineNotification, SkeletonText } from "@carbon/react";
 import { Maximize, Minimize, Renew } from "@carbon/icons-react";
 import { useState } from "react";
 import type { DocumentMeta } from "@/lib/types";
@@ -69,17 +69,19 @@ export function BriefingView({
         />
       )}
       {showPlanSkeleton && (
-        <Tile className="briefing-section">
+        <div className="briefing-section">
           <SkeletonText heading width="30%" />
           <SkeletonText paragraph lineCount={3} />
-        </Tile>
+        </div>
       )}
       {state.plan.map((plan) => {
         const section = state.sections[plan.id];
         const error = state.sectionErrors[plan.id];
         return (
-          <Tile key={plan.id} className="briefing-section" data-section={plan.id}>
-            <h2 className="briefing-section__title">{plan.title}</h2>
+          <section key={plan.id} className="briefing-section" data-section={plan.id} aria-labelledby={`section-${plan.id}`}>
+            <h2 className="briefing-section__title" id={`section-${plan.id}`}>
+              {plan.title}
+            </h2>
             {section
               ? section.items.map((item) => (
                   <ItemRow
@@ -95,6 +97,7 @@ export function BriefingView({
               : plan.items.map((i) => (
                   <div className="item-row item-row--loading" key={i.key}>
                     <div className="item-row__label">
+                      <span className="item-row__status" aria-hidden />
                       <h3>{i.label}</h3>
                     </div>
                     <div className="item-row__body">
@@ -107,13 +110,12 @@ export function BriefingView({
                 Retry
               </Button>
             )}
-          </Tile>
+          </section>
         );
       })}
       {state.status === "done" && (
         <p className="briefing__footer">
-          Generated from {documents.length} source documents. Every statement links to its source passage; facts that could not be
-          matched to the source text are not shown. Verify before clinical decisions.
+          From {documents.length} documents · every statement links to its source · verify before clinical decisions
         </p>
       )}
       </div>
