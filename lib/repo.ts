@@ -120,3 +120,19 @@ export function addMessage(conversationId: number, role: "user" | "assistant", c
   const [row] = getDb().insert(schema.messages).values({ conversationId, role, content, latencyMs: latencyMs ?? null }).returning().all();
   return row;
 }
+
+export type PatientDocumentRow = typeof schema.patientDocuments.$inferSelect;
+
+export function createPatientDocument(userId: number, patientId: string, type: string, content: unknown, asaClass: string | null): PatientDocumentRow {
+  const [row] = getDb().insert(schema.patientDocuments).values({ userId, patientId, type, content, asaClass }).returning().all();
+  return row;
+}
+
+export function listPatientDocuments(patientId: string): PatientDocumentRow[] {
+  return getDb()
+    .select()
+    .from(schema.patientDocuments)
+    .where(eq(schema.patientDocuments.patientId, patientId))
+    .orderBy(desc(schema.patientDocuments.id))
+    .all();
+}

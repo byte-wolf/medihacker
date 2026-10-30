@@ -104,3 +104,18 @@ export const auditLog = sqliteTable("audit_log", {
   details: text("details", { mode: "json" }),
   createdAt: createdAt(),
 });
+
+/** Documents users create for a patient, e.g. the preoperative anaesthesia checklist. */
+export const patientDocuments = sqliteTable("patient_documents", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  patientId: text("patient_id").notNull(),
+  type: text("type").notNull(),
+  /** The completed form as entered (type-specific JSON) */
+  content: text("content", { mode: "json" }).notNull(),
+  /** ASA class confirmed by the user (checklist only) */
+  asaClass: text("asa_class"),
+  createdAt: createdAt(),
+});

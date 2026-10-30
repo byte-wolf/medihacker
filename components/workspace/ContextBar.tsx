@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, ComboBox, Modal, Stack, TextArea, TextInput } from "@carbon/react";
-import { Chat } from "@carbon/icons-react";
+import { Chat, DocumentAdd } from "@carbon/icons-react";
 import { useState } from "react";
 import type { SituationOption } from "./types";
 
@@ -67,6 +67,9 @@ export function ContextBar(props: {
       <div className="context-bar__actions">
         <Button kind="ghost" size="md" renderIcon={Chat} onClick={props.onNewConversation} disabled={!props.hasMessages}>
           New conversation
+        </Button>
+        <Button kind="ghost" size="md" renderIcon={DocumentAdd} href={`/patients/${props.patientId}/documents/new`}>
+          Create New Document
         </Button>
       </div>
 
