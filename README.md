@@ -46,6 +46,7 @@ bun run index
 | `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` | OpenRouter key and an ordered model list; the next model answers when one refuses, is rate-limited or answers badly |
 | `OPENROUTER_FAST_MODEL`, `OPENROUTER_BASE_URL`, `OPENROUTER_REASONING_EFFORT` | Optional list for planning and translation; endpoint override; hidden reasoning effort (default `minimal`, faster and never cut off) |
 | `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` | Any other OpenAI-compatible endpoint, e.g. a local Ollama server |
+| `LLM_ITEMS_PER_CALL` | Briefing items per extraction call (1-8, default 2). Each call sends the whole record, so 4 roughly halves input tokens at some cost in speed; every call logs `[tokens] ...` and the briefing shows its total |
 | `LLM_MAX_CONCURRENCY` | Max parallel LLM requests (default 12); the rest wait in a queue |
 | `DATABASE_URL` | SQLite file (default `./medihacker.db`) |
 | `PATIENT_DATA_DIR` | Patient folders (default `./data/data`) |

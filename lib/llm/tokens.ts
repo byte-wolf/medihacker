@@ -17,6 +17,15 @@ export const TOKEN_LIMITS = {
   explain: 400,
 } as const;
 
+/**
+ * Items answered per extraction call (LLM_ITEMS_PER_CALL, 1-8, default 2). Every call sends the
+ * whole patient record, so fewer, bigger calls save input tokens; smaller calls finish faster.
+ */
+export function itemsPerCall(): number {
+  const n = Number.parseInt(process.env.LLM_ITEMS_PER_CALL ?? "", 10);
+  return Number.isFinite(n) ? Math.min(8, Math.max(1, n)) : 2;
+}
+
 export type TokenUsage = { prompt: number; completion: number; total: number };
 
 const store = new AsyncLocalStorage<TokenCall[]>();

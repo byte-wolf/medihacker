@@ -83,3 +83,14 @@ describe("restrictPlan", () => {
     expect(plan.at(-1)?.id).toBe("more");
   });
 });
+
+describe("groupSections", () => {
+  it("packs consecutive sections up to the per-call limit", async () => {
+    const { groupSections } = await import("@/lib/briefing/pipeline");
+    const sec = (id: string, n: number) => ({ id, title: id, items: Array.from({ length: n }, (_, i) => ({ key: `${id}${i}`, label: "", guidance: "" })) });
+    const plan = [sec("a", 1), sec("b", 1), sec("c", 3), sec("d", 2), sec("e", 1)];
+    expect(groupSections(plan, 2).map((g) => g.map((s) => s.id).join(""))).toEqual(["ab", "c", "d", "e"]);
+    expect(groupSections(plan, 4).map((g) => g.map((s) => s.id).join(""))).toEqual(["ab", "c", "de"]);
+    expect(groupSections(plan, 8).map((g) => g.map((s) => s.id).join(""))).toEqual(["abcde"]);
+  });
+});

@@ -3,7 +3,7 @@ import type { PatientRecord } from "@/lib/data/patients";
 import { listContradictions, ensureContradictions } from "@/lib/contradictions/store";
 import { cachedComplete } from "@/lib/llm/cache";
 import { LlmUnavailableError, llmConfigured, parseJsonObject } from "@/lib/llm/provider";
-import { sumTokens, TOKEN_LIMITS, withTokenLog } from "@/lib/llm/tokens";
+import { itemsPerCall, sumTokens, TOKEN_LIMITS, withTokenLog } from "@/lib/llm/tokens";
 import { extractionPrompt, selectionPrompt } from "@/lib/llm/prompts";
 import type { BriefingItem, BriefingSection, BriefingStreamEvent, Contradiction } from "@/lib/types";
 import { demographicsItem, itemsFromModel, retrievalItems, verifyContext, weightTrendItem } from "./items";
@@ -66,6 +66,23 @@ async function selectPlan(roles: string[], situation: SituationInput): Promise<P
   }
 }
 
+/** Pack consecutive sections into groups of at most `per` items; a bigger section stays alone. */
+export function groupSections(plan: PlannedSection[], per: number): PlannedSection[][] {
+  const groups: PlannedSection[][] = [];
+  let size = 0;
+  for (const s of plan) {
+    const last = groups.at(-1);
+    if (last && size + s.items.length <= per) {
+      last.push(s);
+      size += s.items.length;
+    } else {
+      groups.push([s]);
+      size = s.items.length;
+    }
+  }
+  return groups;
+}
+
 async function extractSection(
   patient: PatientRecord,
   roles: string[],
@@ -84,8 +101,9 @@ async function extractSection(
     return { section: { id: section.id, title: section.title, items: [...fixed.values()] }, rejected: { type: "debug", rejected: [] }, cached: true, fallback: false };
   }
   try {
-    // At most two items per call, all in parallel: short answers keep every call fast.
-    const chunks = Array.from({ length: Math.ceil(llmItems.length / 2) }, (_, i) => llmItems.slice(i * 2, i * 2 + 2));
+    // At most itemsPerCall() items per call, all in parallel.
+    const per = itemsPerCall();
+    const chunks = Array.from({ length: Math.ceil(llmItems.length / per) }, (_, i) => llmItems.slice(i * per, i * per + per));
     const results = await Promise.all(
       chunks.map(async (chunk) => {
         const { system, user } = extractionPrompt({ patient, roles, situation, sectionTitle: section.title, items: chunk });
@@ -162,19 +180,21 @@ async function runBriefing(patient: PatientRecord, roles: string[], situation: S
   let fallback = false;
   let allCached = true;
 
-  const runOne = async (s: PlannedSection): Promise<BriefingSection | null> => {
+  // Small sections share an extraction call, so each call carries up to itemsPerCall() items.
+  const runGroup = async (group: PlannedSection[]): Promise<BriefingSection[]> => {
+    const merged: PlannedSection = { id: group.map((s) => s.id).join("+"), title: group.map((s) => s.title).join(" · "), items: group.flatMap((s) => s.items) };
     try {
-      const r = await extractSection(patient, roles, situation, s);
+      const r = await extractSection(patient, roles, situation, merged);
       attachContradictions(r.section, contradictions, relevant);
       fallback ||= r.fallback;
       allCached &&= r.cached;
       if (r.rejected.rejected.length) emit(r.rejected);
-      return r.section;
+      return group.map((s) => ({ id: s.id, title: s.title, items: r.section.items.filter((i) => s.items.some((p) => p.key === i.key)) }));
     } catch (err) {
-      console.error(`[briefing] section ${s.id} failed:`, err);
+      console.error(`[briefing] section ${merged.id} failed:`, err);
       allCached = false;
-      emit({ type: "error", sectionId: s.id, message: "This section could not be loaded. Please retry." });
-      return null;
+      for (const s of group) emit({ type: "error", sectionId: s.id, message: "This section could not be loaded. Please retry." });
+      return [];
     }
   };
   const publish = (section: BriefingSection | null) => {
@@ -184,7 +204,7 @@ async function runBriefing(patient: PatientRecord, roles: string[], situation: S
     else sections.push(section);
     emit({ type: "section", section });
   };
-  await Promise.all(plan.map((s) => runOne(s).then(publish)));
+  await Promise.all(groupSections(plan, itemsPerCall()).map((g) => runGroup(g).then((done) => done.forEach(publish))));
   emit({ type: "contradictions", relevant: [...relevant], all: contradictions });
   return { sections, allCached, fallback };
 }

@@ -124,6 +124,28 @@ describe("item selection by the model", () => {
     expect(keys).toEqual(["allergies", "antithrombotics", "contrast_safety", "renal_function"]);
     mods.provider.setProvider(new mods.provider.MockProvider(scripted));
   });
+
+  it("LLM_ITEMS_PER_CALL packs more items into each extraction call", async () => {
+    const select = (opts: CompleteOptions) =>
+      opts.tag === "select" ? JSON.stringify({ keys: ["antithrombotics", "contrast_safety", "renal_function", "current_medication"], custom: [] }) : scripted(opts);
+    mods.provider.setProvider(new mods.provider.MockProvider(select));
+    const patient = mods.patients.getPatient("9999-0001")!;
+    const situation = { title: "Batch test", description: "CT with contrast, batch of items." };
+    const extractCalls = async (per: string) => {
+      process.env.LLM_ITEMS_PER_CALL = per;
+      const events: BriefingStreamEvent[] = [];
+      const result = await mods.pipeline.buildBriefing(patient, ["Emergency physician"], situation, (e) => events.push(e));
+      const tokens = events.find((e): e is Extract<BriefingStreamEvent, { type: "tokens" }> => e.type === "tokens")!;
+      return { calls: tokens.calls.filter((c) => c.tag.startsWith("extract:")).length, items: result.sections.flatMap((s) => s.items).length };
+    };
+    const one = await extractCalls("1");
+    const eight = await extractCalls("8");
+    delete process.env.LLM_ITEMS_PER_CALL;
+    expect(one.calls).toBe(5);
+    expect(eight.calls).toBe(1);
+    expect(eight.items).toBe(one.items);
+    mods.provider.setProvider(new mods.provider.MockProvider(scripted));
+  });
 });
 
 describe("chat", () => {
