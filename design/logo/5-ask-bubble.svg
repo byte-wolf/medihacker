@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 180" width="640" height="180" role="img" aria-label="DOKuTOR"><title>DOKuTOR</title>
+  <path d="M18 30 a18 18 0 0 1 18 -18 h96 a18 18 0 0 1 18 18 v70 a18 18 0 0 1 -18 18 h-58 l-28 26 v-26 h-10 a18 18 0 0 1 -18 -18 z" fill="#0f62fe"/>
+  <path d="M74 36 h16 v16 h16 v16 h-16 v16 h-16 v-16 h-16 v-16 h16 z" fill="#fff"/>
+  <text x="170" y="118" font-family="'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif" font-size="96" font-weight="600" fill="#161616" textLength="176" lengthAdjust="spacingAndGlyphs" >DOK</text>
+  <text x="350" y="118" font-family="'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif" font-size="96" font-weight="600" fill="#0f62fe" textLength="52" lengthAdjust="spacingAndGlyphs" >u</text>
+  <text x="406" y="118" font-family="'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif" font-size="96" font-weight="600" fill="#161616" textLength="196" lengthAdjust="spacingAndGlyphs" >TOR</text>
+</svg>

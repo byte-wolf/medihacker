@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 200" width="660" height="200" role="img" aria-label="DOKuTOR"><title>DOKuTOR</title>
+  <path d="M30 14 h78 l34 34 v128 a10 10 0 0 1 -10 10 h-102 a10 10 0 0 1 -10 -10 v-152 a10 10 0 0 1 10 -10 z" fill="#fff" stroke="#161616" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M108 14 v24 a10 10 0 0 0 10 10 h24" fill="none" stroke="#161616" stroke-width="6" stroke-linejoin="round"/>
+  <circle cx="58" cy="78" r="15" fill="none" stroke="#161616" stroke-width="5"/>
+  <circle cx="98" cy="78" r="15" fill="none" stroke="#161616" stroke-width="5"/>
+  <line x1="73" y1="78" x2="83" y2="78" stroke="#161616" stroke-width="5"/>
+  <circle cx="58" cy="80" r="4" fill="#161616"/><circle cx="98" cy="80" r="4" fill="#161616"/>
+  <path d="M62 106 q16 14 32 0" fill="none" stroke="#161616" stroke-width="5" stroke-linecap="round"/>
+  <path d="M40 124 q38 44 76 0" fill="none" stroke="#0f62fe" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="78" cy="160" r="11" fill="#0f62fe"/><circle cx="78" cy="160" r="4" fill="#fff"/>
+  <text x="180" y="128" font-family="'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif" font-size="96" font-weight="600" fill="#161616" textLength="176" lengthAdjust="spacingAndGlyphs" >DOK</text>
+  <text x="360" y="128" font-family="'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif" font-size="96" font-weight="600" fill="#0f62fe" textLength="52" lengthAdjust="spacingAndGlyphs" >u</text>
+  <text x="416" y="128" font-family="'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif" font-size="96" font-weight="600" fill="#161616" textLength="196" lengthAdjust="spacingAndGlyphs" >TOR</text>
+</svg>
