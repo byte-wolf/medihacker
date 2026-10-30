@@ -4,6 +4,7 @@ import { Button, RadioTile, TileGroup } from "@carbon/react";
 import { ArrowLeft } from "@carbon/icons-react";
 import { useState } from "react";
 import type { Checklist } from "@/lib/documents/anesthesia";
+import type { DocumentMeta } from "@/lib/types";
 import { AnesthesiaChecklist } from "./AnesthesiaChecklist";
 
 type DocType = { id: string; title: string; description: string };
@@ -15,6 +16,7 @@ export function NewDocument(props: {
   initialType: string | null;
   prefill: Checklist;
   docLabels: Record<string, string>;
+  documents: DocumentMeta[];
 }) {
   const [type, setType] = useState<string | null>(props.initialType);
   const backHref = `/patients/${props.patientId}`;
@@ -27,7 +29,7 @@ export function NewDocument(props: {
             Choose another document
           </Button>
         </div>
-        <AnesthesiaChecklist patientId={props.patientId} prefill={props.prefill} docLabels={props.docLabels} backHref={backHref} />
+        <AnesthesiaChecklist patientId={props.patientId} prefill={props.prefill} docLabels={props.docLabels} documents={props.documents} backHref={backHref} />
       </>
     );
   }

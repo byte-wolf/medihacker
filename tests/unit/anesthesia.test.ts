@@ -74,7 +74,7 @@ describe("prefillAnesthesia", () => {
     const c = base();
     expect(c.identity).toMatchObject({ patientId: "X-1", name: "Test Person", confirmed: false });
     expect(c.allergies.confirmed).toBe(false);
-    expect(c.allergies.entries).toEqual([{ id: "d2:p004", origin: "record", text: "KM-Allergie (Übelkeit)", date: "", docIds: ["d2"] }]);
+    expect(c.allergies.entries).toEqual([{ id: "d2:p004", origin: "record", text: "KM-Allergie (Übelkeit)", date: "", docIds: ["d2"], passageIds: ["d2:p004"] }]);
   });
 
   it("falls back to the CAVE extract when the documents name no allergy", () => {
@@ -83,7 +83,7 @@ describe("prefillAnesthesia", () => {
 
   it("takes the newest mention per drug, whitespace cleaned", () => {
     expect(base().medication).toEqual([
-      { id: "ramipril", origin: "record", drug: "Ramipril", dosage: "Ramipril 5mg oral 1 0 0 0 ST", date: "2024-03-xx", docIds: ["d1", "d2"] },
+      { id: "ramipril", origin: "record", drug: "Ramipril", dosage: "Ramipril 5mg oral 1 0 0 0 ST", date: "2024-03-xx", docIds: ["d1", "d2"], passageIds: [] },
     ]);
   });
 
@@ -163,7 +163,7 @@ describe("suggestAsa", () => {
   it("TIA within 3 months is ASA IV, older is ASA III", () => {
     const tia = (date: string): Checklist => ({
       ...filled(),
-      conditions: [{ id: "t", origin: "manual", label: "Amaurosis fugax", detail: "", status: "positive", icd: ["G45.3"], date, docIds: [] }],
+      conditions: [{ id: "t", origin: "manual", label: "Amaurosis fugax", detail: "", status: "positive", icd: ["G45.3"], date, docIds: [], passageIds: [] }],
     });
     expect(suggestAsa(tia("2024-02-xx"))).toMatchObject({ asaClass: "IV" });
     expect(suggestAsa(tia("2015-06-xx"))).toMatchObject({ asaClass: "III" });

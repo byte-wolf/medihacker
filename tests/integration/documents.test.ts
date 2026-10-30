@@ -49,12 +49,17 @@ function prefill(id: string) {
     structured: structured.readStructured(p),
     allergyPassages: allergies.allergyLines(p),
     referenceDate: p.latestDocumentDate,
+    passages: p.passages,
   });
 }
+
+let formCounter = 0;
+const formId = () => `test-form-${++formCounter}`;
 
 function complete(c: ReturnType<typeof prefill>) {
   return {
     ...c,
+    formId: formId(),
     identity: { ...c.identity, confirmed: true },
     allergies: { ...c.allergies, confirmed: true },
     confirmations: { medication: true, diagnoses: true, history: true },
@@ -82,6 +87,18 @@ describe("checklist pre-fill from the fixture patients", () => {
     expect(checklist.suggestAsa(complete(c))).toMatchObject({ asaClass: "II" });
   });
 
+  it("links values to the passages that mention them, in the cited documents only", () => {
+    const p = patients.getPatient("TEST-0001")!;
+    const c = prefill("TEST-0001");
+    const ramipril = c.medication.find((m) => m.drug === "Ramipril")!;
+    expect(ramipril.passageIds.length).toBeGreaterThan(0);
+    for (const id of ramipril.passageIds) {
+      expect(ramipril.docIds).toContain(id.split(":")[0]);
+      expect(p.passages.find((x) => x.id === id)!.text).toMatch(/ramipril/i);
+    }
+    expect(c.conditions.some((x) => x.passageIds.length > 0)).toBe(true);
+  });
+
   it("every pre-filled source names a document of that patient", () => {
     for (const id of ["TEST-0001", "TEST-0002", "TEST-0003"]) {
       const docs = new Set(patients.getPatient(id)!.documents.map((d) => d.id));
@@ -100,7 +117,7 @@ describe("POST /api/patient-documents", () => {
 
   it("refuses to save without confirmations and lists what is missing", async () => {
     await login.POST(post("/api/login", { username: "anaesthesia" }));
-    const res = await route.POST(post("/api/patient-documents", { patientId: "TEST-0001", type: "preop-anesthesia", content: prefill("TEST-0001") }));
+    const res = await route.POST(post("/api/patient-documents", { patientId: "TEST-0001", type: "preop-anesthesia", content: { ...prefill("TEST-0001"), formId: formId() } }));
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.blockers).toEqual(
@@ -112,6 +129,20 @@ describe("POST /api/patient-documents", () => {
     const c = { ...complete(prefill("TEST-0001")), asa: { finalClass: "III", emergency: false, note: "" } };
     expect((await route.POST(post("/api/patient-documents", { patientId: "TEST-0001", type: "x", content: c }))).status).toBe(400);
     expect((await route.POST(post("/api/patient-documents", { patientId: "TEST-0002", type: "preop-anesthesia", content: c }))).status).toBe(400);
+  });
+
+  it("rejects a checklist without a form id", async () => {
+    const c = { ...complete(prefill("TEST-0001")), formId: "", asa: { finalClass: "III", emergency: false, note: "" } };
+    const res = await route.POST(post("/api/patient-documents", { patientId: "TEST-0001", type: "preop-anesthesia", content: c }));
+    expect(res.status).toBe(400);
+  });
+
+  it("saves the same form only once, also when both requests arrive together", async () => {
+    const c = { ...complete(prefill("TEST-0002")), asa: { finalClass: "II", emergency: false, note: "" } };
+    const send = () => route.POST(post("/api/patient-documents", { patientId: "TEST-0002", type: "preop-anesthesia", content: c }));
+    const statuses = (await Promise.all([send(), send(), send()])).map((r) => r.status).sort();
+    expect(statuses).toEqual([200, 409, 409]);
+    expect(db.select().from(schema.patientDocuments).all().filter((r) => r.formId === c.formId)).toHaveLength(1);
   });
 
   it("saves a complete checklist with the confirmed ASA class and audits it", async () => {

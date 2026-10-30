@@ -113,6 +113,8 @@ export const patientDocuments = sqliteTable("patient_documents", {
     .references(() => users.id),
   patientId: text("patient_id").notNull(),
   type: text("type").notNull(),
+  /** Client id of the filled-in form; unique, so the same form cannot be saved twice */
+  formId: text("form_id").unique(),
   /** The completed form as entered (type-specific JSON) */
   content: text("content", { mode: "json" }).notNull(),
   /** ASA class confirmed by the user (checklist only) */

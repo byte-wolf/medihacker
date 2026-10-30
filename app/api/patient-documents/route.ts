@@ -17,13 +17,15 @@ export async function POST(request: Request) {
     return badRequest("The checklist is incomplete.");
   }
   if (JSON.stringify(content).length > 200_000) return badRequest("The checklist is too large.");
+  if (typeof content.formId !== "string" || !/^[\w-]{8,64}$/.test(content.formId)) return badRequest("The checklist has no form id.");
   if (content.identity.patientId !== patient.id) return badRequest("The checklist belongs to a different patient.");
   if (content.asa.finalClass && !ASA_CLASSES.includes(content.asa.finalClass)) return badRequest("Unknown ASA class.");
   const blockers = saveBlockers(content);
   if (blockers.length) return NextResponse.json({ error: "The checklist cannot be saved yet.", blockers }, { status: 400 });
 
   const suggested = suggestAsa(content);
-  const doc = createPatientDocument(user.id, patient.id, body.type, content, content.asa.finalClass);
+  const doc = createPatientDocument(user.id, patient.id, body.type, content.formId, content, content.asa.finalClass);
+  if (!doc) return NextResponse.json({ error: "This checklist has already been saved." }, { status: 409 });
   logAudit(user.id, patient.id, "create_document", {
     documentId: doc.id,
     type: body.type,

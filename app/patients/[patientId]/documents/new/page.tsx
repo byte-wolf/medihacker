@@ -27,6 +27,7 @@ async function NewDocumentContent({ params, searchParams }: PageProps<"/patients
     structured: readStructured(patient),
     allergyPassages: allergyLines(patient),
     referenceDate: patient.latestDocumentDate,
+    passages: patient.passages,
   });
   const docLabels = Object.fromEntries(patient.documents.map((d) => [d.id, `${docKindLabel(d.title, d.type)} · ${formatDate(d.date)}`]));
 
@@ -40,6 +41,7 @@ async function NewDocumentContent({ params, searchParams }: PageProps<"/patients
           initialType={isDocumentType(sp.type) ? sp.type : null}
           prefill={prefill}
           docLabels={docLabels}
+          documents={patient.documents.map(({ id, title, date, type, department }) => ({ id, title, date, type, department }))}
         />
       </main>
     </>

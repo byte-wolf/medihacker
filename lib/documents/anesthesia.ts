@@ -1,3 +1,4 @@
+import { normalizeForMatch } from "@/lib/data/parse";
 import type { Score, StructuredData, StructuredNode } from "@/lib/data/structured";
 
 // Preoperative Anesthesia Checklist: pre-fill from the patient's structured
@@ -20,7 +21,8 @@ export const DENTAL_OPTIONS = [
 export const MALLAMPATI = ["I", "II", "III", "IV"] as const;
 
 export type Origin = "record" | "manual";
-type Sourced = { id: string; origin: Origin; date: string; docIds: string[] };
+/** passageIds: the passages in those documents that mention the value (for highlighting the source). */
+type Sourced = { id: string; origin: Origin; date: string; docIds: string[]; passageIds: string[] };
 export type AllergyEntry = Sourced & { text: string };
 export type MedicationEntry = Sourced & { drug: string; dosage: string };
 export type ConditionEntry = Sourced & { label: string; detail: string; status: "positive" | "statuspost" | "suspected"; icd: string[] };
@@ -28,6 +30,8 @@ export type SurgeryEntry = Sourced & { label: string };
 export type RecordValue = { value: number; date: string; docIds: string[] };
 
 export type Checklist = {
+  /** One id per filled-in form; the server saves each form only once. Set by the client. */
+  formId: string;
   identity: { patientId: string; name: string; dateOfBirth: string; sex: string; confirmed: boolean };
   allergies: { entries: AllergyEntry[]; confirmed: boolean };
   medication: MedicationEntry[];
@@ -67,7 +71,34 @@ export type PrefillInput = {
   /** Allergy lines from the documents' "Allergien" sections (as in the CAVE banner). */
   allergyPassages: { passageId: string; text: string }[];
   referenceDate: string;
+  /** The patient's passages, to link each value to the lines that mention it. */
+  passages?: { id: string; docId: string; text: string }[];
 };
+
+type Link = (nodes: StructuredNode[]) => string[];
+
+/** Passages that mention the extracted value, searched only in the documents the value names. */
+function linker(passages: PrefillInput["passages"]): Link {
+  if (!passages?.length) return () => [];
+  const byDoc = new Map<string, { id: string; norm: string }[]>();
+  for (const p of passages) byDoc.set(p.docId, [...(byDoc.get(p.docId) ?? []), { id: p.id, norm: normalizeForMatch(p.text) }]);
+  return (nodes) => {
+    const ids = new Set<string>();
+    for (const n of nodes)
+      for (const docId of n.documentIds ?? []) {
+        const inDoc = byDoc.get(docId) ?? [];
+        for (const candidate of [n.text, n.name, n.drug, n.agent]) {
+          const needle = normalizeForMatch(clean(candidate));
+          if (needle.length < 3) continue;
+          const hits = inDoc.filter((p) => p.norm.includes(needle));
+          if (!hits.length) continue;
+          hits.forEach((h) => ids.add(h.id));
+          break;
+        }
+      }
+    return [...ids];
+  };
+}
 
 const num = (s: string | undefined) => {
   const n = Number(String(s ?? "").replace(",", ".").trim());
@@ -90,7 +121,7 @@ const newest = (nodes: StructuredNode[]) => [...nodes].sort((a, b) => (b.date?.v
 const docIdsOf = (nodes: StructuredNode[]) => [...new Set(nodes.flatMap((n) => n.documentIds ?? []))];
 const clean = (s: string | undefined) => (s ?? "").replace(/<\/?[a-z][^>]*>/gi, "").replace(/\s+/g, " ").trim();
 
-function medicationFrom(tree: StructuredNode[]): MedicationEntry[] {
+function medicationFrom(tree: StructuredNode[], link: Link): MedicationEntry[] {
   // tree: ATC group → subgroup → active agent → mentions. One entry per agent, newest mention.
   const byDrug = new Map<string, { id: string; nodes: StructuredNode[] }>();
   for (const group of tree)
@@ -102,11 +133,19 @@ function medicationFrom(tree: StructuredNode[]): MedicationEntry[] {
       }
   return [...byDrug].map(([drug, { id, nodes }]) => {
     const n = newest(nodes);
-    return { id, origin: "record" as const, drug, dosage: clean(n?.name ?? n?.text), date: n?.date?.value ?? "", docIds: docIdsOf(nodes) };
+    return {
+      id,
+      origin: "record" as const,
+      drug,
+      dosage: clean(n?.name ?? n?.text),
+      date: n?.date?.value ?? "",
+      docIds: docIdsOf(nodes),
+      passageIds: link(nodes),
+    };
   }).sort((a, b) => b.date.localeCompare(a.date) || a.drug.localeCompare(b.drug));
 }
 
-function conditionsFrom(tree: StructuredNode[]): ConditionEntry[] {
+function conditionsFrom(tree: StructuredNode[], link: Link): ConditionEntry[] {
   // tree: chapter → ICD group → finding (with status) → mentions. One entry per ICD group.
   const out: ConditionEntry[] = [];
   for (const chapter of tree)
@@ -127,12 +166,13 @@ function conditionsFrom(tree: StructuredNode[]): ConditionEntry[] {
         icd,
         date: newest(nodes)?.date?.value ?? "",
         docIds: docIdsOf(nodes),
+        passageIds: link(nodes),
       });
     }
   return out;
 }
 
-function surgeriesFrom(tree: StructuredNode[]): SurgeryEntry[] {
+function surgeriesFrom(tree: StructuredNode[], link: Link): SurgeryEntry[] {
   const out = new Map<string, SurgeryEntry>();
   for (const chapter of tree.filter((c) => /operation/i.test(c.name ?? "")))
     for (const group of chapter.values ?? [])
@@ -143,7 +183,8 @@ function surgeriesFrom(tree: StructuredNode[]): SurgeryEntry[] {
         const prev = out.get(label);
         const docIds = [...new Set([...(prev?.docIds ?? []), ...docIdsOf(nodes)])];
         const date = [prev?.date ?? "", newest(nodes)?.date?.value ?? ""].sort().at(-1) ?? "";
-        out.set(label, { id: p.id ?? label, origin: "record", label, date, docIds });
+        const passageIds = [...new Set([...(prev?.passageIds ?? []), ...link(nodes)])];
+        out.set(label, { id: p.id ?? label, origin: "record", label, date, docIds, passageIds });
       }
   return [...out.values()];
 }
@@ -155,26 +196,29 @@ function allergiesFrom(input: PrefillInput): AllergyEntry[] {
     text: p.text,
     date: "",
     docIds: [p.passageId.split(":")[0]],
+    passageIds: [p.passageId],
   }));
   // cave.json often only says "Arzneimittel-Allergie"; keep it when the documents name nothing more specific.
   const fromCave = fromDocs.length
     ? []
-    : input.structured.adverseReactions.map((text, i) => ({ id: `cave-${i}`, origin: "record" as const, text, date: "", docIds: [] }));
+    : input.structured.adverseReactions.map((text, i) => ({ id: `cave-${i}`, origin: "record" as const, text, date: "", docIds: [], passageIds: [] }));
   return [...fromDocs, ...fromCave];
 }
 
 export function prefillAnesthesia(input: PrefillInput): Checklist {
   const { structured: s } = input;
+  const link = linker(input.passages);
   const height = latestScore(s.scores, /^größe$/i);
   const weight = latestScore(s.scores, /^gewicht$/i);
   // Height comes in metres ("1,7"); a value above 3 is already in cm.
   const heightCm = height ? (height.value <= 3 ? Math.round(height.value * 100) : height.value) : null;
   return {
+    formId: "",
     identity: { patientId: input.patient.id, name: input.patient.name, dateOfBirth: input.patient.dateOfBirth, sex: input.patient.sex, confirmed: false },
     allergies: { entries: allergiesFrom(input), confirmed: false },
-    medication: medicationFrom(s.medication),
-    conditions: conditionsFrom(s.diagnoses),
-    surgeries: surgeriesFrom(s.procedures),
+    medication: medicationFrom(s.medication, link),
+    conditions: conditionsFrom(s.diagnoses, link),
+    surgeries: surgeriesFrom(s.procedures, link),
     confirmations: { medication: false, diagnoses: false, history: false },
     exam: {
       dental: [],

@@ -123,9 +123,22 @@ export function addMessage(conversationId: number, role: "user" | "assistant", c
 
 export type PatientDocumentRow = typeof schema.patientDocuments.$inferSelect;
 
-export function createPatientDocument(userId: number, patientId: string, type: string, content: unknown, asaClass: string | null): PatientDocumentRow {
-  const [row] = getDb().insert(schema.patientDocuments).values({ userId, patientId, type, content, asaClass }).returning().all();
-  return row;
+/** Saves a created document; null when this form (formId) was saved before. */
+export function createPatientDocument(
+  userId: number,
+  patientId: string,
+  type: string,
+  formId: string,
+  content: unknown,
+  asaClass: string | null,
+): PatientDocumentRow | null {
+  const [row] = getDb()
+    .insert(schema.patientDocuments)
+    .values({ userId, patientId, type, formId, content, asaClass })
+    .onConflictDoNothing({ target: schema.patientDocuments.formId })
+    .returning()
+    .all();
+  return row ?? null;
 }
 
 export function listPatientDocuments(patientId: string): PatientDocumentRow[] {
