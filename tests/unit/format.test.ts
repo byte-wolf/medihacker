@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { docKindLabel, formatDate } from "@/lib/format";
+import { docKindLabel, docKindShort, formatDate, formatShortDate } from "@/lib/format";
 
 describe("formatDate", () => {
   it("formats ISO dates as 'd Mon y'", () => {
@@ -48,5 +48,32 @@ describe("docKindLabel", () => {
   it("falls back to the document title for unknown types", () => {
     expect(docKindLabel("Laborwerte", "Lab")).toBe("Laborwerte");
     expect(docKindLabel("Pflegeprotokoll", "")).toBe("Pflegeprotokoll");
+  });
+});
+
+describe("docKindShort", () => {
+  it("abbreviates known document kinds", () => {
+    expect(docKindShort("Stat. Patientenbrief (Interne)", "Arztbrief(Inter.)")).toBe("Discharge");
+    expect(docKindShort("Ambulanter Patientenbrief", "Ambulanzbrief(Inter.)")).toBe("Outpatient");
+    expect(docKindShort("Radiologischer Befund", "")).toBe("Radiology");
+    expect(docKindShort("24h-RR Messung", "")).toBe("24-h BP");
+  });
+
+  it("keeps short unknown titles and truncates long ones", () => {
+    expect(docKindShort("Laborwerte", "Lab")).toBe("Laborwerte");
+    expect(docKindShort("Pflegeprotokoll der Intensivstation", "")).toBe("Pflegeprotokoll d…");
+  });
+});
+
+describe("formatShortDate", () => {
+  it("omits the year when it matches the reference year", () => {
+    expect(formatShortDate("2024-10-25", 2024)).toBe("25 Oct");
+    expect(formatShortDate("2023-03-15", 2024)).toBe("15 Mar 2023");
+    expect(formatShortDate("2024-10-25")).toBe("25 Oct 2024");
+  });
+
+  it("always keeps the year for month-only dates and returns malformed input", () => {
+    expect(formatShortDate("2024-03", 2024)).toBe("Mar 2024");
+    expect(formatShortDate("not a date", 2024)).toBe("not a date");
   });
 });
