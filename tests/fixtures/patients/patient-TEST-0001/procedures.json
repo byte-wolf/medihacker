@@ -1,0 +1,248 @@
+{
+  "metadata": {
+    "status": [
+      "positive",
+      "statuspost",
+      "recommended"
+    ]
+  },
+  "values": [
+    {
+      "id": "p_1fgVZJLJvhwQW3U9MwKnQog2xW",
+      "name": "DIAGNOSTIK",
+      "values": [
+        {
+          "id": "p_KZ2-0NPb71rlStva3KzjObVnAv",
+          "name": "Andere Diagnostik - Herz und Kreislaufsystem",
+          "values": [
+            {
+              "id": "p_niquaVlyTG1Ze3cb63KKTAhbuZ_DL520",
+              "name": "24h-RR-Messung",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "DL520",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_xUXKfdkNRrQFCrWhBsRFQczMat",
+                  "name": "24h-RR-Messung",
+                  "text": "24h-RR-Messung",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010102",
+                    "91010104"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "p_2NGDJY5CZPuEjdg5vTGlpCCHkx_DE510",
+              "name": "EKG",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "DE510",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_N16f2pLHztvvkGhG5wU00pjmMW",
+                  "name": "EKG",
+                  "text": "EKG",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010104"
+                  ]
+                },
+                {
+                  "id": "p_PlXFWWC7KON3OjeCtrdGtCd1e3",
+                  "name": "EKG",
+                  "text": "EKG",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "p_yk1XZkCARpCsVCItZE1x8_DsyH_DU110",
+              "name": "Duplexsonographie der hirnversorgenden Arterien",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "DU110",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_sAvMYPegRsUQ63vLjw9SzM8tyY",
+                  "name": "US Hirnversorgende Arterien",
+                  "text": "US Hirnversorgende Arterien",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010101"
+                  ]
+                },
+                {
+                  "id": "p_0Q1VRHPBxxln8Foie2gX14cvXi",
+                  "name": "Duplexsonographie der hirnversorgenden Arterien",
+                  "text": "Duplexsonographie der hirnversorgenden Arterien",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010104"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p_90ZiqP3Jg22sWr5jB8oCwbdGp_",
+          "name": "Andere Diagnostik - Lunge",
+          "values": [
+            {
+              "id": "p_Dh5MbGpjBNpAQf-eHG_JyEO-qb_DB310",
+              "name": "Spirometrie",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "DB310",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_xb71PYis1SiTCafq1JUHhstdAY",
+                  "name": "Spirometrie",
+                  "text": "Spirometrie",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010103"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "p_IqWmwX3vhx4V5y-FF7HZUfM0Iu_DC110",
+              "name": "Röntgen Thorax",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "DC110",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_YwUOXVvcI0lXDSOZeXDscmc7G_",
+                  "name": "Röntgen Thorax in 2 Ebenen",
+                  "text": "Röntgen Thorax in 2 Ebenen",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010107",
+                    "91010108"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p_fQtMBSwc3w_r-8eOxZR8jMYceX",
+      "name": "THERAPIE",
+      "values": [
+        {
+          "id": "p_xyKMR8xWKHzPphVFyJqqC_s6Fh",
+          "name": "Andere Therapie - Lunge",
+          "values": [
+            {
+              "id": "p_uTw852qOJitIGk8jQUM1K0bcPK_TG210",
+              "name": "Inhalative Therapie",
+              "status": "positive",
+              "code": {
+                "catalog": "MEL",
+                "value": "TG210",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_2C5CfR2uweI52T7OYGhmiYbJxZ",
+                  "name": "inhalative Therapie mit Tiotropium",
+                  "text": "inhalative Therapie mit Tiotropium",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010103"
+                  ]
+                },
+                {
+                  "id": "p_JNft_UHX0e-PCRw4XOl9B6dhjk",
+                  "name": "Inhalationen mit Salbutamol",
+                  "text": "Inhalationen mit Salbutamol",
+                  "date": {
+                    "value": "2024-10-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010108"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "p_uDrpgsyNp3kuKuWFGFtb8G9nwd_KA120",
+              "name": "Pneumologische Kontrolle",
+              "status": "recommended",
+              "code": {
+                "catalog": "MEL",
+                "value": "KA120",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "p_PXAOFOs9EZRtedCEnMuTU3-ixJ",
+                  "name": "Pneumologische Kontrolle in 6 Monaten empfohlen",
+                  "text": "Pneumologische Kontrolle in 6 Monaten empfohlen",
+                  "date": {
+                    "value": "2024-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91010103",
+                    "91010104"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

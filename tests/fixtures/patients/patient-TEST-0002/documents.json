@@ -1,0 +1,142 @@
+{
+  "documents": [
+    {
+      "id": "91020101",
+      "title": "Radiologischer Befund",
+      "version": "1",
+      "date": "2025-01-20",
+      "type": "Sonographie",
+      "group": "Bildgebung",
+      "division": "Bildgebung",
+      "hospital": "Testklinikum Musterstadt",
+      "department": "Institut für Radiologie",
+      "admission": {
+        "id": "TEST-0201",
+        "type": "outpatient",
+        "admission": {
+          "date": "2025-01-20",
+          "time": "09:40:00"
+        },
+        "discharge": {
+          "date": "2025-01-20",
+          "time": "11:15:00"
+        }
+      }
+    },
+    {
+      "id": "91020102",
+      "title": "Ambulanter Patientenbrief",
+      "version": "1",
+      "date": "2025-01-20",
+      "type": "Ambulanzbrief(Inter.)",
+      "group": "Patientenbrief ambulant",
+      "division": "Chirurgie",
+      "hospital": "Testklinikum Musterstadt",
+      "department": "Chirurgische Ambulanz",
+      "admission": {
+        "id": "TEST-0201",
+        "type": "outpatient",
+        "admission": {
+          "date": "2025-01-20",
+          "time": "09:40:00"
+        },
+        "discharge": {
+          "date": "2025-01-20",
+          "time": "11:15:00"
+        }
+      }
+    },
+    {
+      "id": "91020103",
+      "title": "Präanästhesiologische Evaluation",
+      "version": "1",
+      "date": "2025-02-24",
+      "type": "Anästhesieabklärung",
+      "group": "Konsil",
+      "division": "Anästhesiologie und Intensivmedizin",
+      "hospital": "Testklinikum Musterstadt",
+      "department": "Anästhesie-Ambulanz",
+      "admission": {
+        "id": "TEST-0202",
+        "type": "outpatient",
+        "admission": {
+          "date": "2025-02-24",
+          "time": "08:10:00"
+        },
+        "discharge": {
+          "date": "2025-02-24",
+          "time": "09:35:00"
+        }
+      }
+    },
+    {
+      "id": "91020104",
+      "title": "Laborbefund",
+      "version": "1",
+      "date": "2025-02-24",
+      "type": "Laborbefund",
+      "group": "Befund",
+      "division": "Sonstige",
+      "hospital": "Testklinikum Musterstadt",
+      "department": "Zentrallabor",
+      "admission": {
+        "id": "TEST-0202",
+        "type": "outpatient",
+        "admission": {
+          "date": "2025-02-24",
+          "time": "08:10:00"
+        },
+        "discharge": {
+          "date": "2025-02-24",
+          "time": "09:35:00"
+        }
+      }
+    },
+    {
+      "id": "91020105",
+      "title": "OP-Bericht",
+      "version": "1",
+      "date": "2025-03-10",
+      "type": "OP-Bericht",
+      "group": "Befund",
+      "division": "Chirurgie",
+      "hospital": "Testklinikum Musterstadt",
+      "department": "Abteilung für Allgemein- und Viszeralchirurgie",
+      "admission": {
+        "id": "TEST-0203",
+        "type": "inpatient",
+        "admission": {
+          "date": "2025-03-10",
+          "time": "07:30:00"
+        },
+        "discharge": {
+          "date": "2025-03-12",
+          "time": "11:00:00"
+        }
+      }
+    },
+    {
+      "id": "91020106",
+      "title": "Stat. Patientenbrief (Interne)",
+      "version": "1",
+      "date": "2025-03-12",
+      "type": "Arztbrief(Inter.)",
+      "group": "Patientenbrief",
+      "division": "Chirurgie",
+      "hospital": "Testklinikum Musterstadt",
+      "department": "Abteilung für Allgemein- und Viszeralchirurgie",
+      "admission": {
+        "id": "TEST-0203",
+        "type": "inpatient",
+        "admission": {
+          "date": "2025-03-10",
+          "time": "07:30:00"
+        },
+        "discharge": {
+          "date": "2025-03-12",
+          "time": "11:00:00"
+        }
+      }
+    }
+  ]
+}

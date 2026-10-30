@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91010107",
+    "title": "Radiologischer Befund",
+    "version": "1",
+    "date": "2024-10-21",
+    "type": "Röntgen",
+    "group": "Bildgebung",
+    "division": "Bildgebung",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Institut für Radiologie",
+    "admission": {
+      "id": "TEST-0103",
+      "type": "inpatient",
+      "admission": {
+        "date": "2024-10-21",
+        "time": "14:05:00"
+      },
+      "discharge": {
+        "date": "2024-10-25",
+        "time": "10:20:00"
+      }
+    }
+  },
+  "text": "Herr<BR>Testpatient<BR>Straße XY/AB<BR>PLZ Ort<BR><BR> Patient(in): NN_TEST-0001 VN_TEST-0001 | geb. 14.02.1949<BR><BR> Fall: 20241021<BR><BR>Anamnese: Husten, Fieber, COPD-Exazerbation?<BR>Fragestellung: Pneumonie?<BR>Zuweisung freigegeben durch / Tel.: Arzt / 0044<BR><BR>OrtXX, am 21.10.2024<BR><BR>Radiologischer Befund<BR><BR>Röntgen Thorax in 2 Ebenen:<BR>Überblähung beider Lungenflügel mit tiefstehendem Zwerchfell, kompatibel mit COPD. Kein Infiltrat, kein pleuraler Erguss. Herz nicht vergrößert.<BR><BR>Gesamtbeurteilung<BR>Kein radiologischer Nachweis einer Pneumonie. Lungenüberblähung bei COPD.<BR><BR>Befund: Dr. Arzt<BR>Vidiert: Dr. Arzt"
+}

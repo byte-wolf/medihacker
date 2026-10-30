@@ -46,7 +46,7 @@ medihacker.db
 
 
 # hackathon data (IBM) must never be committed
-/data/
+/data
 
 # test output
 /test-results/

@@ -1,0 +1,362 @@
+{
+  "metadata": {
+    "status": [
+      "positive",
+      "negative",
+      "suspected",
+      "statuspost"
+    ]
+  },
+  "values": [
+    {
+      "id": "d_qRR2lojoUiInsB1Marj3ZZ0V8Y",
+      "name": "BÖSARTIGE NEUBILDUNGEN",
+      "values": [
+        {
+          "id": "d_q2FWKBxBuh0Z_SJViRClmHqDMz",
+          "name": "Bösartige Neubildung: Kolon",
+          "values": [
+            {
+              "id": "d_xC4_cIiZu5Iiap3jExwZnTQ7H6_C18.2",
+              "name": "Adenokarzinom des Colon ascendens (pT3 pN1 (2/24) cM0 G2 R0)",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "C18.2",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_iFppmxeP9yU7cjZ1OkA34Zm2xT",
+                  "name": "Adenokarzinom des Colon ascendens, pT3 pN1 (2/24) cM0 G2 R0",
+                  "text": "Adenokarzinom des Colon ascendens, pT3 pN1 (2/24) cM0 G2 R0",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030101",
+                    "91030102"
+                  ],
+                  "scores": [
+                    {
+                      "name": "T",
+                      "value": "3"
+                    },
+                    {
+                      "name": "N",
+                      "value": "1"
+                    },
+                    {
+                      "name": "M",
+                      "value": "0"
+                    },
+                    {
+                      "name": "Grad",
+                      "value": "2"
+                    },
+                    {
+                      "name": "R",
+                      "value": "0"
+                    }
+                  ]
+                },
+                {
+                  "id": "d_i-MUnNLLwUvskRhoePJIcCvfa_",
+                  "name": "Adenokarzinom des Colon ascendens pT3 pN1 (2/24) cM0 G2 R0",
+                  "text": "Adenokarzinom des Colon ascendens pT3 pN1 (2/24) cM0 G2 R0",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030103"
+                  ]
+                },
+                {
+                  "id": "d_htrMeEx1avF-HEQscG6VqR2qLw",
+                  "name": "Adenokarzinom des Colon ascendens pT3 pN1 (2/24) cM0 G2 R0",
+                  "text": "Adenokarzinom des Colon ascendens pT3 pN1 (2/24) cM0 G2 R0",
+                  "date": {
+                    "value": "2025-04-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030104",
+                    "91030105"
+                  ]
+                },
+                {
+                  "id": "d_psnwczfWMaXmEJvsBi3h0ntyci",
+                  "name": "Adenokarzinom des Colon ascendens pT3 pN1 (2/24) cM0 G2 R0",
+                  "text": "Adenokarzinom des Colon ascendens pT3 pN1 (2/24) cM0 G2 R0",
+                  "date": {
+                    "value": "2025-05-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030107"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d_CKN15hiIZIt9tfdbUgT3_ZBN1T",
+      "name": "BLUT UND IMMUNSYSTEM",
+      "values": [
+        {
+          "id": "d_sWht_ErYCabqv7p22A_WEqD5Im",
+          "name": "Neutropenie",
+          "values": [
+            {
+              "id": "d_iUMdPNGX4y0FKA7C8vR6RyeEA0_D70.9",
+              "name": "Febrile Neutropenie CTC Grad IV",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "D70.9",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_yEmKc0lgLt4FH1nVPB9b3j1jdG",
+                  "name": "Febrile Neutropenie CTC Grad IV nach 3. Zyklus XELOX",
+                  "text": "Febrile Neutropenie CTC Grad IV nach 3. Zyklus XELOX",
+                  "date": {
+                    "value": "2025-05-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030107"
+                  ]
+                },
+                {
+                  "id": "d_7qFMpHaCWvodSB6Vg6701RUQLq",
+                  "name": "Neutropenie 0,7 G/l",
+                  "text": "Neutropenie 0,7 G/l",
+                  "date": {
+                    "value": "2025-05-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030106"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "d_doK4QTSZ2jdNHHYlTBApsLJ6rT_D69.6",
+              "name": "Thrombozytopenie",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "D69.6",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_Y_CAKVfnjut9n7sn-fhieynkbS",
+                  "name": "Thrombozytopenie 92 G/l",
+                  "text": "Thrombozytopenie 92 G/l",
+                  "date": {
+                    "value": "2025-05-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030106",
+                    "91030107"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "d_vBsJz1MJYCIWUV5JJmpBF5cwVD_D64.9",
+              "name": "Leichte Anämie",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "D64.9",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_gPk29qZotgCgTKATovxa4fgZ0C",
+                  "name": "Hb 11,2 g/dl",
+                  "text": "Hb 11,2 g/dl",
+                  "date": {
+                    "value": "2025-04-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030105"
+                  ]
+                },
+                {
+                  "id": "d_AiaHpj5bxWVgVKO8ZMXFJ0NybY",
+                  "name": "Hämoglobin 10,8 g/dl",
+                  "text": "Hämoglobin 10,8 g/dl",
+                  "date": {
+                    "value": "2025-05-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030106"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d_2kXBKdzZVKBcSCUNz3i9f-LC7G",
+      "name": "HERZ-KREISLAUF-ERKRANKUNGEN",
+      "values": [
+        {
+          "id": "d_GdZOphA73Dc1mUF9jYUbKsS9QF",
+          "name": "Arterielle Hypertonie",
+          "values": [
+            {
+              "id": "d_W23M8jKeLRsZAmmKyct-ERBeNn_I10.90",
+              "name": "Art. Hypertonie",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "I10.90",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_MpDhUeHlKdbNU4R_jOOlipHYTK",
+                  "name": "Art. Hypertonie",
+                  "text": "Art. Hypertonie",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030102"
+                  ]
+                },
+                {
+                  "id": "d_eUGkNptCWgCpQ0qUDnrIZMaYLB",
+                  "name": "Art. Hypertonie",
+                  "text": "Art. Hypertonie",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030103"
+                  ]
+                },
+                {
+                  "id": "d_pCSri4Ce5hxNQ5lK4DTDT9vVw4",
+                  "name": "Art. Hypertonie",
+                  "text": "Art. Hypertonie",
+                  "date": {
+                    "value": "2025-05-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030107"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d_hNRa8bkvZVVB6i9djWXRp3Gng_",
+      "name": "NERVENSYSTEM",
+      "values": [
+        {
+          "id": "d_dow511OaVm8-eUpg3CsJeBP3h5",
+          "name": "Polyneuropathie",
+          "values": [
+            {
+              "id": "d_NOwLAH8gn5703gTh2zFHnK3CCx_G62.0",
+              "name": "Polyneuropathie CTC Grad I",
+              "status": "positive",
+              "code": {
+                "catalog": "ICD10",
+                "value": "G62.0",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_gnvkfPzmGhR9DAzxAlsSEej1w1",
+                  "name": "Polyneuropathie CTC Grad I",
+                  "text": "Polyneuropathie CTC Grad I",
+                  "date": {
+                    "value": "2025-04-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030104",
+                    "91030105"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d_ms19xsv3qlufjoP7qsLbfKDwAb",
+      "name": "ZUSTÄNDE NACH OPERATIONEN",
+      "values": [
+        {
+          "id": "d_qlpe0bAlnW99vIBfBNzYCs5Kq5",
+          "name": "Z.n. Hemikolektomie",
+          "values": [
+            {
+              "id": "d_6GstULCSgy46FY4HjgQvHc8rON_Z90.4",
+              "name": "Z.n. Hemikolektomie rechts 02/2025",
+              "status": "statuspost",
+              "code": {
+                "catalog": "ICD10",
+                "value": "Z90.4",
+                "specific": true
+              },
+              "values": [
+                {
+                  "id": "d_EMD2UCxX1M3HAurj7JfnBZ2WsB",
+                  "name": "Z.n. Hemikolektomie rechts 03.02.2025",
+                  "text": "Z.n. Hemikolektomie rechts 03.02.2025",
+                  "date": {
+                    "value": "2025-02-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030102"
+                  ]
+                },
+                {
+                  "id": "d_8yPdEG69Wv36eBJtpYnJbD9ag5",
+                  "name": "Z.n. Hemikolektomie rechts 02/2025",
+                  "text": "Z.n. Hemikolektomie rechts 02/2025",
+                  "date": {
+                    "value": "2025-03-xx",
+                    "type": "document"
+                  },
+                  "documentIds": [
+                    "91030103"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

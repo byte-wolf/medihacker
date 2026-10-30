@@ -1,0 +1,355 @@
+{
+  "scores": [
+    {
+      "name": "Body-Mass-Index",
+      "unit": "kg/m2",
+      "values": [
+        {
+          "id": "w_Z9g3DDYatZbYJaetQ6VcNHDv1P",
+          "date": {
+            "value": "2025-02-xx",
+            "type": "document"
+          },
+          "value": "25,9",
+          "documentIds": [
+            "91030102"
+          ]
+        },
+        {
+          "id": "w_9lwjokPuZPjx1Vb9B8MTukVzDN",
+          "date": {
+            "value": "2025-03-xx",
+            "type": "document"
+          },
+          "value": "25,2",
+          "documentIds": [
+            "91030103"
+          ]
+        },
+        {
+          "id": "w_5iX5hh59NYcF8iAiyaZm9mGvvg",
+          "date": {
+            "value": "2025-04-xx",
+            "type": "document"
+          },
+          "value": "24,9",
+          "documentIds": [
+            "91030104"
+          ]
+        },
+        {
+          "id": "w_b_Nj-rNyoAfBcAhZqf36DeD-Lc",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "24,6",
+          "documentIds": [
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CRP",
+      "unit": "mg/l",
+      "values": [
+        {
+          "id": "w_l9EGJKNAbzwYx-jK8QaB6mq3Yr",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "86",
+          "documentIds": [
+            "91030106",
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gewicht",
+      "unit": "kg",
+      "values": [
+        {
+          "id": "w_RG3cd22CQbxmmG3eTjOKBcz3lU",
+          "date": {
+            "value": "2025-02-xx",
+            "type": "document"
+          },
+          "value": "82",
+          "documentIds": [
+            "91030102"
+          ]
+        },
+        {
+          "id": "w_2wftRJMjwTQxtclGtm4Anu6vaz",
+          "date": {
+            "value": "2025-03-xx",
+            "type": "document"
+          },
+          "value": "80",
+          "documentIds": [
+            "91030103"
+          ]
+        },
+        {
+          "id": "w_OCnFusgmjTvRb1uHWT_vDSmW4D",
+          "date": {
+            "value": "2025-04-xx",
+            "type": "document"
+          },
+          "value": "79",
+          "documentIds": [
+            "91030104"
+          ]
+        },
+        {
+          "id": "w_myQtXktGOzWJ0dEyy1QqKn_kie",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "78",
+          "documentIds": [
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Größe",
+      "unit": "m",
+      "values": [
+        {
+          "id": "w_kpcHn5Hiz69I3R4-HjtrVUWwvJ",
+          "date": {
+            "value": "2025-02-xx",
+            "type": "document"
+          },
+          "value": "1,78",
+          "documentIds": [
+            "91030102"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hämoglobin",
+      "unit": "g/dl",
+      "values": [
+        {
+          "id": "w_Oe07kwBV2Nq50d7JPuC9WEm629",
+          "date": {
+            "value": "2025-04-xx",
+            "type": "document"
+          },
+          "value": "12,4",
+          "documentIds": [
+            "91030104"
+          ]
+        },
+        {
+          "id": "w_jR_D6MREEZN0oh4clDZdrM7xkD",
+          "date": {
+            "value": "2025-04-xx",
+            "type": "document"
+          },
+          "value": "11,2",
+          "documentIds": [
+            "91030105"
+          ]
+        },
+        {
+          "id": "w_ow8scbCgXTI1IqPRX6jitcDTXc",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "10,8",
+          "documentIds": [
+            "91030106",
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Herzfrequenz",
+      "unit": "/min",
+      "values": [
+        {
+          "id": "w_6x5stryahHTp_ro_Tq4caiyTLC",
+          "date": {
+            "value": "2025-02-xx",
+            "type": "document"
+          },
+          "value": "74",
+          "documentIds": [
+            "91030102"
+          ]
+        },
+        {
+          "id": "w_ZPdRcPCHJIlxsbP3YoNWKmMdLN",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "96",
+          "documentIds": [
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Körpertemperatur",
+      "unit": "°C",
+      "values": [
+        {
+          "id": "w_mU6QdsGmQ9nURN9Uv3zuY782um",
+          "date": {
+            "value": "2025-02-xx",
+            "type": "document"
+          },
+          "value": "36,5",
+          "documentIds": [
+            "91030102"
+          ]
+        },
+        {
+          "id": "w_iUHCIuQK6SNHpwsdt5tuilNgfW",
+          "date": {
+            "value": "2025-03-xx",
+            "type": "document"
+          },
+          "value": "36,4",
+          "documentIds": [
+            "91030103"
+          ]
+        },
+        {
+          "id": "w_JIurlgOvv-piY1kgibqIZ5btwL",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "38,9",
+          "documentIds": [
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Leukozyten",
+      "unit": "G/l",
+      "values": [
+        {
+          "id": "w_2KIvXeOOedl2Kh6qc2-pY0_7dt",
+          "date": {
+            "value": "2025-04-xx",
+            "type": "document"
+          },
+          "value": "4,1",
+          "documentIds": [
+            "91030104"
+          ]
+        },
+        {
+          "id": "w_oj_MomgZXnpwmPDL8plCQwMxFd",
+          "date": {
+            "value": "2025-04-xx",
+            "type": "document"
+          },
+          "value": "3,4",
+          "documentIds": [
+            "91030105"
+          ]
+        },
+        {
+          "id": "w_HIbR-lqM9SExHHj20qU-QKUorm",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "1,9",
+          "documentIds": [
+            "91030106",
+            "91030107"
+          ]
+        },
+        {
+          "id": "w_GRRiITyI-MddbtLQ6CC9IuuzRY",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "4,6",
+          "documentIds": [
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Neutrophile",
+      "unit": "G/l",
+      "values": [
+        {
+          "id": "w_mR9wplpgPYjC9Jc-QQdkjlp0A0",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "0,7",
+          "documentIds": [
+            "91030106",
+            "91030107"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Thrombozyten",
+      "unit": "G/l",
+      "values": [
+        {
+          "id": "w_JOm_4FpUJBJ0n4S6neIhd6S93V",
+          "date": {
+            "value": "2025-04-xx",
+            "type": "document"
+          },
+          "value": "178",
+          "documentIds": [
+            "91030104"
+          ]
+        },
+        {
+          "id": "w_j2CAPALD3yAGEAlno60ivb8_xW",
+          "date": {
+            "value": "2025-04-xx",
+            "type": "document"
+          },
+          "value": "132",
+          "documentIds": [
+            "91030105"
+          ]
+        },
+        {
+          "id": "w_wJ9ZUmqignAxLii6epQ32sYE4H",
+          "date": {
+            "value": "2025-05-xx",
+            "type": "document"
+          },
+          "value": "92",
+          "documentIds": [
+            "91030106",
+            "91030107"
+          ]
+        }
+      ]
+    }
+  ]
+}

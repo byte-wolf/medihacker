@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "91010106",
+    "title": "Laborbefund",
+    "version": "1",
+    "date": "2024-07-08",
+    "type": "Laborbefund",
+    "group": "Befund",
+    "division": "Sonstige",
+    "hospital": "Testklinikum Musterstadt",
+    "department": "Zentrallabor",
+    "admission": {
+      "id": "TEST-0102",
+      "type": "outpatient",
+      "admission": {
+        "date": "2024-07-08",
+        "time": "10:30:00"
+      },
+      "discharge": {
+        "date": "2024-07-08",
+        "time": "11:45:00"
+      }
+    }
+  },
+  "text": "Herr<BR>Testpatient<BR>Straße XY/AB<BR>PLZ Ort<BR><BR>OrtXX, am 08.07.2024<BR><BR>Laborbefund<BR><BR>Testpatient, geb 14.02.1949<BR>Patienten-ID: TEST-0001<BR>Fallzahl: 20240708<BR><BR>Parameter<BR>Fettgedruckte Werte außerhalb des Referenzbereichs. Ausgangswert Kontrollwert Grenzwert Einheit<BR><BR>Kreatinin 1,5 mg/dl (Referenz &lt; 1,2)<BR>eGFR (CKD-EPI) 48 ml/min/1,73m²<BR>Harnstoff 52 mg/dl<BR>HbA1c 7,2%<BR>Gesamtcholesterin 198 mg/dl<BR>LDL-Cholesterin 112 mg/dl<BR><BR>befundet: Dr. Arzt<BR>vidiert: Dr. Arzt"
+}

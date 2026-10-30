@@ -1,0 +1,149 @@
+[
+  {
+    "id": "1.1",
+    "situation": "Medication review at the GP",
+    "question": "Which antihypertensive drugs (blood pressure drugs) does he take and at what doses?",
+    "answer": "Ramipril 5 mg 1-0-0 and Amlodipin 5 mg 0-1-0, as of October 2024.",
+    "sources": ["91010104", "91010108"]
+  },
+  {
+    "id": "1.2",
+    "situation": "Medication review at the GP",
+    "question": "What is his latest HbA1c (long-term blood sugar) and from when?",
+    "answer": "7.2%, from July 2024. No later value is documented.",
+    "sources": ["91010106"]
+  },
+  {
+    "id": "1.3",
+    "situation": "Medication review at the GP",
+    "question": "Is his kidney function documented?",
+    "answer": "Yes. Chronic kidney disease stage G3a is diagnosed, and the lab from July 2024 shows creatinine 1.5 mg/dl with eGFR 48 ml/min/1.73m2.",
+    "sources": ["91010104", "91010105", "91010106"]
+  },
+  {
+    "id": "2.1",
+    "situation": "Planning a CT with iodinated contrast",
+    "question": "Which allergies are documented?",
+    "answer": "Contradictory. The discharge letters of March and October 2024 document a penicillin allergy (exanthem); the outpatient letter of July 2024 documents an allergy to iodinated contrast media (exanthem) and does not mention penicillin.",
+    "sources": ["91010104", "91010105", "91010108"]
+  },
+  {
+    "id": "2.2",
+    "situation": "Planning a CT with iodinated contrast",
+    "question": "Which drug makes giving iodinated contrast a concern?",
+    "answer": "Metformin (Glucophage 1000 mg 1-0-1), together with the reduced kidney function (eGFR 48).",
+    "sources": ["91010104", "91010106", "91010108"]
+  },
+  {
+    "id": "3.1",
+    "situation": "Carotid stenosis follow-up",
+    "question": "On which side is the carotid stenosis?",
+    "answer": "Contradictory. The duplex ultrasound of March 2024 and the discharge letter of October 2024 place the stenosis on the left; the discharge letter of March 2024 says right.",
+    "sources": ["91010101", "91010104", "91010108"]
+  },
+  {
+    "id": "3.2",
+    "situation": "Carotid stenosis follow-up",
+    "question": "How severe is the stenosis?",
+    "answer": "About 50% (moderate) at the origin of the internal carotid artery.",
+    "sources": ["91010101", "91010104", "91010108"]
+  },
+  {
+    "id": "3.3",
+    "situation": "Carotid stenosis follow-up",
+    "question": "Is there a record that the recommended pneumology follow-up (six months after March 2024) took place?",
+    "answer": "No. A pneumology check-up in six months was recommended in March 2024, but none of the eight documents records that it took place.",
+    "sources": []
+  },
+  {
+    "id": "4.1",
+    "situation": "Pre-operative anaesthesia check",
+    "question": "Which allergies are documented?",
+    "answer": "Not documented. None of the six documents, including the pre-anaesthesia evaluation and the discharge letter, records an allergy status.",
+    "sources": []
+  },
+  {
+    "id": "4.2",
+    "situation": "Pre-operative anaesthesia check",
+    "question": "Does she take any anticoagulant or antiplatelet drug (blood thinner) permanently?",
+    "answer": "No permanent anticoagulation is documented. She takes ibuprofen occasionally (last two weeks before the evaluation); enoxaparin 40 mg 0-0-1 was only given as thrombosis prophylaxis during the hospital stay.",
+    "sources": ["91020103", "91020106"]
+  },
+  {
+    "id": "4.3",
+    "situation": "Pre-operative anaesthesia check",
+    "question": "What is her ASA classification and airway assessment?",
+    "answer": "ASA II. Mallampati II, mouth opening more than three fingerbreadths, freely movable neck, unremarkable dental status, no dentures. General anaesthesia with endotracheal intubation is planned.",
+    "sources": ["91020103"]
+  },
+  {
+    "id": "5.1",
+    "situation": "Review after discharge",
+    "question": "Which operation was performed and when?",
+    "answer": "An uncomplicated laparoscopic cholecystectomy on 10 March 2025.",
+    "sources": ["91020105", "91020106"]
+  },
+  {
+    "id": "5.2",
+    "situation": "Review after discharge",
+    "question": "What did the pre-operative laboratory show?",
+    "answer": "Normal values: haemoglobin 13.1 g/dl, leukocytes 6.8 G/l, platelets 245 G/l, creatinine 0.8 mg/dl, Quick 98%, INR 1.0, glucose 92 mg/dl.",
+    "sources": ["91020104"]
+  },
+  {
+    "id": "5.3",
+    "situation": "Review after discharge",
+    "question": "Is a blood group or crossmatch documented?",
+    "answer": "Not documented.",
+    "sources": []
+  },
+  {
+    "id": "6.1",
+    "situation": "Chemotherapy protocol check",
+    "question": "Which chemotherapy protocol is he on, and what are the doses?",
+    "answer": "Adjuvant XELOX, six cycles: oxaliplatin 130 mg/m2 intravenous on day 1 plus capecitabine 1000 mg/m2 by mouth twice daily on days 1-14, cycle length 21 days. Premedication: ondansetron 8 mg and dexamethasone 8 mg.",
+    "sources": ["91030102", "91030103"]
+  },
+  {
+    "id": "6.2",
+    "situation": "Chemotherapy protocol check",
+    "question": "What is the stage of his colon cancer (tumour size, lymph nodes, spread)?",
+    "answer": "Moderately differentiated adenocarcinoma of the ascending colon, pT3 pN1 (2/24) cM0 G2 R0, microsatellite stable (MSS), KRAS mutation exon 2 codon 12, BRAF wild type.",
+    "sources": ["91030101", "91030102"]
+  },
+  {
+    "id": "6.3",
+    "situation": "Chemotherapy protocol check",
+    "question": "Which vascular access for the chemotherapy is documented?",
+    "answer": "A Port-a-Cath placed in the right subclavian position on 17 March 2025.",
+    "sources": ["91030103"]
+  },
+  {
+    "id": "7.1",
+    "situation": "Fever during chemotherapy, night shift",
+    "question": "How low are his blood counts (cytopenias)?",
+    "answer": "On 6 May 2025: leukocytes 1.9 G/l with absolute neutrophils 0.7 G/l, haemoglobin 10.8 g/dl, platelets 92 G/l, CRP 86 mg/l.",
+    "sources": ["91030106", "91030107"]
+  },
+  {
+    "id": "7.2",
+    "situation": "Fever during chemotherapy, night shift",
+    "question": "What treatment did he receive for the febrile neutropenia?",
+    "answer": "Immediate intravenous piperacillin/tazobactam plus G-CSF (filgrastim) subcutaneously. No focus was found; he has been afebrile since 9 May 2025.",
+    "sources": ["91030107"]
+  },
+  {
+    "id": "7.3",
+    "situation": "Fever during chemotherapy, night shift",
+    "question": "What is planned for chemotherapy cycle 4?",
+    "answer": "Postponed to 26 May 2025 with a 25% dose reduction of oxaliplatin.",
+    "sources": ["91030107"]
+  },
+  {
+    "id": "7.4",
+    "situation": "Fever during chemotherapy, night shift",
+    "question": "Which allergy is documented?",
+    "answer": "Iodinated contrast media (exanthem).",
+    "sources": ["91030102", "91030107"]
+  }
+]
