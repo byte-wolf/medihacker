@@ -120,7 +120,7 @@ export function ChatPanel(props: {
               }
             }}
           />
-          <Button type="submit" renderIcon={busy ? undefined : Send} disabled={props.disabled || busy || !question.trim() || !props.conversationId}>
+          <Button type="submit" size="md" renderIcon={busy ? undefined : Send} disabled={props.disabled || busy || !question.trim() || !props.conversationId}>
             {busy ? <InlineLoading className="ask-bar__spinner" description="Answering…" /> : "Ask"}
           </Button>
         </form>
@@ -139,7 +139,6 @@ export function ChatPanel(props: {
           {props.situation ? `Answers stay in the context of “${props.situation.title}”.` : "No situation selected: answers use your role only."} Every
           answer is checked against the source documents.
         </p>
-        {messages.length === 0 && <p className="chat__empty muted">Ask a question in the bar above.</p>}
         <div className="chat__thread" aria-live="polite">
           {messages.map((m) => {
             if (m.role === "user")
