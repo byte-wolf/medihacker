@@ -1,7 +1,7 @@
 ---
 id: T-028
 title: Fix the Impeccable critique findings on the briefing workspace
-status: claimed
+status: in_progress
 owner: Devin for mirraman (https://app.devin.ai/sessions/6142ae58ff4a4f9f8dd116e56624138a)
 branch: feat/t-028-critique-fixes
 pr:
@@ -29,3 +29,4 @@ Built on `feat/t-026-minimal-briefing` (not yet merged). Work is split across pa
 ## Log
 
 - 2026-10-30, Devin: claimed.
+- 2026-10-30, Devin: 3 parallel fix agents (safety/typography, layout, sources) merged into feat/t-028-critique-fixes; collapsible question bar and source-close tooltip fix added on request. Independent re-critique: 30/40, no P0/P1. lint/typecheck/169 unit tests pass; e2e not run (needs ./data). PR base should be feat/t-026-minimal-briefing until T-026 merges.
