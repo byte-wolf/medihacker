@@ -1,7 +1,7 @@
 ---
 id: T-010
 title: Info button always in the same position
-status: review
+status: done
 owner: Devin (https://app.devin.ai/sessions/110cff77a54f439799b0e2128c832bfc)
 branch: feat/ui-polish-2
 pr: https://github.com/byte-wolf/medihacker/pull/4
@@ -25,3 +25,4 @@ Second UI batch requested by Martin; T-007 to T-014 are built together on one br
 
 - 2026-10-30, Devin: claimed together with T-007–T-014.
 - 2026-10-30, Devin: implemented and tested, PR #4 open for review.
+- 2026-10-30, Devin: PR #4 merged into main.
