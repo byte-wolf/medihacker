@@ -95,8 +95,12 @@ describe("briefing pipeline", () => {
     expect(items.find((i) => i.key === "contrast_safety")?.status).toBe("not_documented");
     expect(items.find((i) => i.key === "prior_events")?.status).toBe("unverified");
 
-    const demo = items.find((i) => i.key === "demographics")!;
-    expect(demo.facts[0].statement).toMatch(/^70 years old/);
+    // Minimal screen: at most 8 items, allergies always among them
+    expect(items.length).toBeLessThanOrEqual(8);
+    expect(items.some((i) => i.key === "allergies")).toBe(true);
+
+    const tokens = events.find((e): e is Extract<BriefingStreamEvent, { type: "tokens" }> => e.type === "tokens");
+    expect(tokens?.calls.some((c) => c.tag.startsWith("extract:"))).toBe(true);
   });
 
   it("marks facts that touch a contradiction", async () => {
@@ -106,6 +110,19 @@ describe("briefing pipeline", () => {
     const last = events.filter((e) => e.type === "contradictions").at(-1) as Extract<BriefingStreamEvent, { type: "contradictions" }>;
     expect(last.all.length).toBeGreaterThanOrEqual(3);
     expect(last.relevant.length).toBeGreaterThan(0);
+  });
+});
+
+describe("item selection by the model", () => {
+  it("shows only the items the model picked, plus allergies", async () => {
+    const select = (opts: CompleteOptions) =>
+      opts.tag === "select" ? JSON.stringify({ keys: ["antithrombotics", "contrast_safety", "renal_function"], custom: [] }) : scripted(opts);
+    mods.provider.setProvider(new mods.provider.MockProvider(select));
+    const patient = mods.patients.getPatient("9999-0001")!;
+    const result = await mods.pipeline.buildBriefing(patient, ["Emergency physician"], { title: "Selection test", description: "CT with contrast tonight." }, () => {});
+    const keys = result.sections.flatMap((s) => s.items.map((i) => i.key)).sort();
+    expect(keys).toEqual(["allergies", "antithrombotics", "contrast_safety", "renal_function"]);
+    mods.provider.setProvider(new mods.provider.MockProvider(scripted));
   });
 });
 

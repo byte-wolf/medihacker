@@ -1,9 +1,10 @@
-import { CATEGORIES, deterministicPlan, type PlannedItem, type PlannedSection } from "@/lib/catalog/roles";
+import { CATEGORIES, compactPlan, deterministicPlan, MAX_BRIEFING_ITEMS, restrictPlan, type PlannedItem, type PlannedSection } from "@/lib/catalog/roles";
 import type { PatientRecord } from "@/lib/data/patients";
 import { listContradictions, ensureContradictions } from "@/lib/contradictions/store";
 import { cachedComplete } from "@/lib/llm/cache";
 import { LlmUnavailableError, llmConfigured, parseJsonObject } from "@/lib/llm/provider";
-import { extractionPrompt, planPrompt } from "@/lib/llm/prompts";
+import { sumTokens, TOKEN_LIMITS, withTokenLog } from "@/lib/llm/tokens";
+import { extractionPrompt, selectionPrompt } from "@/lib/llm/prompts";
 import type { BriefingItem, BriefingSection, BriefingStreamEvent, Contradiction } from "@/lib/types";
 import { demographicsItem, itemsFromModel, retrievalItems, verifyContext, weightTrendItem } from "./items";
 
@@ -26,11 +27,17 @@ const ITEM_CONTRADICTION_CATEGORIES: Record<string, string[]> = {
   followups_recommended: ["dates"],
 };
 
-/** Situation-specific items from the model (cached), merged into the regular briefing sections. */
-async function customItems(roles: string[], situation: SituationInput, plan: PlannedSection[]): Promise<PlannedItem[]> {
-  if (!situation || !llmConfigured()) return [];
-  const existing = plan.flatMap((s) => s.items.map((i) => i.label));
-  const { system, user } = planPrompt({ roles, situation, existing });
+/**
+ * The model picks the few items this role needs for this situation (cached, fast model), plus up
+ * to two situation-specific items the catalog lacks. Without a model, or if its answer is unusable,
+ * a rule picks them.
+ */
+async function selectPlan(roles: string[], situation: SituationInput): Promise<PlannedSection[]> {
+  const situationText = situation ? `${situation.title} ${situation.description}` : "";
+  const fallback = compactPlan(roles, situationText);
+  if (!situation || !llmConfigured()) return fallback;
+  const catalog = Object.values(CATEGORIES).map((c) => ({ key: c.key, label: c.label }));
+  const { system, user } = selectionPrompt({ roles, situation, catalog, max: MAX_BRIEFING_ITEMS });
   try {
     const { text } = await cachedComplete({
       messages: [
@@ -39,17 +46,23 @@ async function customItems(roles: string[], situation: SituationInput, plan: Pla
       ],
       json: true,
       fast: true,
-      tag: "plan",
-      maxTokens: 600,
+      tag: "select",
+      maxTokens: TOKEN_LIMITS.select,
     });
-    const items = parseJsonObject<{ items?: PlannedItem[] }>(text).items ?? [];
-    return items
+    const raw = parseJsonObject<{ keys?: unknown; custom?: unknown }>(text);
+    const picked = (Array.isArray(raw.keys) ? raw.keys : []).filter((k): k is string => typeof k === "string" && !!CATEGORIES[k]);
+    if (picked.length < 3) return fallback;
+    const custom: PlannedItem[] = (Array.isArray(raw.custom) ? (raw.custom as PlannedItem[]) : [])
       .filter((i) => typeof i?.key === "string" && typeof i?.label === "string")
-      .slice(0, 4)
+      .slice(0, 2)
       .map((i) => ({ key: i.key.startsWith("custom_") ? i.key : `custom_${i.key}`, label: i.label, guidance: String(i.guidance ?? "") }));
+    const keys = [...new Set(picked.includes("allergies") ? picked : ["allergies", ...picked])].slice(0, MAX_BRIEFING_ITEMS - custom.length);
+    const plan = restrictPlan(deterministicPlan(roles, situationText), keys);
+    if (custom.length) plan.push({ id: "situation", title: "For this situation", items: custom });
+    return plan;
   } catch (err) {
-    console.error("[briefing] planning failed:", err);
-    return [];
+    if (!(err instanceof LlmUnavailableError)) console.error("[briefing] item selection failed:", err instanceof Error ? err.message.slice(0, 200) : err);
+    return fallback;
   }
 }
 
@@ -83,7 +96,7 @@ async function extractSection(
           ],
           json: true,
           tag: `extract:${section.id}`,
-          maxTokens: 3000,
+          maxTokens: TOKEN_LIMITS.extract,
         });
         return { ...itemsFromModel(parseJsonObject(text), chunk, ctx, section.title), cached };
       }),
@@ -127,8 +140,18 @@ export async function buildBriefing(
   emit: (e: BriefingStreamEvent) => void,
 ): Promise<{ sections: BriefingSection[]; ms: number; fallback: boolean }> {
   const started = Date.now();
+  const { result, calls } = await withTokenLog(() => runBriefing(patient, roles, situation, emit));
+  const tokens = sumTokens(calls);
+  emit({ type: "tokens", calls, total: tokens.total });
+  console.log(`[tokens] briefing total ${tokens.prompt} in + ${tokens.completion} out = ${tokens.total} over ${calls.filter((c) => !c.cached).length} model calls (${calls.filter((c) => c.cached).length} cached)`);
+  const ms = Date.now() - started;
+  emit({ type: "done", ms, cached: result.allCached, fallback: result.fallback });
+  return { sections: result.sections, ms, fallback: result.fallback };
+}
+
+async function runBriefing(patient: PatientRecord, roles: string[], situation: SituationInput, emit: (e: BriefingStreamEvent) => void) {
   ensureContradictions(patient);
-  const plan = deterministicPlan(roles, situation ? `${situation.title} ${situation.description}` : "");
+  const plan = await selectPlan(roles, situation);
   emit({ type: "plan", sections: plan.map((s) => ({ id: s.id, title: s.title, items: s.items.map((i) => ({ key: i.key, label: i.label })) })) });
 
   const contradictions = listContradictions(patient.id);
@@ -161,23 +184,7 @@ export async function buildBriefing(
     else sections.push(section);
     emit({ type: "section", section });
   };
-  const jobs = plan.map((s) => runOne(s).then((section) => (publish(section), section)));
-
-  // Situation-specific items are planned while the standard sections are already extracting,
-  // then appended to the last regular section (no separate "questions" section to read).
-  const customJob = customItems(roles, situation, plan).then(async (items) => {
-    const known = new Set(plan.flatMap((s) => s.items.map((i) => i.key)));
-    const extra = items.filter((i) => !known.has(i.key) && !CATEGORIES[i.key]);
-    const target = plan.at(-1);
-    if (!extra.length || !target) return;
-    const [extraSection, base] = await Promise.all([runOne({ ...target, items: extra }), jobs[plan.length - 1]]);
-    if (!extraSection?.items.length) return;
-    publish({ ...(base ?? { id: target.id, title: target.title, items: [] }), items: [...(base?.items ?? []), ...extraSection.items] });
-  });
-
-  await Promise.all([...jobs, customJob]);
+  await Promise.all(plan.map((s) => runOne(s).then(publish)));
   emit({ type: "contradictions", relevant: [...relevant], all: contradictions });
-  const ms = Date.now() - started;
-  emit({ type: "done", ms, cached: allCached, fallback });
-  return { sections, ms, fallback };
+  return { sections, allCached, fallback };
 }

@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
 import type { PatientRecord } from "@/lib/data/patients";
 import { cachedComplete } from "@/lib/llm/cache";
+import { TOKEN_LIMITS } from "@/lib/llm/tokens";
 import { llmConfigured, parseJsonObject } from "@/lib/llm/provider";
 import { contradictionPrompt, PROMPT_VERSION, skepticPrompt } from "@/lib/llm/prompts";
 import type { Contradiction } from "@/lib/types";
@@ -39,7 +40,7 @@ export async function llmContradictions(patient: PatientRecord, existing: Contra
     ],
     json: true,
     tag: "contradictions",
-    maxTokens: 6000,
+    maxTokens: TOKEN_LIMITS.contradictions,
   });
   type Cand = { title?: string; explanation?: string; severity?: string; passageIds?: string[] };
   const raw = parseJsonObject<{ contradictions?: Cand[] }>(text).contradictions ?? [];
@@ -63,6 +64,7 @@ export async function llmContradictions(patient: PatientRecord, existing: Contra
     ],
     json: true,
     tag: "skeptic",
+    maxTokens: TOKEN_LIMITS.contradictions,
   });
   const verdicts = parseJsonObject<{ verdicts?: { index: number; keep: boolean }[] }>(verdictText.text).verdicts ?? [];
   return candidates

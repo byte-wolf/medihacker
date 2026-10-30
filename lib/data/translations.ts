@@ -1,6 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
 import { cachedComplete } from "@/lib/llm/cache";
+import { TOKEN_LIMITS } from "@/lib/llm/tokens";
 import { llmConfigured, parseJsonObject } from "@/lib/llm/provider";
 import { TRANSLATION_VERSION, translationIsSafe } from "@/lib/llm/glossary";
 import { translationPrompt } from "@/lib/llm/prompts";
@@ -46,7 +47,7 @@ export function ensureTranslations(patient: PatientRecord): Promise<void> {
           json: true,
           fast: true,
           tag: "translate",
-          maxTokens: 3000,
+          maxTokens: TOKEN_LIMITS.translate,
         });
         const map = parseJsonObject<{ translations?: Record<string, string> }>(text).translations ?? {};
         for (const p of batch) {

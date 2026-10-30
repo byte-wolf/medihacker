@@ -1,6 +1,5 @@
 "use client";
 
-import { OperationalTag, Tag } from "@carbon/react";
 import { Document } from "@carbon/icons-react";
 import { docKindLabel, formatDate } from "@/lib/format";
 import type { DocumentMeta, Fact } from "@/lib/types";
@@ -11,7 +10,7 @@ export function docLabel(documents: DocumentMeta[], docId: string) {
   return d ? `${docKindLabel(d.title, d.type)} · ${formatDate(d.date)}` : `Document ${docId}`;
 }
 
-/** One clickable source tag per cited document; clicking opens the highlighted passage(s). */
+/** One source link per cited document; clicking opens the highlighted passage(s). */
 export function SourceTags({
   fact,
   documents,
@@ -33,21 +32,21 @@ export function SourceTags({
   return (
     <span className="source-tags">
       {[...byDoc].map(([docId, ids]) => (
-        <OperationalTag
+        <button
           key={docId}
-          type="blue"
-          size="sm"
-          renderIcon={Document}
+          type="button"
           onClick={() => onOpenSource(docId, ids, fact.statement)}
           className="source-tag"
-          text={docLabel(documents, docId)}
           aria-label={`Open source: ${docLabel(documents, docId)}`}
-        />
+        >
+          <Document size={12} aria-hidden />
+          {docLabel(documents, docId)}
+        </button>
       ))}
       {fact.kind === "calculated" && (
-        <Tag type="purple" size="sm" title="Calculated from the linked source values">
-          Calculated
-        </Tag>
+        <span className="source-tags__calc" title="Calculated from the linked source values">
+          calculated
+        </span>
       )}
     </span>
   );

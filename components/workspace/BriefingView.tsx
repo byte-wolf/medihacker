@@ -1,11 +1,15 @@
 "use client";
 
-import { Button, InlineNotification, SkeletonText, Tile } from "@carbon/react";
+import { Button, InlineNotification, SkeletonText } from "@carbon/react";
 import { Maximize, Minimize, Renew } from "@carbon/icons-react";
 import { useState } from "react";
-import type { DocumentMeta } from "@/lib/types";
+import type { DocumentMeta, TokenCall } from "@/lib/types";
 import { ItemRow } from "./ItemRow";
 import type { BriefingState, OpenSource, SituationOption } from "./types";
+
+function tokenTooltip(calls: TokenCall[]) {
+  return calls.map((c) => `${c.tag}: ${c.cached ? "cached" : `${c.prompt} in + ${c.completion} out (${c.model})`}`).join("\n");
+}
 
 export function BriefingView({
   state,
@@ -33,10 +37,13 @@ export function BriefingView({
   return (
     <section className="briefing" aria-labelledby="briefing-title" aria-busy={loading}>
       <div className="briefing__head">
-        <h2 id="briefing-title">Briefing for this situation</h2>
+        <h2 id="briefing-title">Briefing</h2>
         <span className="briefing__meta" aria-live="polite">
           {loading && "Reading 8 documents…"}
           {state.status === "done" && state.ms !== undefined && `Ready in ${(state.ms / 1000).toFixed(1)} s${state.cached ? " (cached)" : ""}`}
+          {state.status === "done" && state.tokens !== undefined && (
+            <span title={tokenTooltip(state.tokenCalls ?? [])}> · {state.tokens.toLocaleString("en")} tokens</span>
+          )}
         </span>
         <Button
           kind="ghost"
@@ -69,17 +76,15 @@ export function BriefingView({
         />
       )}
       {showPlanSkeleton && (
-        <Tile className="briefing-section">
-          <SkeletonText heading width="30%" />
-          <SkeletonText paragraph lineCount={3} />
-        </Tile>
+        <div className="briefing-group">
+          <SkeletonText paragraph lineCount={4} />
+        </div>
       )}
       {state.plan.map((plan) => {
         const section = state.sections[plan.id];
         const error = state.sectionErrors[plan.id];
         return (
-          <Tile key={plan.id} className="briefing-section" data-section={plan.id}>
-            <h2 className="briefing-section__title">{plan.title}</h2>
+          <div key={plan.id} className="briefing-group" data-section={plan.id} aria-label={plan.title} role="group">
             {section
               ? section.items.map((item) => (
                   <ItemRow
@@ -89,7 +94,6 @@ export function BriefingView({
                     onOpenSource={onOpenSource}
                     contradictionTitles={contradictionTitles}
                     onShowContradiction={onShowContradiction}
-                    explainSituationId={situation && situation.id > 0 ? situation.id : undefined}
                   />
                 ))
               : plan.items.map((i) => (
@@ -107,15 +111,9 @@ export function BriefingView({
                 Retry
               </Button>
             )}
-          </Tile>
+          </div>
         );
       })}
-      {state.status === "done" && (
-        <p className="briefing__footer">
-          Generated from {documents.length} source documents. Every statement links to its source passage; facts that could not be
-          matched to the source text are not shown. Verify before clinical decisions.
-        </p>
-      )}
       </div>
     </section>
   );

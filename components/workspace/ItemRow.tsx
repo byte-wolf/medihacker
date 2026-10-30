@@ -1,9 +1,7 @@
 "use client";
 
-import { Tag } from "@carbon/react";
-import { CheckmarkFilled, HelpFilled, WarningAltFilled } from "@carbon/icons-react";
+import { WarningAltFilled } from "@carbon/icons-react";
 import type { BriefingItem, DocumentMeta } from "@/lib/types";
-import { ExplainButton } from "./ExplainButton";
 import { SourceTags } from "./SourceTags";
 import type { OpenSource } from "./types";
 
@@ -75,24 +73,17 @@ export function ItemRow({
   onOpenSource,
   contradictionTitles,
   onShowContradiction,
-  explainSituationId,
 }: {
   item: BriefingItem;
   documents: DocumentMeta[];
   onOpenSource: OpenSource;
   contradictionTitles: Record<string, string>;
   onShowContradiction: (id: string) => void;
-  /** Briefing only: show the "why this matters" button for this situation */
-  explainSituationId?: number;
 }) {
   return (
     <div className={`item-row item-row--${item.status}`} data-item={item.key}>
       <div className="item-row__label">
-        {item.status === "documented" && <CheckmarkFilled size={16} aria-hidden className="icon-ok" />}
-        {item.status === "not_documented" && <HelpFilled size={16} aria-hidden className="icon-muted" />}
-        {item.status === "unverified" && <WarningAltFilled size={16} aria-hidden className="icon-warn" />}
         <h3>{item.label}</h3>
-        {explainSituationId !== undefined && <ExplainButton situationId={explainSituationId} label={item.label} />}
       </div>
       <div className="item-row__body">
         {item.status === "documented" ? (
@@ -110,10 +101,8 @@ export function ItemRow({
           </ul>
         ) : (
           <div className="item-row__note">
-            <Tag type={item.status === "not_documented" ? "gray" : "warm-gray"} size="sm">
-              {item.status === "not_documented" ? "Not documented" : "Not verified"}
-            </Tag>{" "}
-            {item.note}
+            <span className="item-row__status">{item.status === "not_documented" ? "Not documented" : "Not verified"}</span>
+            {item.note && <span className="item-row__why"> · {item.note}</span>}
           </div>
         )}
       </div>
