@@ -1,7 +1,7 @@
 ---
 id: T-025
 title: Compact question bar and Q&A section
-status: claimed
+status: in_progress
 owner: Devin for mirraman (https://app.devin.ai/sessions/b5e677a322d14b239181836c7ede0378)
 branch: feat/t-025-compact-question-bar
 pr:
@@ -26,3 +26,4 @@ Requested by mirraman ("this gap is too huge, make it more compact and nicer"), 
 ## Log
 
 - 2026-10-30, Devin: claimed.
+- 2026-10-30, Devin: in progress on feat/t-025-compact-question-bar (PR to be opened by mirraman).
