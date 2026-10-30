@@ -48,7 +48,7 @@ export function ContradictionCard({
             onClick={() => onOpenSource(docId, c.passageIds.filter((p) => p.startsWith(docId + ":")), c.title)}
           />
         ))}
-        <Tag type={c.severity === "high" ? "red" : c.severity === "medium" ? "magenta" : "gray"} size="sm">
+        <Tag type={c.severity === "high" ? "red" : c.severity === "medium" ? "warm-gray" : "gray"} size="sm">
           {c.severity === "high" ? "High" : c.severity === "medium" ? "Medium" : "Low"} relevance
         </Tag>
         {c.detectedBy === "llm" && (
@@ -75,7 +75,7 @@ export function ContradictionsPanel(props: {
   return (
     <section className="contradictions" aria-labelledby="contradictions-title">
       <h2 id="contradictions-title" className="contradictions__title">
-        Contradictions in the documents <Tag type="red" size="sm">{props.contradictions.length}</Tag>
+        Contradictions in the documents <Tag type="warm-gray" size="sm">{props.contradictions.length}</Tag>
       </h2>
       <p className="muted contradictions__lead">Passages that cannot all be true. Open each source to compare.</p>
       {props.loading && <SkeletonText paragraph lineCount={4} />}

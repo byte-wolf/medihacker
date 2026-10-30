@@ -65,7 +65,7 @@ export const CATEGORIES: Record<string, Category> = {
     key: "weight_trend",
     label: "Weight, height and BMI over time",
     guidance:
-      "One fact per weighing: 'Weight X kg (date)', quoting that document's weight line; never combine values from different documents in one fact. The latest weight is the one in the most recently dated document. Then one calculated fact for the change between the first and the latest weight, citing both weight lines.",
+      "ONE fact for the whole series in date order: 'Weight X kg (date) → Y kg (date); change ±Z kg', quoting each document's weight line and adding a difference calculation from the first to the latest weight. Repeated weighings are a trend, not a contradiction. The latest weight is the one in the most recently dated document.",
     terms: /gewicht|größe|BMI|kg\b/i,
   },
   blood_pressure: {
@@ -241,10 +241,12 @@ const DEFAULT_PROFILE: SectionTemplate[] = [
 ];
 
 /** Situation templates add or prioritise categories when their trigger matches the situation text. */
-export const SITUATION_TEMPLATES: { id: string; trigger: RegExp; sections: SectionTemplate[]; excludeRoles?: string[] }[] = [
+export const SITUATION_TEMPLATES: { id: string; trigger: RegExp; sections: SectionTemplate[]; excludeRoles?: string[]; broad?: boolean }[] = [
   {
     id: "preop",
     trigger: /pre-?op|anaesth|anesth|surgery|operation|procedure|scheduled for/i,
+    // Matches almost every peri-operative situation, so a more specific template goes first on a capped screen.
+    broad: true,
     sections: [
       { id: "safety", title: "Safety alerts", items: ["allergies", "antithrombotics"] },
       { id: "cardio", title: "Cardiovascular and airway", items: ["cardiac_function", "blood_pressure", "airway_osa"] },
@@ -336,4 +338,48 @@ export function deterministicPlan(roles: string[], situationText: string): Plann
         .map((k) => ({ key: k, label: CATEGORIES[k].label, guidance: CATEGORIES[k].guidance })),
     }))
     .filter((s) => s.items.length > 0);
+}
+
+/** At most this many items on the screen: enough for the task, few enough to read in seconds. */
+export const MAX_BRIEFING_ITEMS = 8;
+
+/** Allergies always come first on screen: their section moves to the top and they lead it. */
+export function allergiesFirst(plan: PlannedSection[]): PlannedSection[] {
+  const i = plan.findIndex((s) => s.items.some((x) => x.key === "allergies"));
+  if (i < 0) return plan;
+  const s = plan[i];
+  const lead = { ...s, items: [...s.items.filter((x) => x.key === "allergies"), ...s.items.filter((x) => x.key !== "allergies")] };
+  return [lead, ...plan.slice(0, i), ...plan.slice(i + 1)];
+}
+
+/** Keep only the given keys of a plan, in the plan's order (allergies first); keys the plan lacks go into a last "More" section. */
+export function restrictPlan(plan: PlannedSection[], keys: string[]): PlannedSection[] {
+  const wanted = new Set(keys);
+  const sections = plan.map((s) => ({ ...s, items: s.items.filter((i) => wanted.has(i.key)) })).filter((s) => s.items.length > 0);
+  const known = new Set(plan.flatMap((s) => s.items.map((i) => i.key)));
+  const extra = keys.filter((k) => !known.has(k) && CATEGORIES[k]);
+  if (extra.length) {
+    sections.push({ id: "more", title: "More", items: extra.map((k) => ({ key: k, label: CATEGORIES[k].label, guidance: CATEGORIES[k].guidance })) });
+  }
+  return allergiesFirst(sections);
+}
+
+/**
+ * Rule-based selection when no model picks the items: the situation's needs first, then
+ * allergies, then the role's base needs, capped at MAX_BRIEFING_ITEMS.
+ */
+export function compactPlan(roles: string[], situationText: string, max = MAX_BRIEFING_ITEMS): PlannedSection[] {
+  const full = deterministicPlan(roles, situationText);
+  const situationKeys = SITUATION_TEMPLATES.filter(
+    (t) => t.trigger.test(situationText) && !(t.excludeRoles && roles.length && roles.every((r) => t.excludeRoles!.includes(r))),
+  )
+    .sort((a, b) => Number(!!a.broad) - Number(!!b.broad))
+    .flatMap((t) => t.sections.flatMap((s) => s.items));
+  const roleKeys = full.flatMap((s) => s.items.map((i) => i.key));
+  const keys: string[] = [];
+  for (const k of [...situationKeys, "allergies", ...roleKeys]) {
+    if (keys.length >= max) break;
+    if (!keys.includes(k) && CATEGORIES[k]) keys.push(k);
+  }
+  return restrictPlan(full, keys);
 }

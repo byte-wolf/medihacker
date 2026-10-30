@@ -180,7 +180,7 @@ export function Workspace(props: {
         </div>
       )}
       <div className={`workspace__grid${source ? " workspace__grid--source" : ""}`}>
-        <div className={`workspace__main${messages.some((m) => m.role === "user") ? " workspace__main--chatting" : ""}`}>
+        <div className="workspace__main">
           <BriefingView
             state={situationId ? briefing : { ...briefing, status: "idle" }}
             situation={situation}
@@ -258,6 +258,8 @@ function reduce(b: BriefingState, e: BriefingStreamEvent): BriefingState {
       return e.sectionId
         ? { ...b, sectionErrors: { ...b.sectionErrors, [e.sectionId]: e.message } }
         : { ...b, status: "error", error: e.message };
+    case "tokens":
+      return { ...b, tokenCalls: e.calls, tokens: e.total };
     case "done":
       return { ...b, status: "done", ms: e.ms, cached: e.cached, fallback: e.fallback };
   }
